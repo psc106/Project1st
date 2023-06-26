@@ -17,7 +17,8 @@ namespace Project1st.Game.Core
         {
             WHITE = 0, RED, GREEN, BLUE,
             YELLOW = 4, CYAN, DARK_GRAY, DARK_RED,
-            DARK_MAGENTA = 8, DARK_BLUE, DARK_CYAN, DARK_GREEN
+            DARK_MAGENTA = 8, DARK_BLUE, DARK_CYAN, DARK_GREEN, 
+            DARK_YELLOW = 12, BLACK=99
         }
 
         public BufferPrinter()
@@ -94,6 +95,12 @@ namespace Project1st.Game.Core
                             case Color.DARK_GREEN:
                                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                                 break;
+                            case Color.DARK_YELLOW:
+                                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                                break;
+                            case Color.BLACK:
+                                Console.ForegroundColor = ConsoleColor.Black;
+                                break;
                             default:
                                 break;
                         }   //[switch] end 컬러체크
@@ -108,6 +115,9 @@ namespace Project1st.Game.Core
                 }// 1행 출력 종료
 
             }//모든 행 출력 종료
+
+            isWork = false;
         }
+
     }
 }
