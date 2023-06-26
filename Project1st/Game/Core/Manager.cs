@@ -13,15 +13,18 @@ namespace Project1st.Game.Core
         public static BufferPrinter buffer;
         public static Player player;
         public static WorldMap map;
+        public static Field currField;
+
         public static Random random;
 
         public static void Instance()
         {
+            random = new Random();
+
+            map = new WorldMap();
             buffer = new BufferPrinter();
             player = new Player();
-            map = new WorldMap();
 
-            random = new Random();
         }
     }
 }
