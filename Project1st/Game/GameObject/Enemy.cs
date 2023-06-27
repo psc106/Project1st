@@ -13,7 +13,7 @@ namespace Project1st.Game.GameObject
 {
     public class Enemy : MoveObject
     {
-        static public int EnemyHitPointMAX = 50;
+        static public int EnemyHitPointMAX = 100;
 
         public Timer moveTimer;
 
@@ -23,10 +23,24 @@ namespace Project1st.Game.GameObject
         public Enemy()
         {
             base.Init();
-            hitPoint = 100;
+            hitPoint = EnemyHitPointMAX;
             ID = 0;
-            isMove = false;
+            isMove = true;
             path = new List<Location>();
+
+            StartTimer();
+        }
+        public Enemy(int x, int y)
+        {
+            base.Init();
+            hitPoint = EnemyHitPointMAX;
+            ID = 0;
+            isMove = true;
+            path = new List<Location>();
+            Axis2D.x = x;
+            Axis2D.y = y;
+
+            StartTimer();
         }
 
 

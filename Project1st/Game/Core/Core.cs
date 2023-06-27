@@ -189,15 +189,21 @@ namespace Project1st.Game.Core
                                 }
 
                                 GameManger.player.Teleport(Field._FIELD_SIZE, Field._FIELD_SIZE);
-                                GameManger.player.score -= 10;
 
                                 GameManger.currField.isCurrField = false;
+                                GameManger.currField.StopEnemies();
+                                if (GameManger.currField.createTimer != null)
+                                {
+                                    GameManger.currField.createTimer.Dispose();
+                                }
 
                                 //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
                                 GameManger.currField = GameManger.map.worldMap[currFieldY, currFieldX];
                                 if (GameManger.currField.type == 0)
                                 {
+                                    GameManger.currField.PlayEnemies();
+                                    GameManger.currField.createTimer = new Timer(GameManger.currField.CreateEnemy, null, 100, 10000);
                                 }
                                 GameManger.currField.isFog = false;
                                 GameManger.currField.isCurrField = true;
@@ -206,6 +212,11 @@ namespace Project1st.Game.Core
                             }
                         }
 
+                    }
+
+                    for (int i = 0; i < GameManger.currField.enemies.Count; i++)
+                    {
+                        GameManger.currField.enemies[i].isMove = true;
                     }
 
                     //적에게 이동
@@ -280,7 +291,35 @@ namespace Project1st.Game.Core
                 line[y] = "";
                 for (int x = 0; x < Field._FIELD_SIZE; x++)
                 {
-
+                    if (GameManger.currField.fogInfo[y, x] == 1)
+                    {
+                        //적 2순위
+                        Enemy tmp = GameManger.currField.FindEnemiesAt(x, y);
+                        if (tmp != null)
+                        {
+                            if (tmp.isLive)
+                            {
+                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX/20)
+                                {
+                                    line[y] += ".7.";
+                                }
+                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX)
+                                {
+                                    line[y] += ".1.";
+                                }
+                                else
+                                {
+                                    line[y] += ".0.";
+                                }
+                                line[y] += "적.";
+                            }
+                            else if (!tmp.isLive)
+                            {
+                                line[y] += ".1.？.";
+                            }
+                            continue;
+                        }
+                    }
 
                     //플레이어 4순위
                     if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y)

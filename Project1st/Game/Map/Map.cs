@@ -281,6 +281,7 @@ namespace Project1st.Game.Map
         public Portal[] portals;
 
         public List<Enemy> enemies;
+        public Timer createTimer;
 
 
         public int type;
@@ -389,6 +390,45 @@ namespace Project1st.Game.Map
             fieldInfo[portals[index].axis.y, portals[index].axis.x] = field_info.portal;
         }
 
+        public void CreateEnemy(object obj)
+        {
+            if (enemies.Count > 6) return;
+            while (true)
+            {
+                int enemyX = GameManger.random.Next(_FIELD_SIZE);
+                int enemyY = GameManger.random.Next(_FIELD_SIZE);
+                if (fieldInfo[enemyY, enemyX] != field_info.tree)
+                {
+                    Enemy enemy = new Enemy(enemyX, enemyY);
+                    enemies.Add(enemy);
+                    break;
+                }
+            }
+        }
+        public void RemoveEnemy(int index)
+        {
+            if (enemies.Count <= 0) return;
+            if (enemies[index].moveTimer != null)
+            {
+                enemies[index].moveTimer.Dispose();
+            }
+            enemies.RemoveAt(index);
+        }
+        public void RemoveEnemy(int x, int y)
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                if (enemies[i] == null) continue;
+                if (enemies[i].Axis2D.x == x && enemies[i].Axis2D.y == y)
+                {
+                    if (enemies[i].moveTimer != null)
+                    {
+                        enemies[i].moveTimer.Dispose();
+                    }
+                    enemies.RemoveAt(i);
+                }
+            }
+        }
         public field_info GetElementAt(int x, int y)
         {
             if (fieldInfo == null) return field_info.error;
