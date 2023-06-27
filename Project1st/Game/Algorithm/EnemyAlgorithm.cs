@@ -1,6 +1,7 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
 using Project1st.Game.Map;
+using Project1st.Game.Map.Fields;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace Project1st.Game.Algorithm
         public Location()
         {
         }
-        public Location(MainObject obj)
+        public Location(ObjectBase obj)
         {
             X = obj.Axis2D.x;
             Y = obj.Axis2D.y;
@@ -116,14 +117,14 @@ namespace Project1st.Game.Algorithm
         {
             List<Location> list = new List<Location>();
 
-            if (y != 0 && GameManger.currField.fieldInfo[y - 1, x] != Field.field_info.tree)
+            if (y != 0 && GameManger.currField.fieldInfo[y - 1, x] != FieldBase.field_info.tree)
             {
                 Location node = openList.Find(l => l.X == x && l.Y == y - 1);
                 if (node == null) list.Add(new Location() { X = x, Y = y - 1 });
                 else list.Add(node);
             }
 
-            if (y != Field._FIELD_SIZE - 1 && GameManger.currField.fieldInfo[y + 1, x] != Field.field_info.tree)
+            if (y != FieldBase._FIELD_SIZE - 1 && GameManger.currField.fieldInfo[y + 1, x] != FieldBase.field_info.tree)
 
             {
                 Location node = openList.Find(l => l.X == x && l.Y == y + 1);
@@ -131,13 +132,13 @@ namespace Project1st.Game.Algorithm
                 else list.Add(node);
             }
 
-            if (x != 0 && GameManger.currField.fieldInfo[y, x - 1] != Field.field_info.tree)
+            if (x != 0 && GameManger.currField.fieldInfo[y, x - 1] != FieldBase.field_info.tree)
             {
                 Location node = openList.Find(l => l.X == x - 1 && l.Y == y);
                 if (node == null) list.Add(new Location() { X = x - 1, Y = y });
                 else list.Add(node);
             }
-            if (x != Field._FIELD_SIZE - 1 && GameManger.currField.fieldInfo[y, x + 1] != Field.field_info.tree)
+            if (x != FieldBase._FIELD_SIZE - 1 && GameManger.currField.fieldInfo[y, x + 1] != FieldBase.field_info.tree)
             {
                 Location node = openList.Find(l => l.X == x + 1 && l.Y == y);
                 if (node == null) list.Add(new Location() { X = x + 1, Y = y });

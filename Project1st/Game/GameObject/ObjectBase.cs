@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game.GameObject
 {
-    public class MainObject
+    public class ObjectBase
     {
         public Coordinate Axis2D;
 
-        public MainObject()
+        public ObjectBase()
         {
             Init();
         }
@@ -21,7 +21,7 @@ namespace Project1st.Game.GameObject
         }
     }
 
-    public class MoveObject : MainObject
+    public class MoveObject : ObjectBase
     {
         public int ID;
         public bool isLive;

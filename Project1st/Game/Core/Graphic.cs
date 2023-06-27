@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Project1st.Game.Core
@@ -10,6 +11,7 @@ namespace Project1st.Game.Core
     {
         private string[] buffer;
         public readonly int _BUFFER_SIZE;
+        public Timer printTimer;
 
         public bool isWork { private set; get; }
 
@@ -24,7 +26,7 @@ namespace Project1st.Game.Core
         public BufferPrinter()
         {
             isWork = false;
-            _BUFFER_SIZE = Console.LargestWindowHeight;
+            _BUFFER_SIZE = Console.LargestWindowHeight-10;
             buffer = new string[_BUFFER_SIZE];
         }
 

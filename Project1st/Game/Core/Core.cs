@@ -32,78 +32,108 @@ namespace Project1st.Game.Core
         {
 
             //그리기 타이머
-            Timer timerField = new Timer(PrintMap, line, 100, 100);
+            GameManger.buffer.printTimer = new Timer(PrintMap, line, 100, 100);
 
 
             GameManger.currField.isFog = false;
             GameManger.currField.isCurrField = true;
 
             bool isMove = false;
-            bool isAttack = false;
             bool isStun = false;
+
+            bool isAttack = false;
+            bool isYes = false;
+            bool isNo = false;
+
 
 
             Console.CursorVisible = false;
             while (true)
             {
-                Console.CursorVisible = false;
                 isMove = false;
                 isAttack = false;
 
-                if (!isStun)
+                switch (Console.ReadKey(true).Key)
                 {
+                    case ConsoleKey.RightArrow:
+                        isMove = true;
+                        GameManger.player.direction = 0;
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        isMove = true;
+                        GameManger.player.direction = 1;
+                        break;
+                    case ConsoleKey.UpArrow:
+                        isMove = true;
+                        GameManger.player.direction = 2;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        isMove = true;
+                        GameManger.player.direction = 3;
+                        break;
+                    case ConsoleKey.Z:
+                        isYes = true;
+                        break;
+                    case ConsoleKey.X:
+                        isNo = true;
+                        break;
+                    default:
+                        GameManger.player.direction = 4;
+                        break;
+                }
 
-                    switch (Console.ReadKey(true).Key)
+                if (GameManger.currField.type == 1)
+                {
+                    //이벤트 처리
+                    if (!isStun)
                     {
-                        case ConsoleKey.RightArrow:
-                            isMove = true;
-                            GameManger.player.direction = 0;
-                            break;
-                        case ConsoleKey.LeftArrow:
-                            isMove = true;
-                            GameManger.player.direction = 1;
-                            break;
-                        case ConsoleKey.UpArrow:
-                            isMove = true;
-                            GameManger.player.direction = 2;
-                            break;
-                        case ConsoleKey.DownArrow:
-                            isMove = true;
-                            GameManger.player.direction = 3;
-                            break;
-                        case ConsoleKey.Z:
-                            isAttack = true;
-                            break;
-                        case ConsoleKey.X:
-                        default:
-                            GameManger.player.direction = 5;
-                            break;
+                        Thread.Sleep(1);
+                        while (Console.KeyAvailable) Console.ReadKey(true);
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+                        while (Console.KeyAvailable) Console.ReadKey(true);
+
+                        isStun = false;
+                        GameManger.player.direction = 4;
                     }
 
-                    Thread.Sleep(1);
-                    while (Console.KeyAvailable) Console.ReadKey(true);
 
+                    //패배
+                    if (!GameManger.player.isLive)
+                    {
+                        GameManger.buffer.printTimer.Dispose();
+                        return;
+                    }
+
+                    //이동
+                    if (isMove)
+                    {
+                        GameManger.player.Move(currFieldPos, ref isStun);
+                    }
+
+                    //메뉴창
+                    if (isNo)
+                    {
+                    }
+
+                    //공격
+                    if (isYes)
+                    {
+                    }
                 }
-                else
-                {
-                    Thread.Sleep(1000);
-                    while (Console.KeyAvailable) Console.ReadKey(true);
 
-                    isStun = false;
-                    GameManger.player.direction = 5;
-                }
-
-                //패배
-                if (!GameManger.player.isLive)
+                else if (GameManger.currField.type == 2)
                 {
-                    timerField.Dispose();
-                    return;
-                }
+                    //커서 이동
+                    if (isMove)
+                    {
 
-                //이동
-                if (isMove)
-                {
-                    GameManger.player.Move(currFieldPos, ref isStun);
+                    }
+
+                    //커서 방향 초기화
+                    GameManger.player.direction = 4;
                 }
             }
         }        

@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.Map;
+using Project1st.Game.Map.Fields;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace Project1st.Game.GameObject
         public int weapon;
         public int viewCount;
 
+        public int hitPointMax = 100;
         public Player()
         {
             Init();
@@ -27,6 +29,7 @@ namespace Project1st.Game.GameObject
             Init();
             Axis2D.x = x;
             Axis2D.y = y;
+
         }
 
         public override void Init()
@@ -37,22 +40,23 @@ namespace Project1st.Game.GameObject
             isCoolTime = false;
             score = 0;
             weapon = 1;
-            viewCount = 20;
+            viewCount = 5;
+            hitPointMax = 100;
         }
 
         public void Move(Coordinate currAxis, ref bool isStun)
         {
             int beforeX = Axis2D.x;
             int beforeY = Axis2D.y;
-            bool isWall = MoveAndHold(direction, Field._FIELD_SIZE, Field._FIELD_SIZE);
+            bool isWall = MoveAndHold(direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
 
             int currX = Axis2D.x;
             int currY = Axis2D.y;
 
 
-            for (int y = 0; y < Field._FIELD_SIZE; y++)
+            for (int y = 0; y < FieldBase._FIELD_SIZE; y++)
             {
-                for (int x = 0; x < Field._FIELD_SIZE; x++)
+                for (int x = 0; x < FieldBase._FIELD_SIZE; x++)
                 {
                     if (GameManger.currField.GetFogInfo(x,y) == 1)
                     {
@@ -63,8 +67,8 @@ namespace Project1st.Game.GameObject
             }
 
             //빈칸으로 이동
-            if (GameManger.currField.fieldInfo[currY, currX] == Field.field_info.empty ||
-                GameManger.currField.fieldInfo[currY, currX] == Field.field_info.road)
+            if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.empty ||
+                GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.road)
             {
                 if (!isWall)
                 {
@@ -72,7 +76,7 @@ namespace Project1st.Game.GameObject
             }
 
             //수풀로 이동
-            if (GameManger.currField.fieldInfo[currY, currX] == Field.field_info.mud)
+            if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.mud)
             {
                 if (!isWall)
                 {
@@ -84,15 +88,15 @@ namespace Project1st.Game.GameObject
                 }
             }
             //벽으로 이동
-            else if (GameManger.currField.fieldInfo[currY, currX] == Field.field_info.tree ||
-                     GameManger.currField.fieldInfo[currY, currX] == Field.field_info.wall)
+            else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.tree ||
+                     GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.wall)
             {
                 Axis2D.x = beforeX;
                 Axis2D.y = beforeY;
             }
 
             //텔레포트로 이동
-            else if (GameManger.currField.fieldInfo[currY, currX] == Field.field_info.portal)
+            else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.portal)
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -121,7 +125,7 @@ namespace Project1st.Game.GameObject
                                 break;
                         }
 
-                        Teleport(Field._FIELD_SIZE, Field._FIELD_SIZE);
+                        Teleport(FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
 
                         GameManger.currField.isCurrField = false;
                         GameManger.currField.StopEnemies();
@@ -140,6 +144,16 @@ namespace Project1st.Game.GameObject
                         }
                         GameManger.currField.isFog = false;
                         GameManger.currField.isCurrField = true;
+
+                        if (GameManger.currField.type == 2)
+                        {
+                            GameManger.buffer.printTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                        }
+                        else if (GameManger.currField.type == 1)
+                        {
+                            GameManger.buffer.printTimer.Change(100, 100);
+
+                        }
 
                         break;
                     }
@@ -189,7 +203,7 @@ namespace Project1st.Game.GameObject
             {
                 Coordinate tmp = q.Dequeue();
 
-                if ((tmp.x <= -1 || tmp.y <= -1 || tmp.x >= Field._FIELD_SIZE || tmp.y >= Field._FIELD_SIZE))
+                if ((tmp.x <= -1 || tmp.y <= -1 || tmp.x >= FieldBase._FIELD_SIZE || tmp.y >= FieldBase._FIELD_SIZE))
                 { }
                 else
                 {
@@ -205,7 +219,7 @@ namespace Project1st.Game.GameObject
 
             foreach (var tmp in q)
             {
-                if ((tmp.x <= -1 || tmp.y <= -1 || tmp.x >= Field._FIELD_SIZE || tmp.y >= Field._FIELD_SIZE))
+                if ((tmp.x <= -1 || tmp.y <= -1 || tmp.x >= FieldBase._FIELD_SIZE || tmp.y >= FieldBase._FIELD_SIZE))
                 {
                     continue;
                 }

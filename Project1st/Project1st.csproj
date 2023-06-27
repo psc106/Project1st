@@ -48,9 +48,12 @@
     <Compile Include="Game\Core\Graphic.cs" />
     <Compile Include="Game\Core\Manager.cs" />
     <Compile Include="Game\GameObject\Enemy.cs" />
-    <Compile Include="Game\GameObject\MainObject.cs" />
+    <Compile Include="Game\GameObject\ObjectBase.cs" />
     <Compile Include="Game\GameObject\Player.cs" />
-    <Compile Include="Game\Map\Field\Field.cs" />
+    <Compile Include="Game\Item\Item.cs" />
+    <Compile Include="Game\Map\Fields\FieldBase.cs" />
+    <Compile Include="Game\Map\Fields\Forest.cs" />
+    <Compile Include="Game\Map\Fields\Town.cs" />
     <Compile Include="Game\Map\Map.cs" />
     <Compile Include="Game\Utility.cs" />
     <Compile Include="Program.cs" />

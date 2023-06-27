@@ -1,6 +1,7 @@
 ﻿using Project1st.Game.Algorithm;
 using Project1st.Game.Core;
 using Project1st.Game.Map;
+using Project1st.Game.Map.Fields;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,7 +66,7 @@ namespace Project1st.Game.GameObject
             if (path == null || path.Count == 0) return;
             Location next = path[0];
 
-            if (GameManger.currField.GetElementAt(next.X, next.Y) != Field.field_info.wall &&
+            if (GameManger.currField.GetElementAt(next.X, next.Y) != FieldBase.field_info.wall &&
                 GameManger.currField.FindEnemiesAt(next.X, next.Y) == null)
             {
                 this.Axis2D.x = next.X;

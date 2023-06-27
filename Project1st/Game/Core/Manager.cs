@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.GameObject;
 using Project1st.Game.Map;
+using Project1st.Game.Map.Fields;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Project1st.Game.Core
         public static BufferPrinter buffer;
         public static Player player;
         public static WorldMap map;
-        public static Field currField;
+        public static FieldBase currField;
 
         public static Random random;
 
