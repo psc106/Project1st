@@ -83,10 +83,10 @@ namespace Project1st.Game.GameObject
                 if (GameManger.player.hitPoint == 0)
                 {
                     GameManger.player.isLive = false;
-                    GameManger.currField.enemies.RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
+                    GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
                     return;
                 }
-                GameManger.currField.enemies.RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
+                GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
             }
         }
     }

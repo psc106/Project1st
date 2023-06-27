@@ -12,18 +12,19 @@ namespace Project1st.Game.Map
 {
     public class WorldMap
     {
-        public static readonly int _MAP_SIZE = 6;
+        public static readonly int _MAP_SIZE = 10;
 
         int[] axisX = { 1, -1, 0, 0 };
         int[] axisY = { 0, 0, -1, 1 };
         public Field[,] worldMap;
         public bool isDay;
-
+        public Timer dayTimer;
 
         public WorldMap()
         {
             isDay = true;
             worldMap = new Field[_MAP_SIZE, _MAP_SIZE];
+
             for (int y = 0; y < _MAP_SIZE; y++)
             {
                 for (int x = 0; x < _MAP_SIZE; x++)
@@ -32,7 +33,7 @@ namespace Project1st.Game.Map
                     //홀수 행, 짝수 열
                     if (y % 2 == 0 && x % 2 == 1)
                     {
-                        worldMap[y, x] = new Field(GameManger.random.Next(0, 16));
+                        worldMap[y, x] = new Forest(GameManger.random.Next(0, 16));
 
                         if (x == 0 && worldMap[y, x].portals[1] != null)
                         {
@@ -62,7 +63,7 @@ namespace Project1st.Game.Map
                     else if (y % 2 == 1 && x % 2 == 0)
                     {
 
-                        worldMap[y, x] = new Field(GameManger.random.Next(0, 16));
+                        worldMap[y, x] = new Forest(GameManger.random.Next(0, 16));
                         if (x == 0 && worldMap[y, x].portals[1] != null)
                         {
                             Portal currPortal = worldMap[y, x].portals[1];
@@ -146,7 +147,7 @@ namespace Project1st.Game.Map
                     //홀수 행, 짝수 열
                     if ((y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1))
                     {
-                        worldMap[y, x] = new Field();
+                        worldMap[y, x] = new Forest();
                         if (x != 0 && worldMap[y, x - 1].portals[0] != null)
                         {
                             Portal nextDoor = worldMap[y, x - 1].portals[0];
@@ -208,7 +209,7 @@ namespace Project1st.Game.Map
                     {
                         continue;
                     }
-                    else if (connect.x != 0 && worldMap[connect.y, connect.x].portals[1]==null)
+                    else if (connect.x != 0 && worldMap[connect.y, connect.x].portals[1] == null)
                     {
                         worldMap[connect.y, connect.x].CreateDoor(1);
                         worldMap[connect.y, connect.x - 1].CreateDoor(0);
@@ -233,6 +234,12 @@ namespace Project1st.Game.Map
                     }
                 }
             }
+            dayTimer = new Timer(SetDayTimer, null, 100, 120000);
+        }
+
+        public void SetDayTimer(object obj)
+        {
+            isDay = !isDay;
         }
 
         Coordinate check(int x, int y)
@@ -247,7 +254,7 @@ namespace Project1st.Game.Map
                 if (worldMap[y, x].portals[i] != null)
                 {
                     worldMap[y, x].isFog = true;
-                    last = check(x + axisX[i], y + axisY[i]); 
+                    last = check(x + axisX[i], y + axisY[i]);
                 }
             }
 
@@ -260,40 +267,26 @@ namespace Project1st.Game.Map
             }
             else
             {
-               // Console.WriteLine("_"+x + ", " + y + " "+"("+last.x+"/"+last.y+")");
+                // Console.WriteLine("_"+x + ", " + y + " "+"("+last.x+"/"+last.y+")");
                 return last;
             }
         }
     }
 
-    public class Field
+    public class Forest : Field
     {
-        public static readonly int _FIELD_SIZE = 15;
-
-        public enum field_info : byte
-        {
-            road = 0, empty, mud, tree, wall, portal, error=90       
-        }
-
-        //0-길 1-빈땅 2-진창 3-나무 4-포탈
-        public field_info[,] fieldInfo;
-        public float[,] fogInfo;
-        public Portal[] portals;
-
         public List<Enemy> enemies;
         public Timer createTimer;
 
+        public float[,] fogInfo;
 
-        public int type;
-        public bool isFog;
-        public bool isCurrField;
-        public Field()
+        public Forest()
         {
             type = 0;
             int wallCount = 60;
             int wallSleep = 2;
             fogInfo = new float[_FIELD_SIZE, _FIELD_SIZE];
-            fieldInfo = new field_info[_FIELD_SIZE, _FIELD_SIZE];
+
             for (int y = 0; y < _FIELD_SIZE; y++)
             {
                 for (int x = 0; x < _FIELD_SIZE; x++)
@@ -301,7 +294,7 @@ namespace Project1st.Game.Map
                     fogInfo[y, x] = 0;
                     if (wallSleep == 0 && wallCount > 0)
                     {
-                        fieldInfo[y, x] = (field_info)GameManger.random.Next(1,4);
+                        fieldInfo[y, x] = (field_info)GameManger.random.Next(1, 4);
                         if (fieldInfo[y, x] == field_info.tree)
                         {
                             wallCount -= 1;
@@ -310,7 +303,7 @@ namespace Project1st.Game.Map
                     }
                     else if (wallSleep > 0 || wallCount == 0)
                     {
-                        fieldInfo[y, x] = (field_info)GameManger.random.Next(1,3);
+                        fieldInfo[y, x] = (field_info)GameManger.random.Next(1, 3);
                         wallSleep -= 1;
                     }
                 }
@@ -320,13 +313,13 @@ namespace Project1st.Game.Map
         }
 
 
-        public Field(int flag)
+        public Forest(int flag)
         {
             type = 0;
             int wallCount = 60;
             int wallSleep = 2;
             fogInfo = new float[_FIELD_SIZE, _FIELD_SIZE];
-            fieldInfo = new field_info[_FIELD_SIZE, _FIELD_SIZE];
+
             for (int y = 0; y < _FIELD_SIZE; y++)
             {
                 for (int x = 0; x < _FIELD_SIZE; x++)
@@ -370,7 +363,7 @@ namespace Project1st.Game.Map
         }
 
 
-        public void CreateDoor(int index)
+        public override void CreateDoor(int index)
         {
             switch (index)
             {
@@ -390,7 +383,7 @@ namespace Project1st.Game.Map
             fieldInfo[portals[index].axis.y, portals[index].axis.x] = field_info.portal;
         }
 
-        public void CreateEnemy(object obj)
+        public override void CreateEnemy(object obj)
         {
             if (enemies.Count > 6) return;
             while (true)
@@ -405,7 +398,7 @@ namespace Project1st.Game.Map
                 }
             }
         }
-        public void RemoveEnemy(int index)
+        public override void RemoveEnemy(int index)
         {
             if (enemies.Count <= 0) return;
             if (enemies[index].moveTimer != null)
@@ -414,7 +407,7 @@ namespace Project1st.Game.Map
             }
             enemies.RemoveAt(index);
         }
-        public void RemoveEnemy(int x, int y)
+        public override void RemoveEnemy(int x, int y)
         {
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -429,12 +422,8 @@ namespace Project1st.Game.Map
                 }
             }
         }
-        public field_info GetElementAt(int x, int y)
-        {
-            if (fieldInfo == null) return field_info.error;
-            return fieldInfo[y, x];
-        }
-        public Enemy FindEnemiesAt(int x, int y)
+
+        public override Enemy FindEnemiesAt(int x, int y)
         {
             if (enemies == null) return null;
             for (int i = 0; i < enemies.Count; i++)
@@ -444,7 +433,7 @@ namespace Project1st.Game.Map
             }
             return null;
         }
-        public void StopEnemies()
+        public override void StopEnemies()
         {
             if (enemies == null) return;
             for (int i = 0; i < enemies.Count; i++)
@@ -457,7 +446,7 @@ namespace Project1st.Game.Map
             }
             return;
         }
-        public void PlayEnemies()
+        public override void PlayEnemies()
         {
             if (enemies == null) return;
             for (int i = 0; i < enemies.Count; i++)
@@ -471,82 +460,214 @@ namespace Project1st.Game.Map
         }
 
 
-        public string[] MakeRoomToString()
+        public override string[] ConvertMapToString(ref string[] line)
         {
-            string[] line = new string[3];
 
-            for (int y = 0; y < line.Length; y++)
+            for (int y = 0; y < Field._FIELD_SIZE; y++)
             {
                 line[y] = "";
-
-            }
-
-            if (!this.isFog && this.portals[2] != null)
-            {
-                line[0] += "　↓　";
-            }
-            else
-            {
-                line[0] += "　　　";
-            }
-
-            if (!this.isFog && this.portals[1] != null)
-            {
-                line[1] += "→";
-            }
-            else
-            {
-                line[1] += "　";
-            }
-
-            if (!this.isFog)
-            {
-                if (!this.isCurrField)
+                for (int x = 0; x < Field._FIELD_SIZE; x++)
                 {
-                    line[1] += "□";
-                }
-                else
-                {
-                    line[1] += "■";
-                }
-            }
-            else
-            {
-                line[1] += "　";
-            }
+                    if (fogInfo[y, x] == 1)
+                    {
+                        //적 2순위
+                        Enemy tmp = FindEnemiesAt(x, y);
+                        if (tmp != null)
+                        {
+                            if (tmp.isLive)
+                            {
+                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX / 20)
+                                {
+                                    line[y] += ".7.";
+                                }
+                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX)
+                                {
+                                    line[y] += ".1.";
+                                }
+                                else
+                                {
+                                    line[y] += ".0.";
+                                }
+                                line[y] += "적.";
+                            }
+                            else if (!tmp.isLive)
+                            {
+                                line[y] += ".1.？.";
+                            }
+                            continue;
+                        }
+                    }
 
-            if (!this.isFog && this.portals[0] != null)
-            {
-                line[1] += "←";
-            }
-            else
-            {
-                line[1] += "　";
-            }
-            if (!this.isFog && this.portals[3] != null)
-            {
-                line[2] += "　↑　";
-            }
-            else
-            {
-                line[2] += "　　　";
+                    //플레이어 4순위
+                    if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y)
+                    {
+                        if (GameManger.player.isLive)
+                        {
+                            if (GameManger.player.hitPoint < 20)
+                            {
+                                line[y] += ".6.";
+
+                            }
+                            else if (GameManger.player.hitPoint < 50)
+                            {
+                                line[y] += ".5.";
+
+                            }
+                            else if (GameManger.player.hitPoint < 200)
+                            {
+                                line[y] += ".4.";
+
+                            }
+                            else if (GameManger.player.hitPoint < 9999)
+                            {
+                                line[y] += ".0.";
+
+                            }
+
+                            switch (GameManger.player.direction)
+                            {
+                                case 0:
+                                    line[y] += "▶.";
+                                    break;
+                                case 1:
+                                    line[y] += "◀.";
+                                    break;
+                                case 2:
+                                    line[y] += "▲.";
+                                    break;
+                                case 3:
+                                    line[y] += "▼.";
+                                    break;
+                                case 4:
+                                    line[y] += "！.";
+                                    break;
+                                default:
+                                    line[y] += "나.";
+                                    break;
+                            }
+
+                        }
+                        else
+                        {
+                            line[y] += ".3.Π.";
+                        }
+                        continue;
+                    }
+
+
+                    if (fogInfo[y, x] == 0)
+                    {
+                        line[y] += ".8.　.";
+                    }
+                    else
+                    {
+                        if (fogInfo[y, x] == 1)
+                        {
+                            if (fieldInfo[y, x] == Field.field_info.portal)
+                            {
+                                line[y] += ".2.";
+                            }
+                            else
+                            {
+                                line[y] += ".0.";
+
+                            }
+                        }
+                        else if (fogInfo[y, x] > 0 && fogInfo[y, x] < 1)
+                        {
+                            if (fieldInfo[y, x] == Field.field_info.portal)
+                            {
+                                line[y] += ".12.";
+                            }
+                            else
+                            {
+                                line[y] += ".6.";
+                            }
+
+                        }
+
+                        //맵정보 마지막
+                        switch (fieldInfo[y, x])
+                        {
+                            case Field.field_info.empty:
+                                line[y] += "ㄹ.";
+                                break;
+                            case Field.field_info.mud:
+                                line[y] += "＊.";
+                                break;
+                            case Field.field_info.tree:
+                                line[y] += "〓.";
+                                break;
+                            case Field.field_info.portal:
+                                line[y] += "문.";
+                                break;
+                            case Field.field_info.road:
+                                line[y] += "□.";
+                                break;
+                            case Field.field_info.wall:
+                                line[y] += "■.";
+                                break;
+                        }
+
+                    }
+
+
+
+                }
+
+
+                line[y] += "  ";
             }
 
             return line;
         }
 
+        public override float[,] GetFogInfo()
+        {
+            return fogInfo;
+        }
+        public override float GetFogInfo(int x, int y)
+        {
+            return fogInfo[y,x];
+        }
+        public override void SetFogInfo(int x, int y, float info)
+        {
+            fogInfo[y, x] = info;
+        }
+
+        public override Timer GetCreateTimer()
+        {
+            return createTimer;
+        }
+        public override void SetCreateTimer(Timer timer)
+        {
+            createTimer = timer;
+        }
+        public override List<Enemy> GetEnemies()
+        {
+            return enemies;
+        }
 
     }
+
+    public class Town : Field
+    {
+    }
+
+    public class City : Field
+    {
+    }
+
 
     public class Portal
     {
         public Coordinate axis;
 
-        public Portal() 
+        public Portal()
         {
-            axis = new Coordinate();        
+            axis = new Coordinate();
         }
-        public Portal(int x, int y) 
+        public Portal(int x, int y)
         {
             axis = new Coordinate(x, y);
         }

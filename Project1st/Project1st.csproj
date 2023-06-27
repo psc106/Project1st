@@ -50,6 +50,7 @@
     <Compile Include="Game\GameObject\Enemy.cs" />
     <Compile Include="Game\GameObject\MainObject.cs" />
     <Compile Include="Game\GameObject\Player.cs" />
+    <Compile Include="Game\Map\Field.cs" />
     <Compile Include="Game\Map\Map.cs" />
     <Compile Include="Game\Utility.cs" />
     <Compile Include="Program.cs" />
