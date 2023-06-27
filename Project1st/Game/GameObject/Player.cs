@@ -37,7 +37,7 @@ namespace Project1st.Game.GameObject
             isCoolTime = false;
             score = 0;
             weapon = 1;
-            viewCount = 5;
+            viewCount = 20;
         }
 
         public void Move(Coordinate currAxis, ref bool isStun)
@@ -133,7 +133,7 @@ namespace Project1st.Game.GameObject
                         //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
                         GameManger.currField = GameManger.map.worldMap[currAxis.y, currAxis.x];
-                        if (GameManger.currField.type == 0)
+                        if (GameManger.currField.type == 1)
                         {
                             GameManger.currField.PlayEnemies();
                             GameManger.currField.SetCreateTimer(new Timer(GameManger.currField.CreateEnemy, null, 100, 10000));
@@ -145,6 +145,11 @@ namespace Project1st.Game.GameObject
                     }
                 }
 
+            }
+
+            if (GameManger.currField.type != 1)
+            {
+                return;
             }
 
             for (int i = 0; i < GameManger.currField.GetEnemies().Count; i++)
