@@ -226,9 +226,17 @@ namespace Project1st.Game.Core
                     q.Enqueue(GameManger.player.Axis2D);
                     GameManger.currField.fogInfo[GameManger.player.Axis2D.y, GameManger.player.Axis2D.x] = 1;
 
-                    int count = ( ( (GameManger.player.viewCount-1) *2) -2) * (GameManger.player.viewCount-1) + 1;
-                    
-                    for (int i = 0; i < count; i++)
+                    int viewSetting = GameManger.player.viewCount;
+                    if (GameManger.map.isDay)
+                    {
+                        viewSetting += 3;
+                    }
+                    else
+                    {
+                        viewSetting -= 2;
+                    }
+                    viewSetting = ( ( (viewSetting - 1) *2) -2) * (viewSetting - 1) + 1;
+                    for (int i = 0; i < viewSetting; i++)
                     {
                         Coordinate tmp = q.Dequeue();
 

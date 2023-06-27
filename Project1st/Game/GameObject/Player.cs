@@ -36,7 +36,7 @@ namespace Project1st.Game.GameObject
             isCoolTime = false;
             score = 0;
             weapon = 1;
-            viewCount = 3;
+            viewCount = 5;
         }
     }
 }
