@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Algorithm\EnemyAlgorithm.cs" />
     <Compile Include="Game\Core\Core.cs" />
     <Compile Include="Game\Core\Graphic.cs" />
     <Compile Include="Game\Core\Manager.cs" />
