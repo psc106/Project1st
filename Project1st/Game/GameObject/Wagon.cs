@@ -8,8 +8,13 @@ namespace Project1st.Game.GameObject
 {
     public class Wagon : MoveObject
     {
+        public int maxWeight;
+        public int weight;
 
-        public Wagon() { }
+        public Wagon()
+        {
+            maxWeight = 200;
+        }
 
         public void Follow(int x, int y)
         {

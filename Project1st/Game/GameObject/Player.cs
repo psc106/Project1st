@@ -18,8 +18,8 @@ namespace Project1st.Game.GameObject
 
         public int gold;
         public int light;
-        public int weight;
-        public int maxWeight;
+        public float weight;
+        public float maxWeight;
 
         public int weapon;
 
@@ -50,13 +50,12 @@ namespace Project1st.Game.GameObject
         {
             base.Init();
             hitPointMax = 100;
-            //hitPoint = 1;
-            hitPoint = 1;
+            hitPoint = 100;
             attckPoint = 10;
             ID = 0;
             isMeleeDelay = false;
             isRangeDelay = false;
-            maxWeight = 100;
+            maxWeight = 50;
             weight = 0;
             gold = 230;
             weapon = 0;
@@ -64,8 +63,6 @@ namespace Project1st.Game.GameObject
             inventory = new List<Items>();
             Effects = new List<Effect>();
             wagonList = new List<Wagon>();
-            wagonList.Add(new Wagon());
-            wagonList.Add(new Wagon());
 
             startInventoryIndex = 0;
         }

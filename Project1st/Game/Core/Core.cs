@@ -191,12 +191,32 @@ namespace Project1st.Game.Core
                                 else if (GameManger.player.gold < (int)(item.price * currTown.priceRate[item.itemId].rate))
                                 {
                                 }
+                                else if (GameManger.player.maxWeight < item.weight + GameManger.player.weight)
+                                {
+                                }
                                 else
                                 {
-                                    currTown.shop[(currTown.cursorPosition.y + currTown.startShopIndex)].count -= 1;
+                                    //무게 증가
+                                    GameManger.player.weight += item.weight;
+                                    
+                                    //골드 교환
                                     currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].rate);
                                     GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].rate);
-                                    int itemIndex = GameManger.player.inventory.FindIndex(x => x.itemId == item.itemId);
+
+                                    //수량 감소
+                                    item.count -= 1;
+
+                                    if (!item.isOwn &&item.count == 0)
+                                    {
+                                        currTown.shop.RemoveAt(currTown.cursorPosition.y + currTown.startShopIndex);
+                                        if (currTown.cursorPosition.y + currTown.startShopIndex > currTown.shop.Count)
+                                        {
+                                            currTown.startShopIndex -= 1;
+                                        }
+                                    }
+                                    
+                                    //퀄리티 max인 같은 아이템에 저장
+                                    int itemIndex = GameManger.player.inventory.FindIndex(x => x.itemId == item.itemId && x.quality==1);
                                     if (itemIndex == -1)
                                     {
                                         GameManger.player.inventory.Add(new Items(item));
@@ -221,11 +241,27 @@ namespace Project1st.Game.Core
                                 }
                                 else
                                 {
-                                    GameManger.player.inventory[(currTown.cursorPosition.y + GameManger.player.startInventoryIndex)].count -= 1;
-                                    currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7);
-                                    GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7);
+                                    //무게 감소
+                                    GameManger.player.weight += item.weight;
 
-                                    int itemIndex = currTown.shop.FindIndex(x => x.itemId == item.itemId);
+                                    //골드 교환
+                                    currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7 * item.quality);
+                                    GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7 * item.quality);
+
+                                    //수량 감소
+                                    item.count -= 1;
+
+                                    if (!item.isOwn && item.count == 0)
+                                    {
+                                        GameManger.player.inventory.RemoveAt(currTown.cursorPosition.y + GameManger.player.startInventoryIndex);
+                                        if (currTown.cursorPosition.y + currTown.startShopIndex > currTown.shop.Count)
+                                        {
+                                            currTown.startShopIndex -= 1;
+                                        }
+                                    }
+
+                                    //퀄리티가 같은 아이템 모아서 저장
+                                    int itemIndex = currTown.shop.FindIndex(x => x.itemId == item.itemId && x.quality == item.quality);
                                     if (itemIndex == -1)
                                     {
                                         currTown.shop.Add(new Items(item));

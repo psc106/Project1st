@@ -27,7 +27,7 @@ namespace Project1st.Game.Map.Fields
 
         public Town()
         {
-            gold = 8000;
+            gold = 2000;
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
             type = 2;
@@ -71,7 +71,8 @@ namespace Project1st.Game.Map.Fields
             {
                 priceRate.Add(i, new PriceRate());
             }
-            List<Items> a = Items.CreateStandard();
+
+
         }
 
         public void Init()

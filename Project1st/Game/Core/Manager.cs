@@ -1,4 +1,5 @@
-﻿using Project1st.Game.GameObject;
+﻿using Project1st.Game.DataBase;
+using Project1st.Game.GameObject;
 using Project1st.Game.Map;
 using Project1st.Game.Map.Fields;
 using System;
@@ -16,6 +17,7 @@ namespace Project1st.Game.Core
         public static WorldMap map;
         public static FieldBase currField;
 
+        public static DB db;
         public static Random random;
 
         public static void Instance()
@@ -26,6 +28,7 @@ namespace Project1st.Game.Core
             buffer = new BufferPrinter();
             player = new Player();
 
+           db = new DB();
         }
     }
 }
