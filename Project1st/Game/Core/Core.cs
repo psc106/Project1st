@@ -32,6 +32,9 @@ namespace Project1st.Game.Core
             GameManger.player.Axis2D.y = 1;
             currFieldPos = new Coordinate(1, 1);
 
+            //테스트 코드
+            WorldMap.testPos = currFieldPos;
+
             GameManger.currField = GameManger.map.worldMap[currFieldPos.y, currFieldPos.x];
         }
 
@@ -45,7 +48,10 @@ namespace Project1st.Game.Core
             GameManger.currField.isFog = false;
             GameManger.currField.isCurrField = true;
 
-            bool isEnd = false;
+            bool isWin = false;
+            bool isLose = false;
+            bool isQuit = false;
+
             bool isMove = false;
             bool isStun = false;
 
@@ -64,6 +70,7 @@ namespace Project1st.Game.Core
             while (true)
             {
                 Console.CursorVisible = false;
+
                 isMove = false;
                 isAttack = false;
                 isYes = false;
@@ -95,6 +102,9 @@ namespace Project1st.Game.Core
                         case ConsoleKey.X:
                             isNo = true;
                             break;
+                        case ConsoleKey.Q:
+                            isQuit = true;
+                            break;
                         default:
                             GameManger.player.direction = 5;
                             break;
@@ -111,17 +121,15 @@ namespace Project1st.Game.Core
                     GameManger.player.direction = 5;
                 }
 
+                //종료
+                if (isQuit)
+                {
+                    GameManger.buffer.printTimer.Dispose();
+                    return;
+                }
 
                 if (GameManger.currField.type == 1)
                 {
-
-                    //패배
-                    if (!GameManger.player.isLive)
-                    {
-                        GameManger.buffer.printTimer.Dispose();
-                        return;
-                    }
-
                     //이동
                     if (isMove)
                     {
@@ -272,6 +280,12 @@ namespace Project1st.Game.Core
 
 
                                 GameManger.player.RemoveFog();
+
+                                for (int i = 0; i < GameManger.player.wagonList.Count; i++)
+                                {
+                                    GameManger.player.wagonList[i].Axis2D.x = GameManger.player.Axis2D.x;
+                                    GameManger.player.wagonList[i].Axis2D.y = GameManger.player.Axis2D.y;
+                                }
                             }
                         }
                     }
@@ -384,9 +398,9 @@ namespace Project1st.Game.Core
                                     {
                                         GameManger.currField.RemoveEnemy(nextX, nextY);
 
-                                        if (GameManger.currField.GetEnemies().Count==0)
+                                        if (GameManger.currField.GetEnemies().Count == 0)
                                         {
-                                            isEnd = true;
+                                            isWin = true;
                                         }
                                     }
                                 }
@@ -396,7 +410,7 @@ namespace Project1st.Game.Core
                         }
                     }
 
-                    if (isEnd)
+                    if (isWin)
                     {
                         GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint = GameManger.player.hitPoint;
                         GameManger.currField.StopEnemies();
@@ -412,11 +426,15 @@ namespace Project1st.Game.Core
                         }
                         GameManger.currField.isFog = false;
                         GameManger.currField.isCurrField = true;
-                        isEnd = false;
+                        isWin = false;
 
                         GameManger.player.RemoveFog();
                     }
                 }
+                else if (GameManger.currField.type == 4)
+                {
+                }
+
             }
         }
 

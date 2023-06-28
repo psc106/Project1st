@@ -123,7 +123,7 @@ namespace Project1st.Game.Map.Fields
 
         public override void CreateEnemy(object obj)
         {
-            if (enemies.Count > 6) return;
+            if (enemies.Count > -1) return;
             while (true)
             {
                 int enemyX = GameManger.random.Next(_FIELD_SIZE);
@@ -236,7 +236,7 @@ namespace Project1st.Game.Map.Fields
                         }
                     }
 
-                    //플레이어 4순위
+                    //플레이어 3순위
                     if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y)
                     {
                         if (GameManger.player.isLive)
@@ -289,6 +289,14 @@ namespace Project1st.Game.Map.Fields
                         {
                             line[y] += ".3.Π.";
                         }
+                        continue;
+                    }
+
+                    //마차 4순위
+                    Wagon wagon = GameManger.player.wagonList.Find(tmp => tmp.Axis2D.x == x && tmp.Axis2D.y == y);
+                    if (wagon!=null)
+                    {
+                        line[y] += ".9.ㅇ.";
                         continue;
                     }
 
@@ -401,6 +409,7 @@ namespace Project1st.Game.Map.Fields
 
         public override bool Move(Coordinate axis)
         {
+            bool isHold = false;
             bool isStun = false;
 
             int beforeX = GameManger.player.Axis2D.x;
@@ -427,13 +436,14 @@ namespace Project1st.Game.Map.Fields
             if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.empty ||
                 GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.road)
             {
-                GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+                isHold = GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+                
             }
 
             //수풀로 이동
             if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.mud)
             {
-                GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+                isHold = GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
                 if (GameManger.random.Next(1, 101) <= 10)
                 {
                     GameManger.player.direction = 4;
@@ -445,11 +455,15 @@ namespace Project1st.Game.Map.Fields
             else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.tree ||
                      GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.wall)
             {
+                isHold = true;
             }
 
             //텔레포트로 이동
             else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.portal)
             {
+                isHold = true;
+                GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+
                 for (int i = 0; i < 4; i++)
                 {
                     if (GameManger.currField.portals[i] == null) { continue; }
@@ -462,6 +476,11 @@ namespace Project1st.Game.Map.Fields
                         axis.y += AXIS_Y[i];
 
                         GameManger.player.Teleport(FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+                        for (int j = 0; j < GameManger.player.wagonList.Count; j++)
+                        {
+                            GameManger.player.wagonList[j].Axis2D.x = GameManger.player.Axis2D.x;
+                            GameManger.player.wagonList[j].Axis2D.y = GameManger.player.Axis2D.y;
+                        }
 
                         GameManger.currField.isCurrField = false;
                         GameManger.currField.StopEnemies();
@@ -521,6 +540,20 @@ namespace Project1st.Game.Map.Fields
             }
 
             GameManger.player.RemoveFog();
+
+            if (!isHold)
+            {
+                for (int i = 0; i < GameManger.player.wagonList.Count; i++)
+                {
+                    currY = GameManger.player.wagonList[i].Axis2D.y;
+                    currX = GameManger.player.wagonList[i].Axis2D.x;
+
+                    GameManger.player.wagonList[i].Follow(beforeX, beforeY);
+
+                    beforeY = currY;
+                    beforeX = currX;
+                }
+            }
 
             return isStun;
         }

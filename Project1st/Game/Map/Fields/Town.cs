@@ -72,47 +72,6 @@ namespace Project1st.Game.Map.Fields
                 priceRate.Add(i, new PriceRate());
             }
             List<Items> a = Items.CreateStandard();
-            shop.Add(new Items(1, "1", 10));
-            shop.Add(new Items(2, "2", 20));
-            shop.Add(new Items(3, "3", 30));
-            shop.Add(new Items(4, "4", 40));
-            shop.Add(new Items(5, "5", 50));
-            shop.Add(new Items(6, "6", 60));
-            shop.Add(new Items(7, "7", 70));
-            shop.Add(new Items(8, "8", 80));
-            shop.Add(new Items(9, "9", 90));
-            shop.Add(new Items(11, "10", 110));
-            shop.Add(new Items(12, "11", 20));
-            shop.Add(new Items(13, "12", 240));
-            shop.Add(new Items(14, "13", 30));
-            shop.Add(new Items(15, "14", 2));
-            shop.Add(new Items(16, "15", 8));
-            shop.Add(new Items(17, "16", 4));
-            shop.Add(new Items(18, "17", 3));
-            shop.Add(new Items(19, "18", 2));
-            shop.Add(new Items(10, "19", 2));
-            shop.Add(new Items(21, "20", 2));
-            shop.Add(new Items(31, "21", 2));
-            shop.Add(new Items(41, "22", 2));
-            shop.Add(new Items(20, "23", 2));
-            shop.Add(new Items(22, "24", 2));
-            shop.Add(new Items(23, "25", 2));
-            shop.Add(new Items(24, "26", 2));
-            shop.Add(new Items(25, "27", 2));
-            shop.Add(new Items(26, "28", 2));
-            shop.Add(new Items(27, "29", 5));
-            shop.Add(new Items(28, "30", 505));
-            shop.Add(new Items(29, "31", 055));
-            shop.Add(new Items(30, "32", 3550));
-            shop.Add(new Items(31, "33", 30));
-            shop.Add(new Items(32, "34", 03));
-            shop.Add(new Items(33, "35", 30));
-            shop.Add(new Items(34, "36", 03));
-            shop.Add(new Items(35, "37", 50));
-            shop.Add(new Items(36, "38", 70));
-            shop.Add(new Items(37, "39", 20));
-            shop.Add(new Items(38, "40", 018));
-
         }
 
         public void Init()
@@ -345,7 +304,7 @@ namespace Project1st.Game.Map.Fields
             return line;
         }
 
-        public void Move()
+        public override bool Move()
         {
 
             if (mainPosition == 0)
@@ -471,7 +430,7 @@ namespace Project1st.Game.Map.Fields
                 }
 
             }
-
+            return false;
             
         }
     }
