@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
+using Project1st.Game.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -336,7 +337,20 @@ namespace Project1st.Game.Map.Fields
                                 line[y] += "〓.";
                                 break;
                             case FieldBase.field_info.portal:
-                                line[y] += "문.";
+                                bool isTownConnect = false;
+                                if (x == _FIELD_SIZE - 1) isTownConnect = portals[0].isTown;
+                                else if (x == 0) isTownConnect = portals[1].isTown;
+                                else if (y == 0) isTownConnect = portals[2].isTown;
+                                else if (y == _FIELD_SIZE - 1) isTownConnect = portals[3].isTown;
+
+                                if (isTownConnect)
+                                {
+                                    line[y] += "문.";
+                                }
+                                else
+                                {
+                                    line[y] += "길.";
+                                }
                                 break;
                             case FieldBase.field_info.road:
                                 line[y] += "□.";
@@ -385,5 +399,9 @@ namespace Project1st.Game.Map.Fields
             return enemies;
         }
 
+        public override bool Move(Coordinate axis)
+        {
+            return GameManger.player.Move(axis);
+        }
     }
 }

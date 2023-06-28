@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
+using Project1st.Game.Interface;
 using Project1st.Game.Item;
 using System;
 using System.Collections.Generic;
@@ -213,6 +214,21 @@ namespace Project1st.Game.Map.Fields
 
             return line;
         }
+
+        public virtual bool Move(Coordinate axis)
+        {
+            return false;
+        }
+
+        public Forest ReturnSelfToForest()
+        {
+            return (Forest)this;
+        }
+
+        public Town ReturnSelfToTown()
+        {
+            return (Town)this;
+        }
     }
 
     public class City : FieldBase
@@ -223,14 +239,17 @@ namespace Project1st.Game.Map.Fields
     public class Portal
     {
         public Coordinate axis;
+        public bool isTown;
 
         public Portal()
         {
             axis = new Coordinate();
+            isTown = false;
         }
         public Portal(int x, int y)
         {
             axis = new Coordinate(x, y);
+            isTown = false;
         }
     }
 

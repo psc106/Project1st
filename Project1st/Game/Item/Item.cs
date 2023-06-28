@@ -14,11 +14,15 @@ namespace Project1st.Game.Item
         public string name { private set; get; }
         //가격
         public int price { private set; get; }
-
+        //최대 내구도
+        public float qualityMax { private set; get; }
+        
         //개수
         public int count;
         //시세
         public float priceRate;
+        //특산품
+        public bool isOwn;
 
         public Items()
         {
@@ -29,6 +33,20 @@ namespace Project1st.Game.Item
             this.itemId = itemId;
             this.name = name;
             this.price = price;
+            this.isOwn = true;
+
+            this.count = 2;
+        }
+
+        public Items(Items other)
+        {
+            this.itemId = other.itemId;
+            this.name = other.name;
+            this.price = other.price;
+            this.isOwn = false;
+
+            this.count = 1;
+            qualityMax = 1;
         }
 
         public static List<Items> CreateStandard()

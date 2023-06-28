@@ -1,4 +1,5 @@
 ﻿using Project1st.Game.Core;
+using Project1st.Game.Item;
 using Project1st.Game.Map;
 using Project1st.Game.Map.Fields;
 using System;
@@ -14,12 +15,16 @@ namespace Project1st.Game.GameObject
     {
         public Timer attackTimer;
 
-        public int score;
+        public int gold;
         public bool isCoolTime;
         public int weapon;
         public int viewCount;
 
         public int hitPointMax = 100;
+
+        public List<Items> inventory;
+        public int startInventoryIndex;
+
         public Player()
         {
             Init();
@@ -38,14 +43,18 @@ namespace Project1st.Game.GameObject
             hitPoint = 100;
             ID = 0;
             isCoolTime = false;
-            score = 0;
+            gold = 10000;
             weapon = 1;
             viewCount = 5;
             hitPointMax = 100;
+            inventory = new List<Items>();
+            startInventoryIndex = 0;
         }
 
-        public void Move(Coordinate currAxis, ref bool isStun)
+        public bool Move(Coordinate currAxis)
         {
+            bool isStun = false;
+
             int beforeX = Axis2D.x;
             int beforeY = Axis2D.y;
             bool isWall = MoveAndHold(direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
@@ -106,24 +115,8 @@ namespace Project1st.Game.GameObject
                     if (currX == GameManger.currField.portals[i].axis.x &&
                         currY == GameManger.currField.portals[i].axis.y)
                     {
-                        switch (i)
-                        {
-                            case 0:
-                                currAxis.x += 1;
-                                break;
-                            case 1:
-                                currAxis.x -= 1;
-
-                                break;
-                            case 2:
-                                currAxis.y -= 1;
-
-                                break;
-                            case 3:
-                                currAxis.y += 1;
-
-                                break;
-                        }
+                        currAxis.x += AXIS_X[i];
+                        currAxis.y += AXIS_Y[i];
 
                         Teleport(FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
 
@@ -139,6 +132,8 @@ namespace Project1st.Game.GameObject
                         GameManger.currField = GameManger.map.worldMap[currAxis.y, currAxis.x];
                         if (GameManger.currField.type == 1)
                         {
+
+                            GameManger.currField.ReturnSelfToTown().Exit();
                             GameManger.currField.PlayEnemies();
                             GameManger.currField.SetCreateTimer(new Timer(GameManger.currField.CreateEnemy, null, 100, 10000));
                         }
@@ -147,12 +142,7 @@ namespace Project1st.Game.GameObject
 
                         if (GameManger.currField.type == 2)
                         {
-                            GameManger.buffer.printTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-                        }
-                        else if (GameManger.currField.type == 1)
-                        {
-                            GameManger.buffer.printTimer.Change(100, 100);
-
+                            GameManger.currField.ReturnSelfToTown().Enter();
                         }
 
                         break;
@@ -163,7 +153,7 @@ namespace Project1st.Game.GameObject
 
             if (GameManger.currField.type != 1)
             {
-                return;
+                return false;
             }
 
             for (int i = 0; i < GameManger.currField.GetEnemies().Count; i++)
@@ -184,12 +174,19 @@ namespace Project1st.Game.GameObject
                 GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == enemy.Axis2D.x && x.Axis2D.y == enemy.Axis2D.y);
             }
 
+            RemoveFog();
+
+            return isStun;
+        }
+
+        public void RemoveFog()
+        {
             Queue<Coordinate> q = new Queue<Coordinate>();
 
-            q.Enqueue(Axis2D);
-            GameManger.currField.SetFogInfo(Axis2D.x, Axis2D.y,1);
+            q.Enqueue(GameManger.player.Axis2D);
+            GameManger.currField.SetFogInfo(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1);
 
-            int viewSetting = viewCount;
+            int viewSetting = GameManger.player.viewCount;
             if (GameManger.map.isDay)
             {
                 viewSetting += 3;
@@ -229,8 +226,6 @@ namespace Project1st.Game.GameObject
                     GameManger.currField.SetFogInfo(tmp.x, tmp.y, 1);
                 }
             }
-
-
         }
     }
 }

@@ -239,41 +239,120 @@ namespace Project1st.Game.Map
             Town startTown = new Town(worldMap[1, 1]);
             Town finalTown = new Town(worldMap[_MAP_SIZE-1, _MAP_SIZE-1]);
 
-            worldMap[1, 1] = startTown;
+            int tmpx = 1;
+            int tmpy = 1;
+            worldMap[tmpy, tmpx] = startTown;
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (worldMap[tmpy, tmpx].portals[i] != null) {
+                    switch (i) 
+                    {
+                        case 0:
+                            worldMap[tmpy, tmpx + 1].portals[1].isTown = true;
+                            break;
+                        case 1:
+                            worldMap[tmpy, tmpx - 1].portals[0].isTown = true;
+                            break;
+
+                        case 2:
+                            worldMap[tmpy - 1, tmpx].portals[3].isTown = true;
+                            break;
+
+                        case 3:
+                            worldMap[tmpy + 1, tmpx].portals[2].isTown = true;
+                            break;
+
+                    }
+                }
+            }
+            tmpx = _MAP_SIZE - 1;
+            tmpy = _MAP_SIZE - 1;
             worldMap[_MAP_SIZE - 1, _MAP_SIZE - 1] = finalTown;
 
-            int count = GameManger.random.Next(3, 6);
+            for (int i = 0; i < 4; i++)
+            {
+                if (worldMap[tmpy, tmpx].portals[i] != null)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            worldMap[tmpy, tmpx + 1].portals[1].isTown = true;
+                            break;
+                        case 1:
+                            worldMap[tmpy, tmpx - 1].portals[0].isTown = true;
+                            break;
+
+                        case 2:
+                            worldMap[tmpy - 1, tmpx].portals[3].isTown = true;
+                            break;
+
+                        case 3:
+                            worldMap[tmpy + 1, tmpx].portals[2].isTown = true;
+                            break;
+
+                    }
+                }
+            }
+            //int count = GameManger.random.Next(3, 6);
+            int count = 20;
+
             while (count > 0)
             {
-                int x = GameManger.random.Next(0, _MAP_SIZE);
-                int y = GameManger.random.Next(0, _MAP_SIZE);
+                tmpx = GameManger.random.Next(0, _MAP_SIZE);
+                tmpy = GameManger.random.Next(0, _MAP_SIZE);
 
-                if (worldMap[y, x].type != 2)
+                if (worldMap[tmpy, tmpx].type != 2)
                 {
-                    if (x != 0 && worldMap[y, x - 1].type == 2)
+                    if (tmpx != 0 && worldMap[tmpy, tmpx - 1].type == 2)
                     {
                         continue;
                     }
 
-                    else if (x != _MAP_SIZE - 1 && worldMap[y, x + 1].type == 2)
+                    else if (tmpx != _MAP_SIZE - 1 && worldMap[tmpy, tmpx + 1].type == 2)
                     {
                         continue;
                     }
 
-                    else if (y != _MAP_SIZE - 1 && worldMap[y + 1, x].type == 2)
+                    else if (tmpy != _MAP_SIZE - 1 && worldMap[tmpy + 1, tmpx].type == 2)
                     {
                         continue;
                     }
 
-                    else if (y != 0 && worldMap[y - 1, x].type == 2)
+                    else if (tmpy != 0 && worldMap[tmpy - 1, tmpx].type == 2)
                     {
                         continue;
                     }
 
                     else
                     {
-                        worldMap[y, x] = new Town(worldMap[y, x]);
+                        worldMap[tmpy, tmpx] = new Town(worldMap[tmpy, tmpx]);
                         count -= 1;
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if (worldMap[tmpy, tmpx].portals[i] != null)
+                            {
+                                switch (i)
+                                {
+                                    case 0:
+                                        worldMap[tmpy, tmpx + 1].portals[1].isTown = true;
+                                        break;
+                                    case 1:
+                                        worldMap[tmpy, tmpx - 1].portals[0].isTown = true;
+                                        break;
+
+                                    case 2:
+                                        worldMap[tmpy - 1, tmpx].portals[3].isTown = true;
+                                        break;
+
+                                    case 3:
+                                        worldMap[tmpy + 1, tmpx].portals[2].isTown = true;
+                                        break;
+
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -284,6 +363,18 @@ namespace Project1st.Game.Map
         public void SetDayTimer(object obj)
         {
             isDay = !isDay;
+
+            for(int y = 0; y<WorldMap._MAP_SIZE; y++){
+                for (int x = 0; x < WorldMap._MAP_SIZE; x++) {
+                    if (GameManger.map.worldMap[y, x].type == 2)
+                    {
+                        foreach (var a in GameManger.map.worldMap[y, x].ReturnSelfToTown().priceRate)
+                        {
+                            a.Value.ChangePriceRate();
+                        }
+                    }
+                }
+            }
         }
 
         Coordinate check(int x, int y)

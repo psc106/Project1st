@@ -50,6 +50,7 @@
     <Compile Include="Game\GameObject\Enemy.cs" />
     <Compile Include="Game\GameObject\ObjectBase.cs" />
     <Compile Include="Game\GameObject\Player.cs" />
+    <Compile Include="Game\Interface\IMove.cs" />
     <Compile Include="Game\Item\Item.cs" />
     <Compile Include="Game\Map\Fields\FieldBase.cs" />
     <Compile Include="Game\Map\Fields\Forest.cs" />
