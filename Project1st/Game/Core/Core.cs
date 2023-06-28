@@ -45,10 +45,12 @@ namespace Project1st.Game.Core
             GameManger.currField.isFog = false;
             GameManger.currField.isCurrField = true;
 
+            bool isEnd = false;
             bool isMove = false;
             bool isStun = false;
 
             bool isAttack = false;
+
             bool isYes = false;
             bool isNo = false;
             bool isFirst = false;
@@ -381,12 +383,38 @@ namespace Project1st.Game.Core
                                     if (currEnemy.hitPoint <= 0)
                                     {
                                         GameManger.currField.RemoveEnemy(nextX, nextY);
+
+                                        if (GameManger.currField.GetEnemies().Count==0)
+                                        {
+                                            isEnd = true;
+                                        }
                                     }
                                 }
                                 continue;
                             }
 
                         }
+                    }
+
+                    if (isEnd)
+                    {
+                        GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint = GameManger.player.hitPoint;
+                        GameManger.currField.StopEnemies();
+
+                        //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+                        GameManger.player = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo;
+                        GameManger.currField = GameManger.currField.ReturnSelfToBattle().beforeFieldInfo;
+                        if (GameManger.currField.type == 1)
+                        {
+                            GameManger.currField.PlayEnemies();
+                            GameManger.currField.SetCreateTimer(new Timer(GameManger.currField.CreateEnemy, null, 100, 10000));
+                        }
+                        GameManger.currField.isFog = false;
+                        GameManger.currField.isCurrField = true;
+                        isEnd = false;
+
+                        GameManger.player.RemoveFog();
                     }
                 }
             }

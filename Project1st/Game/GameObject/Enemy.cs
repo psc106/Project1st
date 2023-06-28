@@ -64,7 +64,7 @@ namespace Project1st.Game.GameObject
         }
         public void StartBattleTimer()
         {
-            moveTimer = new Timer(FightTimer, null, 3000, 600 - (400 * ((EnemyHitPointMAX - hitPoint)/EnemyHitPointMAX)));
+            moveTimer = new Timer(FightTimer, null, 0, 600 - (400 * ((EnemyHitPointMAX - hitPoint)/EnemyHitPointMAX)));
 
         }
 

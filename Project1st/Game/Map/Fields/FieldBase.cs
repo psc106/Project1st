@@ -231,15 +231,26 @@ namespace Project1st.Game.Map.Fields
             return false;
         }
 
-        public Forest ReturnSelfToForest()
+        public Battle ReturnSelfToBattle()
         {
-            return (Forest)this;
+            if(type == 3) return (Battle)this;
+            return null;
         }
 
         public Town ReturnSelfToTown()
         {
-            return (Town)this;
+
+            if (type == 2) return (Town)this;
+            return null;
         }
+
+        public Forest ReturnSelfToForest()
+        {
+
+            if (type == 1) return (Forest)this;
+            return null;
+        }
+
     }
 
     public class City : FieldBase

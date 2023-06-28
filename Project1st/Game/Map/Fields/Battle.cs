@@ -27,6 +27,7 @@ namespace Project1st.Game.Map.Fields
 
             GameManger.player = new Player();
             GameManger.currField = this;
+            GameManger.player.hitPoint = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint;
 
             enemies = new List<Enemy>();
             enemyCount = GameManger.random.Next(7, 13);
@@ -83,6 +84,7 @@ namespace Project1st.Game.Map.Fields
                 }
             }
 
+            GameManger.player.RemoveFog();
 
         }
         public override Enemy FindEnemiesAt(int x, int y)
@@ -149,7 +151,6 @@ namespace Project1st.Game.Map.Fields
         {
             fogInfo[y, x] = info;
         }
-
         public override List<Enemy> GetEnemies()
         {
             return enemies;
@@ -236,7 +237,7 @@ namespace Project1st.Game.Map.Fields
                         Effect currEffect = GameManger.player.Effects.FindAll(effect => (effect.Axis2D.x == x && effect.Axis2D.y == y)).FirstOrDefault();
                         if (currEffect != null)
                         {
-                            line[y] += ".8." + Effect.effectString[currEffect.type] + ".";
+                            line[y] += ".11." + Effect.effectString[currEffect.type] + ".";
                             GameManger.player.Effects.Remove(currEffect);
                             continue;
                         }
@@ -249,17 +250,17 @@ namespace Project1st.Game.Map.Fields
                         {
                             if (tmp.isLive)
                             {
-                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX / 20)
+                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX * 2 / 3)
+                                {
+                                    line[y] += ".8.";
+                                }
+                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX / 3)
                                 {
                                     line[y] += ".7.";
                                 }
-                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX)
-                                {
-                                    line[y] += ".1.";
-                                }
                                 else
                                 {
-                                    line[y] += ".0.";
+                                    line[y] += ".1.";
                                 }
 
                                 if (!tmp.isAttack)

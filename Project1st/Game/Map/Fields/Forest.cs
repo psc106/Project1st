@@ -506,13 +506,18 @@ namespace Project1st.Game.Map.Fields
             Enemy enemy = GameManger.currField.FindEnemiesAt(currX, currY);
             if (enemy != null && enemy.isLive)
             {
-                GameManger.player.hitPoint -= 1;
-                enemy.moveTimer.Dispose();
-                if (GameManger.player.hitPoint == 0)
+                GameManger.currField.StopEnemies();
+                if (GameManger.currField.GetCreateTimer() != null)
                 {
-                    GameManger.player.isLive = false;
+                    GameManger.currField.GetCreateTimer().Dispose();
                 }
+
+                enemy.moveTimer.Dispose();
                 GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == enemy.Axis2D.x && x.Axis2D.y == enemy.Axis2D.y);
+
+                //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+                new Battle(GameManger.currField.ReturnSelfToForest());
             }
 
             GameManger.player.RemoveFog();
