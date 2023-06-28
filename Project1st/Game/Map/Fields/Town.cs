@@ -1,5 +1,4 @@
 ﻿using Project1st.Game.Core;
-using Project1st.Game.Interface;
 using Project1st.Game.Item;
 using System;
 using System.Collections.Generic;
@@ -237,7 +236,7 @@ namespace Project1st.Game.Map.Fields
                         Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
                         line[y] += y + GameManger.player.startInventoryIndex + ") ";
                         line[y] += item.name + " ";
-                        line[y] += (int)(item.price * priceRate[item.itemId].rate) + " ";
+                        line[y] += (int)(item.price * priceRate[item.itemId].rate*0.7f) + " ";
                         line[y] += item.count;
                         line[y] += "\t\t";
 
