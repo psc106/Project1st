@@ -51,6 +51,7 @@
     <Compile Include="Game\GameObject\Enemy.cs" />
     <Compile Include="Game\GameObject\ObjectBase.cs" />
     <Compile Include="Game\GameObject\Player.cs" />
+    <Compile Include="Game\GameObject\Wagon.cs" />
     <Compile Include="Game\Item\Item.cs" />
     <Compile Include="Game\Map\Fields\Battle.cs" />
     <Compile Include="Game\Map\Fields\Ending.cs" />

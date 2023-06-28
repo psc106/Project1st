@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Project1st.Game.Map;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -117,6 +118,9 @@ namespace Project1st.Game.Core
                 }// 1행 출력 종료
 
             }//모든 행 출력 종료
+
+            Console.SetCursorPosition(50, 40);
+            Console.WriteLine(WorldMap.testPos.x+", "+ WorldMap.testPos.y);
 
             isWork = false;
         }
