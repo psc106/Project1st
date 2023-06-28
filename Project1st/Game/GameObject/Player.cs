@@ -13,14 +13,19 @@ namespace Project1st.Game.GameObject
 {
     public class Player : MoveObject
     {
-        public Timer attackTimer;
+        public Timer meleeDelay;
+        public Timer rangeDelay;
 
         public int gold;
-        public bool isCoolTime;
         public int weapon;
         public int viewCount;
 
+        public bool isMeleeDelay;
+        public bool isRangeDelay;
+
         public int hitPointMax = 100;
+
+        public List<Effect> Effects;
 
         public List<Items> inventory;
         public int startInventoryIndex;
@@ -42,13 +47,15 @@ namespace Project1st.Game.GameObject
             base.Init();
             hitPointMax = 100;
             hitPoint = 100;
-            attckPoint = 1;
+            attckPoint = 10;
             ID = 0;
-            isCoolTime = false;
+            isMeleeDelay = false;
+            isRangeDelay = false;
             gold = 10000;
-            weapon = 1;
+            weapon = 0;
             viewCount = 5;
             inventory = new List<Items>();
+            Effects = new List<Effect>();
             startInventoryIndex = 0;
         }
 
@@ -99,6 +106,18 @@ namespace Project1st.Game.GameObject
                     GameManger.currField.SetFogInfo(tmp.x, tmp.y, 1);
                 }
             }
+        }
+
+
+        public void DelayMeleeTimer(object obj)
+        {
+            isMeleeDelay = false;
+            meleeDelay.Dispose();
+        }
+        public void DelayRangeTimer(object obj)
+        {
+            isRangeDelay = false;
+            rangeDelay.Dispose();
         }
     }
 }

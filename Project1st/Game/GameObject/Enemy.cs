@@ -14,7 +14,7 @@ namespace Project1st.Game.GameObject
 {
     public class Enemy : MoveObject
     {
-        static public int EnemyHitPointMAX = 100;
+        static public int EnemyHitPointMAX = 30;
 
         public Timer moveTimer;
         public Timer delayTimer;

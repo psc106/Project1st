@@ -47,6 +47,7 @@
     <Compile Include="Game\Core\Core.cs" />
     <Compile Include="Game\Core\Graphic.cs" />
     <Compile Include="Game\Core\Manager.cs" />
+    <Compile Include="Game\GameObject\Effect.cs" />
     <Compile Include="Game\GameObject\Enemy.cs" />
     <Compile Include="Game\GameObject\ObjectBase.cs" />
     <Compile Include="Game\GameObject\Player.cs" />

@@ -121,6 +121,34 @@ namespace Project1st.Game.Map.Fields
                 //enemies[i].enemyTimer.Change(500, 500);
             }
         }
+        public override void RemoveEnemy(int x, int y)
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                if (enemies[i] == null) continue;
+                if (enemies[i].Axis2D.x == x && enemies[i].Axis2D.y == y)
+                {
+                    if (enemies[i].moveTimer != null)
+                    {
+                        enemies[i].moveTimer.Dispose();
+                    }
+                    enemies.RemoveAt(i);
+                }
+            }
+        }
+
+        public override float[,] GetFogInfo()
+        {
+            return fogInfo;
+        }
+        public override float GetFogInfo(int x, int y)
+        {
+            return fogInfo[y, x];
+        }
+        public override void SetFogInfo(int x, int y, float info)
+        {
+            fogInfo[y, x] = info;
+        }
 
         public override List<Enemy> GetEnemies()
         {
@@ -202,42 +230,55 @@ namespace Project1st.Game.Map.Fields
                 line[y] = "";
                 for (int x = 0; x < FieldBase._FIELD_SIZE; x++)
                 {
-                    //적 2순위
-                    Enemy tmp = FindEnemiesAt(x, y);
-                    if (tmp != null)
+                    //이펙트 1순위
+                    if (GameManger.player.Effects != null && GameManger.player.Effects.Count > 0)
                     {
-                        if (tmp.isLive)
+                        Effect currEffect = GameManger.player.Effects.FindAll(effect => (effect.Axis2D.x == x && effect.Axis2D.y == y)).FirstOrDefault();
+                        if (currEffect != null)
                         {
-                            if (tmp.hitPoint < Enemy.EnemyHitPointMAX / 20)
-                            {
-                                line[y] += ".7.";
-                            }
-                            else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX)
-                            {
-                                line[y] += ".1.";
-                            }
-                            else
-                            {
-                                line[y] += ".0.";
-                            }
-
-                            if (!tmp.isAttack)
-                            {
-                                line[y] += "적.";
-                            }
-                            else
-                            {
-                                line[y] += "喝.";
-                                tmp.isAttack = false;
-                            }
+                            line[y] += ".8." + Effect.effectString[currEffect.type] + ".";
+                            GameManger.player.Effects.Remove(currEffect);
+                            continue;
                         }
-                        else if (!tmp.isLive)
-                        {
-                            line[y] += ".1.？.";
-                        }
-                        continue;
                     }
+                    if (fogInfo[y, x] == 1)
+                    {
+                        //적 2순위
+                        Enemy tmp = FindEnemiesAt(x, y);
+                        if (tmp != null)
+                        {
+                            if (tmp.isLive)
+                            {
+                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX / 20)
+                                {
+                                    line[y] += ".7.";
+                                }
+                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX)
+                                {
+                                    line[y] += ".1.";
+                                }
+                                else
+                                {
+                                    line[y] += ".0.";
+                                }
 
+                                if (!tmp.isAttack)
+                                {
+                                    line[y] += "적.";
+                                }
+                                else
+                                {
+                                    line[y] += "喝.";
+                                    tmp.isAttack = false;
+                                }
+                            }
+                            else if (!tmp.isLive)
+                            {
+                                line[y] += ".1.？.";
+                            }
+                            continue;
+                        }
+                    }
                     //플레이어 4순위
                     if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y)
                     {
@@ -294,36 +335,58 @@ namespace Project1st.Game.Map.Fields
                         continue;
                     }
 
-
-                    if (fogInfo[y, x] == 1)
+                    if (fogInfo[y, x] == 0)
                     {
-                        line[y] += ".0.";
+                        line[y] += ".8.　.";
                     }
-                    else if (fogInfo[y, x] >= 0 && fogInfo[y, x] < 1)
+                    else
                     {
-                        line[y] += ".6.";
-                    }
+                        if (fogInfo[y, x] == 1)
+                        {
+                            if (fieldInfo[y, x] == FieldBase.field_info.portal)
+                            {
+                                line[y] += ".2.";
+                            }
+                            else
+                            {
+                                line[y] += ".0.";
 
-                    //맵정보 마지막
-                    switch (fieldInfo[y, x])
-                    {
-                        case FieldBase.field_info.empty:
-                            line[y] += "ㄹ.";
-                            break;
-                        case FieldBase.field_info.mud:
-                            line[y] += "＊.";
-                            break;
-                        case FieldBase.field_info.tree:
-                            line[y] += "〓.";
-                            break;
-                        case FieldBase.field_info.road:
-                            line[y] += "□.";
-                            break;
-                        case FieldBase.field_info.wall:
-                            line[y] += "■.";
-                            break;
-                    }
+                            }
+                        }
+                        else if (fogInfo[y, x] > 0 && fogInfo[y, x] < 1)
+                        {
+                            if (fieldInfo[y, x] == FieldBase.field_info.portal)
+                            {
+                                line[y] += ".12.";
+                            }
+                            else
+                            {
+                                line[y] += ".6.";
+                            }
 
+                        }
+
+                        //맵정보 마지막
+                        switch (fieldInfo[y, x])
+                        {
+                            case FieldBase.field_info.empty:
+                                line[y] += "ㄹ.";
+                                break;
+                            case FieldBase.field_info.mud:
+                                line[y] += "＊.";
+                                break;
+                            case FieldBase.field_info.tree:
+                                line[y] += "〓.";
+                                break;
+                            case FieldBase.field_info.road:
+                                line[y] += "□.";
+                                break;
+                            case FieldBase.field_info.wall:
+                                line[y] += "■.";
+                                break;
+                        }
+
+                    }
                 }
 
                 line[y] += "  ";

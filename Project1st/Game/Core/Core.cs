@@ -109,7 +109,7 @@ namespace Project1st.Game.Core
 
 
                 if (GameManger.currField.type == 1)
-                {                    
+                {
 
                     //패배
                     if (!GameManger.player.isLive)
@@ -197,10 +197,10 @@ namespace Project1st.Game.Core
                             }
                             //판매
                             else if (currTown.cursorPosition.x == 1)
-                            {                             
+                            {
 
                                 Items item = GameManger.player.inventory[(currTown.cursorPosition.y + GameManger.player.startInventoryIndex)];
-                               
+
                                 if (item.count == 0)
                                 {
                                 }
@@ -312,9 +312,81 @@ namespace Project1st.Game.Core
                     //근접 공격
                     if (isYes)
                     {
+                        if (!GameManger.player.isMeleeDelay)
+                        {
+                            GameManger.player.isMeleeDelay = true;
+                            GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, 450, 0);
+
+                            int nextX = GameManger.player.GetNextX(GameManger.player.direction);
+                            int nextY = GameManger.player.GetNextY(GameManger.player.direction);
+
+                            GameManger.player.Effects.Add(new Effect(nextX, nextY, 1));
+
+                            if (GameManger.player.weapon == 1)
+                            {
+                                if (GameManger.player.direction / 2 == 0)//양쪽 보는중
+                                {
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY + 1, 1));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY - 1, 1));
+                                }
+                                else if (GameManger.player.direction / 2 == 1)//위쪽 보는중
+                                {
+                                    GameManger.player.Effects.Add(new Effect(nextX + 1, nextY, 1));
+                                    GameManger.player.Effects.Add(new Effect(nextX - 1, nextY, 1));
+                                }
+                            }
+                            else if (GameManger.player.weapon == 2)
+                            {
+                                if (GameManger.player.direction == 0)//오른쪽 보는중
+                                {
+                                    //AttackEffect.Add(new MyEffect(nextX + 1, nextY, 0));
+                                    //AttackEffect.Add(new MyEffect(nextX + 2, nextY, 0));
+                                }
+                                else if (GameManger.player.direction == 1)//왼쪽 보는중
+                                {
+                                    //AttackEffect.Add(new MyEffect(nextX - 1, nextY, 0));
+                                    //AttackEffect.Add(new MyEffect(nextX - 2, nextY, 0));
+                                }
+                                else if (GameManger.player.direction == 2)//위쪽 보는중
+                                {
+                                    //AttackEffect.Add(new MyEffect(nextX, nextY - 1, 0));
+                                    //AttackEffect.Add(new MyEffect(nextX, nextY - 2, 0));
+                                }
+                                else if (GameManger.player.direction == 3)//아래쪽 보는중
+                                {
+                                    //AttackEffect.Add(new MyEffect(nextX, nextY + 1, 0));
+                                    //AttackEffect.Add(new MyEffect(nextX, nextY + 2, 0));
+                                }
+                            }
+
+                        }
+
+                        for (int i = 0; i < GameManger.player.Effects.Count; i++)
+                        {
+                            if (GameManger.player.Effects[i].type == -1) continue;
+
+                            int nextX = GameManger.player.Effects[i].Axis2D.x;
+                            int nextY = GameManger.player.Effects[i].Axis2D.y;
+
+                            //적 공격
+                            Enemy currEnemy = GameManger.currField.FindEnemiesAt(nextX, nextY);
+                            if (currEnemy != null)
+                            {
+                                if (currEnemy.isLive)
+                                {
+                                    currEnemy.hitPoint -= GameManger.player.attckPoint;
+                                    currEnemy.moveTimer.Change(300, 600 - (400 * ((Enemy.EnemyHitPointMAX - currEnemy.hitPoint) / Enemy.EnemyHitPointMAX)));
+                                    if (currEnemy.hitPoint <= 0)
+                                    {
+                                        GameManger.currField.RemoveEnemy(nextX, nextY);
+                                    }
+                                }
+                                continue;
+                            }
+
+                        }
                     }
                 }
-
             }
         }
 
