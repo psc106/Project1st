@@ -21,8 +21,10 @@ namespace Project1st.Game.Core
 
         public Core()
         {
-
             GameManger.Instance();
+
+            Console.WindowWidth = 100;
+            Console.WindowHeight = GameManger.buffer._BUFFER_SIZE;
 
             line = new string[GameManger.buffer._BUFFER_SIZE];
 

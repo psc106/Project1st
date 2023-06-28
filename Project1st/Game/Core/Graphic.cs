@@ -26,7 +26,7 @@ namespace Project1st.Game.Core
         public BufferPrinter()
         {
             isWork = false;
-            _BUFFER_SIZE = Console.LargestWindowHeight-10;
+            _BUFFER_SIZE = 45;
             buffer = new string[_BUFFER_SIZE];
         }
 
