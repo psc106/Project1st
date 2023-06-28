@@ -17,16 +17,20 @@ namespace Project1st.Game.GameObject
         public Timer rangeDelay;
 
         public int gold;
+        public int light;
+        public int weight;
+        public int maxWeight;
+
         public int weapon;
-        public int viewCount;
 
         public bool isMeleeDelay;
         public bool isRangeDelay;
 
-        public int hitPointMax = 100;
+        public int hitPointMax;
 
         public List<Effect> Effects;
 
+        public List<Wagon> wagonList;
         public List<Items> inventory;
         public int startInventoryIndex;
 
@@ -51,11 +55,17 @@ namespace Project1st.Game.GameObject
             ID = 0;
             isMeleeDelay = false;
             isRangeDelay = false;
-            gold = 10000;
+            maxWeight = 100;
+            weight = 0;
+            gold = 230;
             weapon = 0;
-            viewCount = 5;
+            light = 5;
             inventory = new List<Items>();
             Effects = new List<Effect>();
+            wagonList = new List<Wagon>();
+            wagonList.Add(new Wagon());
+            wagonList.Add(new Wagon());
+
             startInventoryIndex = 0;
         }
 
@@ -66,17 +76,17 @@ namespace Project1st.Game.GameObject
             q.Enqueue(GameManger.player.Axis2D);
             GameManger.currField.SetFogInfo(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1);
 
-            int viewSetting = GameManger.player.viewCount;
+            int light = GameManger.player.light;
             if (GameManger.map.isDay)
             {
-                viewSetting += 3;
+                light += 3;
             }
             else
             {
-                viewSetting -= 2;
+                light -= 2;
             }
-            viewSetting = (((viewSetting - 1) * 2) - 2) * (viewSetting - 1) + 1;
-            for (int i = 0; i < viewSetting; i++)
+            light = (((light - 1) * 2) - 2) * (light - 1) + 1;
+            for (int i = 0; i < light; i++)
             {
                 Coordinate tmp = q.Dequeue();
 
