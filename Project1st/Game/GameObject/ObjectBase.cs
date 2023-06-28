@@ -40,7 +40,7 @@ namespace Project1st.Game.GameObject
         public override void Init()
         {
             base.Init();
-            direction = 4;
+            direction = 5;
             isLive = true;
         }
 
