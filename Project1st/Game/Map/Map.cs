@@ -20,6 +20,8 @@ namespace Project1st.Game.Map
         public FieldBase[,] worldMap;
         public bool isDay;
         public Timer dayTimer;
+        public static Coordinate testPos;
+
 
         public WorldMap()
         {
@@ -212,26 +214,52 @@ namespace Project1st.Game.Map
                     }
                     else if (connect.x != 0 && worldMap[connect.y, connect.x].portals[1] == null)
                     {
-                        worldMap[connect.y, connect.x].CreateDoor(1);
                         worldMap[connect.y, connect.x - 1].CreateDoor(0);
+                        Portal nextDoor = worldMap[connect.y, connect.x - 1].portals[0];
+
+                        worldMap[connect.y, connect.x].portals[1] = new Portal(0, nextDoor.axis.y);
+                        Portal currDoor = worldMap[connect.y, connect.x].portals[1];
+
+
+                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        worldMap[connect.y, connect.x -1].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
+
                     }
 
                     else if (connect.x != _MAP_SIZE - 1 && worldMap[connect.y, connect.x].portals[0] == null)
                     {
-                        worldMap[connect.y, connect.x].CreateDoor(0);
                         worldMap[connect.y, connect.x + 1].CreateDoor(1);
+                        Portal nextDoor = worldMap[connect.y, connect.x + 1].portals[1];
+
+                        worldMap[connect.y, connect.x].portals[0] = new Portal(FieldBase._FIELD_SIZE - 1, nextDoor.axis.y);
+                        Portal currDoor = worldMap[connect.y, connect.x].portals[0];
+
+                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        worldMap[connect.y, connect.x + 1].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
                     }
 
                     else if (connect.y != _MAP_SIZE - 1 && worldMap[connect.y, connect.x].portals[3] == null)
                     {
-                        worldMap[connect.y, connect.x].CreateDoor(3);
                         worldMap[connect.y + 1, connect.x].CreateDoor(2);
+                        Portal nextDoor = worldMap[connect.y + 1, connect.x].portals[2];
+
+                        worldMap[connect.y, connect.x].portals[3] = new Portal(nextDoor.axis.x, FieldBase._FIELD_SIZE - 1);
+                        Portal currDoor = worldMap[connect.y, connect.x].portals[3];
+
+                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        worldMap[connect.y +1, connect.x].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
                     }
 
                     else if (connect.y != 0 && worldMap[connect.y, connect.x].portals[2] == null)
                     {
-                        worldMap[connect.y, connect.x].CreateDoor(2);
                         worldMap[connect.y - 1, connect.x].CreateDoor(3);
+                        Portal nextDoor = worldMap[connect.y - 1, connect.x].portals[3];
+
+                        worldMap[connect.y, connect.x].portals[2] = new Portal(nextDoor.axis.x, 0);
+                        Portal currDoor = worldMap[connect.y, connect.x].portals[2];
+
+                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        worldMap[connect.y -1, connect.x].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
                     }
                 }
             }
