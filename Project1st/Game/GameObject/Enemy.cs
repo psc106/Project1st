@@ -149,7 +149,7 @@ namespace Project1st.Game.GameObject
                     {
                         GameManger.player.isLive = false;
                         //게임오버 엔딩
-                        //new Ending(GameManger.currField);
+                        new Ending(1);
                     }
                 }
             }

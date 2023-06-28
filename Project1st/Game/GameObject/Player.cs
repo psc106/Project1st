@@ -50,7 +50,8 @@ namespace Project1st.Game.GameObject
         {
             base.Init();
             hitPointMax = 100;
-            hitPoint = 100;
+            //hitPoint = 1;
+            hitPoint = 1;
             attckPoint = 10;
             ID = 0;
             isMeleeDelay = false;

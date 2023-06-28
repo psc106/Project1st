@@ -123,7 +123,7 @@ namespace Project1st.Game.Map.Fields
 
         public override void CreateEnemy(object obj)
         {
-            if (enemies.Count > -1) return;
+            if (enemies.Count > 6) return;
             while (true)
             {
                 int enemyX = GameManger.random.Next(_FIELD_SIZE);
