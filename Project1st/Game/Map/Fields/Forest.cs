@@ -1,8 +1,8 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
-using Project1st.Game.Interface;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -191,7 +191,7 @@ namespace Project1st.Game.Map.Fields
             {
                 if (enemies[i].moveTimer != null)
                 {
-                    enemies[i].StartTimer();
+                    enemies[i].StartForestTimer();
                 }
                 //enemies[i].enemyTimer.Change(500, 500);
             }
@@ -401,7 +401,123 @@ namespace Project1st.Game.Map.Fields
 
         public override bool Move(Coordinate axis)
         {
-            return GameManger.player.Move(axis);
+            bool isStun = false;
+
+            int beforeX = GameManger.player.Axis2D.x;
+            int beforeY = GameManger.player.Axis2D.y;
+
+            int currX = GameManger.player.Hold(GameManger.player.GetNextX(GameManger.player.direction), FieldBase._FIELD_SIZE);
+            int currY = GameManger.player.Hold(GameManger.player.GetNextY(GameManger.player.direction), FieldBase._FIELD_SIZE);
+
+
+
+            for (int y = 0; y < FieldBase._FIELD_SIZE; y++)
+            {
+                for (int x = 0; x < FieldBase._FIELD_SIZE; x++)
+                {
+                    if (GameManger.currField.GetFogInfo(x, y) == 1)
+                    {
+                        GameManger.currField.SetFogInfo(x, y, 0.5f);
+                    }
+
+                }
+            }
+
+            //빈칸으로 이동
+            if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.empty ||
+                GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.road)
+            {
+                GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+            }
+
+            //수풀로 이동
+            if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.mud)
+            {
+                GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+                if (GameManger.random.Next(1, 101) <= 10)
+                {
+                    GameManger.player.direction = 4;
+                    isStun = true;
+                }
+                
+            }
+            //벽으로 이동
+            else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.tree ||
+                     GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.wall)
+            {
+            }
+
+            //텔레포트로 이동
+            else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.portal)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (GameManger.currField.portals[i] == null) { continue; }
+
+
+                    if (currX == GameManger.currField.portals[i].axis.x &&
+                        currY == GameManger.currField.portals[i].axis.y)
+                    {
+                        axis.x += AXIS_X[i];
+                        axis.y += AXIS_Y[i];
+
+                        GameManger.player.Teleport(FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
+
+                        GameManger.currField.isCurrField = false;
+                        GameManger.currField.StopEnemies();
+                        if (GameManger.currField.GetCreateTimer() != null)
+                        {
+                            GameManger.currField.GetCreateTimer().Dispose();
+                        }
+
+                        //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+                        GameManger.currField = GameManger.map.worldMap[axis.y, axis.x];
+                        if (GameManger.currField.type == 1)
+                        {
+                            GameManger.currField.PlayEnemies();
+                            GameManger.currField.SetCreateTimer(new Timer(GameManger.currField.CreateEnemy, null, 100, 10000));
+                        }
+                        GameManger.currField.isFog = false;
+                        GameManger.currField.isCurrField = true;
+
+                        if (GameManger.currField.type == 2)
+                        {
+                            GameManger.currField.ReturnSelfToTown().Enter();
+                        }
+
+                        break;
+                    }
+                }
+
+            }
+
+            if (GameManger.currField.type != 1)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < GameManger.currField.GetEnemies().Count; i++)
+            {
+                GameManger.currField.GetEnemies()[i].isMove = true;
+            }
+
+            //적에게 이동
+            Enemy enemy = GameManger.currField.FindEnemiesAt(currX, currY);
+            if (enemy != null && enemy.isLive)
+            {
+                GameManger.player.hitPoint -= 1;
+                enemy.moveTimer.Dispose();
+                if (GameManger.player.hitPoint == 0)
+                {
+                    GameManger.player.isLive = false;
+                }
+                GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == enemy.Axis2D.x && x.Axis2D.y == enemy.Axis2D.y);
+            }
+
+            GameManger.player.RemoveFog();
+
+            return isStun;
         }
     }
 }
