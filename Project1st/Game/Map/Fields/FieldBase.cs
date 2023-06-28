@@ -1,6 +1,5 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
-using Project1st.Game.Interface;
 using Project1st.Game.Item;
 using System;
 using System.Collections.Generic;
@@ -14,6 +13,9 @@ namespace Project1st.Game.Map.Fields
 
     public class FieldBase
     {
+        protected int[] AXIS_X = { 1, -1, 0, 0, 0, 0 };
+        protected int[] AXIS_Y = { 0, 0, -1, 1, 0, 0 };
+
         public static readonly int _FIELD_SIZE = 15;
 
         public enum field_info : byte
@@ -28,6 +30,7 @@ namespace Project1st.Game.Map.Fields
         public int type;
         public bool isFog;
         public bool isCurrField;
+
         public FieldBase()
         {
             type = 0;
@@ -102,7 +105,7 @@ namespace Project1st.Game.Map.Fields
         }
         public virtual float GetFogInfo(int x, int y)
         {
-            return 0;
+            return 1;
         }
         public virtual void SetFogInfo(int x, int y, float info)
         {
@@ -141,6 +144,10 @@ namespace Project1st.Game.Map.Fields
         {
         }
         public virtual Enemy FindEnemiesAt(int x, int y)
+        {
+            return null;
+        }
+        public virtual Player FindPlayerAt(int x, int y)
         {
             return null;
         }
@@ -216,6 +223,10 @@ namespace Project1st.Game.Map.Fields
         }
 
         public virtual bool Move(Coordinate axis)
+        {
+            return false;
+        }
+        public virtual bool Move()
         {
             return false;
         }

@@ -30,6 +30,8 @@ namespace Project1st.Game.GameObject
         protected int[] AXIS_Y = { 0, 0, -1, 1, 0, 0 };
 
         public int hitPoint;
+        public int attckPoint;
+
         public int direction { get; set; }
 
         public MoveObject() 
@@ -53,6 +55,18 @@ namespace Project1st.Game.GameObject
         public int GetNextY(int direction)
         {
             return Axis2D.y + AXIS_Y[direction];
+        }
+        public int Hold(int axis, int size)
+        {
+            if (axis < 0)
+            {
+                axis = 0;
+            }
+            else if (axis >= size)
+            {
+                axis = size - 1;
+            }
+            return axis;
         }
 
         public bool MoveAndHold(int direction, int XSize, int YSize)

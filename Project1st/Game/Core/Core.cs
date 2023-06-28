@@ -233,6 +233,8 @@ namespace Project1st.Game.Core
                                 currFieldPos.y += axisY[currTown.cursorPosition.y];
                                 currFieldPos.x += axisX[currTown.cursorPosition.y];
 
+                                currTown.Exit();
+
                                 GameManger.currField = GameManger.map.worldMap[currFieldPos.y, currFieldPos.x];
 
                                 if (currTown.cursorPosition.y == 0)
@@ -266,7 +268,6 @@ namespace Project1st.Game.Core
 
 
                                 GameManger.player.RemoveFog();
-
                             }
                         }
                     }
@@ -285,6 +286,35 @@ namespace Project1st.Game.Core
                     //커서 방향 초기화
                     GameManger.player.direction = 5;
                 }
+
+
+                else if (GameManger.currField.type == 3)
+                {
+
+                    //패배
+                    if (!GameManger.player.isLive)
+                    {
+                        GameManger.buffer.printTimer.Dispose();
+                        return;
+                    }
+
+                    //이동
+                    if (isMove)
+                    {
+                        isStun = GameManger.currField.Move();
+                    }
+
+                    //원거리 공격
+                    if (isNo)
+                    {
+                    }
+
+                    //근접 공격
+                    if (isYes)
+                    {
+                    }
+                }
+
             }
         }
 

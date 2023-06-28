@@ -117,14 +117,18 @@ namespace Project1st.Game.Algorithm
         {
             List<Location> list = new List<Location>();
 
-            if (y != 0 && GameManger.currField.fieldInfo[y - 1, x] != FieldBase.field_info.tree)
+            if (y != 0 && 
+                GameManger.currField.fieldInfo[y - 1, x] != FieldBase.field_info.tree && 
+                GameManger.currField.FindEnemiesAt(x, y-1) == null)
             {
                 Location node = openList.Find(l => l.X == x && l.Y == y - 1);
                 if (node == null) list.Add(new Location() { X = x, Y = y - 1 });
                 else list.Add(node);
             }
 
-            if (y != FieldBase._FIELD_SIZE - 1 && GameManger.currField.fieldInfo[y + 1, x] != FieldBase.field_info.tree)
+            if (y != FieldBase._FIELD_SIZE - 1 && 
+                GameManger.currField.fieldInfo[y + 1, x] != FieldBase.field_info.tree &&
+                GameManger.currField.FindEnemiesAt(x,y+1) == null)
 
             {
                 Location node = openList.Find(l => l.X == x && l.Y == y + 1);
@@ -132,13 +136,17 @@ namespace Project1st.Game.Algorithm
                 else list.Add(node);
             }
 
-            if (x != 0 && GameManger.currField.fieldInfo[y, x - 1] != FieldBase.field_info.tree)
+            if (x != 0 &&
+                GameManger.currField.fieldInfo[y, x - 1] != FieldBase.field_info.tree &&
+                GameManger.currField.FindEnemiesAt(x - 1, y) == null)
             {
                 Location node = openList.Find(l => l.X == x - 1 && l.Y == y);
                 if (node == null) list.Add(new Location() { X = x - 1, Y = y });
                 else list.Add(node);
             }
-            if (x != FieldBase._FIELD_SIZE - 1 && GameManger.currField.fieldInfo[y, x + 1] != FieldBase.field_info.tree)
+            if (x != FieldBase._FIELD_SIZE - 1 &&
+                GameManger.currField.fieldInfo[y, x + 1] != FieldBase.field_info.tree &&
+                GameManger.currField.FindEnemiesAt(x + 1, y) == null)
             {
                 Location node = openList.Find(l => l.X == x + 1 && l.Y == y);
                 if (node == null) list.Add(new Location() { X = x + 1, Y = y });
