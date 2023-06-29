@@ -30,9 +30,11 @@ namespace Project1st.Game.Map.Fields
         public int type;
         public bool isFog;
         public bool isCurrField;
+        public bool isMenu;
 
         public FieldBase()
         {
+            isMenu = false;
             type = 0;
             portals = new Portal[4];
             fieldInfo = new field_info[_FIELD_SIZE, _FIELD_SIZE];
@@ -49,6 +51,7 @@ namespace Project1st.Game.Map.Fields
 
         public FieldBase(int flag)
         {
+            isMenu = false;
             type = 0;
 
             portals = new Portal[4];
@@ -188,13 +191,21 @@ namespace Project1st.Game.Map.Fields
 
             if (!this.isFog)
             {
-                if (!this.isCurrField)
+                if (!this.isCurrField && this.type==1)
                 {
                     line[1] += "□";
                 }
-                else
+                else if(!this.isCurrField && this.type==2)
+                {
+                    line[1] += "☆";
+                }
+                else if (this.isCurrField && this.type == 1)
                 {
                     line[1] += "■";
+                }
+                else if (this.isCurrField && this.type == 2)
+                {
+                    line[1] += "★";
                 }
             }
             else
@@ -210,7 +221,7 @@ namespace Project1st.Game.Map.Fields
             {
                 line[1] += "　";
             }
-            if (!this.isFog && this.portals[3] != null)
+                if (!this.isFog && this.portals[3] != null)
             {
                 line[2] += "　↑　";
             }

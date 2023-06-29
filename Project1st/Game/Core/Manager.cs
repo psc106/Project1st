@@ -19,6 +19,7 @@ namespace Project1st.Game.Core
 
         public static DB db;
         public static Random random;
+        public static Coordinate currFieldPos;
 
         public static void Instance()
         {
@@ -30,6 +31,7 @@ namespace Project1st.Game.Core
             map = new WorldMap();
             buffer = new BufferPrinter();
             player = new Player();
+            currFieldPos = new Coordinate(1, 1);
 
         }
     }

@@ -17,25 +17,23 @@ namespace Project1st.Game.Core
         int[] axisY = { 0, 0, -1, 1 };
 
         string[] line;
-        Coordinate currFieldPos;
 
         public Core()
         {
             GameManger.Instance();
 
-            Console.WindowWidth = 100;
+            Console.WindowWidth = 200;
             Console.WindowHeight = GameManger.buffer._BUFFER_SIZE;
 
             line = new string[GameManger.buffer._BUFFER_SIZE];
 
             GameManger.player.Axis2D.x = 1;
             GameManger.player.Axis2D.y = 1;
-            currFieldPos = new Coordinate(1, 1);
 
             //테스트 코드
-            WorldMap.testPos = currFieldPos;
+            WorldMap.testPos = GameManger.currFieldPos;
 
-            GameManger.currField = GameManger.map.worldMap[currFieldPos.y, currFieldPos.x];
+            GameManger.currField = GameManger.map.worldMap[GameManger.currFieldPos.y, GameManger.currFieldPos.x];
         }
 
         public void Start()
@@ -67,10 +65,10 @@ namespace Project1st.Game.Core
                 GameManger.currField.ReturnSelfToTown().Enter();
             }
 
+
+            Console.CursorVisible = false;
             while (true)
             {
-                Console.CursorVisible = false;
-
                 isMove = false;
                 isAttack = false;
                 isYes = false;
@@ -133,17 +131,197 @@ namespace Project1st.Game.Core
                     //이동
                     if (isMove)
                     {
-                        isStun = GameManger.currField.Move(currFieldPos);
+                        if (!GameManger.currField.isMenu)
+                        {
+                            isStun = GameManger.currField.Move(GameManger.currFieldPos);
+                        }
+                        else
+                        {
+                            if (GameManger.map.isInventory)
+                            {
+                                //GameManger.map.cursor.x = GameManger.map.cursor.x + axisX[GameManger.player.direction];
+                                GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
+
+                                //구매창
+                                if (GameManger.player.inventory.Count > 10)
+                                {
+                                    if (GameManger.map.cursor.y < 0)
+                                    {
+                                        GameManger.map.cursor.y = 0;
+                                        GameManger.player.startInventoryIndex -= 1;
+                                        if (GameManger.player.startInventoryIndex < 0)
+                                        {
+                                            GameManger.player.startInventoryIndex = 0;
+                                        }
+                                    }
+                                    else if (GameManger.map.cursor.y >= 10)
+                                    {
+                                        GameManger.map.cursor.y = 9;
+                                        GameManger.player.startInventoryIndex += 1;
+                                        if (GameManger.player.inventory.Count - GameManger.player.startInventoryIndex < 10)
+                                        {
+                                            GameManger.player.startInventoryIndex = GameManger.player.inventory.Count - 10;
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (GameManger.map.cursor.y < 0)
+                                    {
+                                        GameManger.map.cursor.y = 0;
+                                    }
+                                    else if (GameManger.map.cursor.y >= GameManger.player.inventory.Count)
+                                    {
+                                        GameManger.map.cursor.y = GameManger.player.inventory.Count - 1;
+                                    }
+                                }
+
+                            }
+                            else if (GameManger.map.isEquip)
+                            {
+                                GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
+                                if (GameManger.map.cursor.y < 0)
+                                {
+                                    GameManger.map.cursor.y = 3;
+                                }
+                                else if (GameManger.map.cursor.y > 3)
+                                {
+                                    GameManger.map.cursor.y = 0;
+                                }
+                            }
+                            else
+                            {
+                                GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
+                                if (GameManger.map.cursor.y < 0)
+                                {
+                                    GameManger.map.cursor.y = 3;
+                                }
+                                else if (GameManger.map.cursor.y > 3)
+                                {
+                                    GameManger.map.cursor.y = 0;
+                                }
+                            }
+                        }
                     }
 
                     //메뉴창
                     if (isNo)
                     {
+                        if (!GameManger.currField.isMenu)
+                        {
+                            GameManger.map.isInventory = false;
+                            GameManger.map.isEquip = false;
+
+                            GameManger.currField.isMenu = true;
+                            GameManger.currField.StopEnemies();
+                            GameManger.currField.ReturnSelfToForest().createTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+                            GameManger.player.startInventoryIndex = 0;
+                            GameManger.map.cursor = new Coordinate(0, 0);
+                        }
+
+                        else
+                        {
+                            if (GameManger.map.isInventory)
+                            {
+                                GameManger.map.isInventory = false;
+                                GameManger.player.startInventoryIndex = 0;
+                                GameManger.map.cursor = new Coordinate(0, 0);
+                                continue;
+                            }
+                            if (GameManger.map.isEquip)
+                            {
+                                GameManger.map.isEquip = false;
+                                GameManger.player.startInventoryIndex = 0;
+                                GameManger.map.cursor = new Coordinate(0, 0);
+                                continue;
+                            }
+
+                            GameManger.currField.isMenu = false;
+                            GameManger.currField.PlayEnemies();
+                            GameManger.currField.ReturnSelfToForest().createTimer.Change(100, 10000);
+                        }
                     }
 
                     //공격
                     if (isYes)
                     {
+                        if (!GameManger.currField.isMenu) 
+                        {
+                            if (!GameManger.player.isMeleeDelay)
+                            {
+                                GameManger.player.isMeleeDelay = true;
+                                GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, 1000, 0);
+
+                                int nextX = GameManger.player.Hold(GameManger.player.GetNextX(GameManger.player.direction), FieldBase._FIELD_SIZE);
+                                int nextY = GameManger.player.Hold(GameManger.player.GetNextY(GameManger.player.direction), FieldBase._FIELD_SIZE);
+
+                                GameManger.player.Effects.Add(new Effect(nextX, nextY, 0));
+                            
+
+                                //적 공격
+                                Enemy currEnemy = GameManger.currField.FindEnemiesAt(nextX, nextY);
+                                if (currEnemy != null)
+                                {
+                                    if (currEnemy.isLive)
+                                    {
+                                        currEnemy.hitPoint -= currEnemy.hitPoint;
+                                        if (currEnemy.hitPoint <= 0)
+                                        {
+                                            GameManger.currField.RemoveEnemy(nextX, nextY);
+
+                                            if (GameManger.currField.GetEnemies().Count == 0)
+                                            {
+                                                isWin = true;
+                                            }
+                                        }
+                                    }
+                                    continue;
+                                }
+
+
+                                //벽 공격
+                                if (GameManger.currField.fieldInfo[nextY, nextX] == FieldBase.field_info.tree)
+                                {
+                                    GameManger.currField.fieldInfo[nextY, nextX] = 0;
+                                    continue;
+                                }
+
+                                //함정 공격
+                                if (GameManger.currField.fieldInfo[nextY, nextX] == FieldBase.field_info.mud)
+                                {
+                                    GameManger.currField.fieldInfo[nextY, nextX] = 0;
+
+                                    continue;
+                                }
+
+                            }
+                        }
+                    
+                        if (GameManger.currField.isMenu)
+                        {
+                            if (!GameManger.map.isInventory && !GameManger.map.isEquip && GameManger.map.cursor.y == 1)
+                            {
+                                GameManger.map.isMinimap = !GameManger.map.isMinimap;
+
+                                GameManger.currField.isMenu = false;
+                            }
+
+                            if (!GameManger.map.isInventory && GameManger.map.cursor.y == 0)
+                            {
+                                GameManger.map.isInventory = true;
+                                GameManger.player.startInventoryIndex = 0;
+                                GameManger.map.cursor = new Coordinate(0, 0);
+                            }
+
+                            if (!GameManger.map.isEquip && GameManger.map.cursor.y == 2)
+                            {
+                                GameManger.map.isEquip = true;
+                                GameManger.player.startInventoryIndex = 0;
+                                GameManger.map.cursor = new Coordinate(0, 0);
+                            }
+                        }
                     }
                 }
 
@@ -314,12 +492,14 @@ namespace Project1st.Game.Core
                             if (GameManger.currField.portals[currTown.cursorPosition.y] != null)
                             {
 
-                                currFieldPos.y += axisY[currTown.cursorPosition.y];
-                                currFieldPos.x += axisX[currTown.cursorPosition.y];
+                                GameManger.currFieldPos.y += axisY[currTown.cursorPosition.y];
+                                GameManger.currFieldPos.x += axisX[currTown.cursorPosition.y];
+                                GameManger.currField.isFog = false;
+                                GameManger.currField.isCurrField = false;
 
                                 currTown.Exit();
 
-                                GameManger.currField = GameManger.map.worldMap[currFieldPos.y, currFieldPos.x];
+                                GameManger.currField = GameManger.map.worldMap[GameManger.currFieldPos.y, GameManger.currFieldPos.x];
 
                                 if (currTown.cursorPosition.y == 0)
                                 {
@@ -397,15 +577,18 @@ namespace Project1st.Game.Core
                     //원거리 공격
                     if (isNo)
                     {
-                        if (GameManger.player.bulletCount < GameManger.player.bulletCountMax)
+                        if (GameManger.player.direction >= 0 && GameManger.player.direction <= 3)
                         {
-                            if (!GameManger.player.isRangeDelay)
+                            if (GameManger.player.bulletCount < GameManger.player.bulletCountMax)
                             {
-                                GameManger.player.isRangeDelay = true;
-                                GameManger.player.rangeDelay = new Timer(GameManger.player.DelayRangeTimer, null, 300, 0);
+                                if (!GameManger.player.isRangeDelay)
+                                {
+                                    GameManger.player.isRangeDelay = true;
+                                    GameManger.player.rangeDelay = new Timer(GameManger.player.DelayRangeTimer, null, 300, 0);
 
-                                GameManger.player.Effects.Add(new Effect(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1, GameManger.player.direction));
-                                GameManger.player.bulletCount += 1;
+                                    GameManger.player.Effects.Add(new Effect(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1, GameManger.player.direction));
+                                    GameManger.player.bulletCount += 1;
+                                }
                             }
                         }
                     }
