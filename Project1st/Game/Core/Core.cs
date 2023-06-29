@@ -372,6 +372,16 @@ namespace Project1st.Game.Core
                                 }
                                 else
                                 {
+                                    //마차구매시
+                                    if (item.itemId == 3)
+                                    {
+                                        GameManger.player.wagonList.Add(new Wagon());
+                                        GameManger.player.maxWeight += 100;
+                                        currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate);
+                                        GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate);
+                                        continue;
+                                    }
+
                                     //무게 증가
                                     GameManger.player.weight += item.weight;
 

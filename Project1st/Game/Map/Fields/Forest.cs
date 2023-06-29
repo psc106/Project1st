@@ -661,6 +661,13 @@ namespace Project1st.Game.Map.Fields
                 new Battle(GameManger.currField.ReturnSelfToForest());
             }
 
+            Wagon wagon = GameManger.player.wagonList.Find(x=>x.Axis2D.x==currX && x.Axis2D.y == currY);
+            if (wagon != null)
+            {
+                GameManger.player.wagonList.Remove(wagon);
+                GameManger.player.maxWeight -= 100;
+            }
+
             GameManger.player.RemoveFog();
 
             if (!isHold)

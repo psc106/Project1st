@@ -59,7 +59,7 @@ namespace Project1st.Game.GameObject
             isRangeDelay = false;
             maxWeight = 50;
             weight = 0;
-            gold = 230;
+            gold = 23000;
             bulletCountMax = 3;
             weapon = 0;
             light = 5;

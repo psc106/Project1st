@@ -74,7 +74,7 @@ namespace Project1st.Game.Map.Fields
             shop.Add(GameManger.db.database[0]);
             shop.Add(GameManger.db.database[1]);
             shop.Add(GameManger.db.database[2]);
-           // shop.Add(GameManger.db.database[3]);
+            shop.Add(GameManger.db.database[3]);
 
             //무기
             int count = GameManger.random.Next(3);
@@ -258,9 +258,17 @@ namespace Project1st.Game.Map.Fields
                     if (y == 30)
                     {
                         line[30] = "\t";
-                        line[30] += GameManger.currField.ReturnSelfToTown().gold;
+                        line[30] += $"{ GameManger.currField.ReturnSelfToTown().gold, 8}";
                         line[30] += "\t\t\t\t\t\t";
-                        line[30] += GameManger.player.gold;
+                        line[30] += $"{GameManger.player.gold,8}";
+                        line[y] += "\t\t";
+                    }
+                    if (y == 31)
+                    {
+                        line[31] = "\t";
+                        line[31] += "\t\t\t\t\t\t\t ";
+                        line[31] += $"{GameManger.player.weight, 4}"+"/";
+                        line[31] += $"{GameManger.player.maxWeight,-4}";
                         line[y] += "\t\t";
                     }
 
