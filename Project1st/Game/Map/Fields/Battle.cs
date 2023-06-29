@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Project1st.Game.Map.Fields
@@ -228,6 +229,10 @@ namespace Project1st.Game.Map.Fields
 
         public override string[] ConvertMapToString(ref string[] line)
         {
+            for (int y = 0; y < GameManger.buffer._BUFFER_SIZE; y++)
+            {
+                line[y] = "";
+            }
 
             for (int y = 0; y < FieldBase._FIELD_SIZE; y++)
             {
@@ -237,18 +242,46 @@ namespace Project1st.Game.Map.Fields
                     //이펙트 1순위
                     if (GameManger.player.Effects != null && GameManger.player.Effects.Count > 0)
                     {
-                        Effect currEffect = GameManger.player.Effects.FindAll(effect => (effect.Axis2D.x == x && effect.Axis2D.y == y)).FirstOrDefault();
-                        if (currEffect != null)
+                        List<Effect> currEffect;
+
+                        try
                         {
-                            if (currEffect.isRemove)
+                             currEffect = GameManger.player.Effects.FindAll(effect => (effect.Axis2D.x == x && effect.Axis2D.y == y));
+                        }
+                        catch
+                        {
+                             currEffect = new List<Effect>();
+                        }
+
+                        foreach (Effect tmpEffect in currEffect)
+                        {
+                            if (tmpEffect != null)
                             {
-                                GameManger.player.Effects.Remove(currEffect);
+                                if (tmpEffect.isRemove)
+                                {
+                                    GameManger.player.Effects.Remove(tmpEffect);
+                                }
+                                else
+                                {
+                                    continue;
+                                }
                             }
-                            else
+                        }
+                        Effect firstEffect = currEffect.FirstOrDefault();
+                        if (firstEffect != null)
+                        {
+                            if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y) continue;
+
+
+                            line[y] += ".11." + Effect.effectString[firstEffect.type] + ".";
+                            if (firstEffect.type != 4)
                             {
-                                line[y] += ".11." + Effect.effectString[currEffect.type] + ".";
-                                continue;
+                                GameManger.player.Effects.Remove(firstEffect);
                             }
+                            continue;
+                        }
+                        else
+                        {
                         }
                     }
 
@@ -381,7 +414,7 @@ namespace Project1st.Game.Map.Fields
                         switch (fieldInfo[y, x])
                         {
                             case FieldBase.field_info.empty:
-                                line[y] += "ㄹ.";
+                                line[y] += "　.";
                                 break;
                             case FieldBase.field_info.mud:
                                 line[y] += "＊.";

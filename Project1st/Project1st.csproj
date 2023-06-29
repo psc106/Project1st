@@ -59,6 +59,7 @@
     <Compile Include="Game\Map\Fields\Ending.cs" />
     <Compile Include="Game\Map\Fields\FieldBase.cs" />
     <Compile Include="Game\Map\Fields\Forest.cs" />
+    <Compile Include="Game\Map\Fields\Menu.cs" />
     <Compile Include="Game\Map\Fields\Town.cs" />
     <Compile Include="Game\Map\Map.cs" />
     <Compile Include="Game\Utility.cs" />

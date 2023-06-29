@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
+using Project1st.Game.Item;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,6 +21,7 @@ namespace Project1st.Game.Map.Fields
 
         public Forest()
         {
+            isMenu = false;
             type = 1;
             int wallCount = 60;
             int wallSleep = 2;
@@ -53,6 +55,7 @@ namespace Project1st.Game.Map.Fields
 
         public Forest(int flag)
         {
+            isMenu = false;
             type = 1;
             int wallCount = 60;
             int wallSleep = 2;
@@ -200,12 +203,36 @@ namespace Project1st.Game.Map.Fields
 
         public override string[] ConvertMapToString(ref string[] line)
         {
+            for (int y = 0; y < GameManger.buffer._BUFFER_SIZE; y++)
+            {
+                line[y] = "";
+            }
 
             for (int y = 0; y < FieldBase._FIELD_SIZE; y++)
             {
                 line[y] = "";
                 for (int x = 0; x < FieldBase._FIELD_SIZE; x++)
                 {
+                    if (GameManger.player.Effects != null && GameManger.player.Effects.Count > 0)
+                    {
+                        List<Effect> currEffect;
+
+                        currEffect = GameManger.player.Effects.FindAll(effect => (effect.Axis2D.x == x && effect.Axis2D.y == y));
+                        Effect firstEffect = currEffect.FirstOrDefault();
+                        if (firstEffect != null)
+                        {
+                            line[y] += ".11." + Effect.effectString[firstEffect.type] + ".";
+                            if (firstEffect.type != 4)
+                            {
+                                GameManger.player.Effects.Remove(firstEffect);
+                            }
+                            continue;
+                        }
+                        else
+                        {
+                        }
+                    }
+
                     if (fogInfo[y, x] == 1)
                     {
                         //적 2순위
@@ -294,7 +321,7 @@ namespace Project1st.Game.Map.Fields
 
                     //마차 4순위
                     Wagon wagon = GameManger.player.wagonList.Find(tmp => tmp.Axis2D.x == x && tmp.Axis2D.y == y);
-                    if (wagon!=null)
+                    if (wagon != null)
                     {
                         line[y] += ".9.ㅇ.";
                         continue;
@@ -336,7 +363,7 @@ namespace Project1st.Game.Map.Fields
                         switch (fieldInfo[y, x])
                         {
                             case FieldBase.field_info.empty:
-                                line[y] += "ㄹ.";
+                                line[y] += "　.";
                                 break;
                             case FieldBase.field_info.mud:
                                 line[y] += "＊.";
@@ -367,17 +394,100 @@ namespace Project1st.Game.Map.Fields
                                 line[y] += "■.";
                                 break;
                         }
-
                     }
-
-
-
                 }
-
-
-                line[y] += "  ";
             }
 
+            for (int y = 0; y < GameManger.buffer._BUFFER_SIZE; y++)
+            {
+                if (line[y].Length < FieldBase._FIELD_SIZE)
+                {
+                    for (int i = line[y].Length; i < FieldBase._FIELD_SIZE; i++)
+                    {
+                        line[y] += "．";
+                    }
+                }
+            }
+
+            if (!GameManger.currField.isMenu)
+            {
+                if (GameManger.map.isMinimap)
+                {
+                    for (int y = 0; y < WorldMap._MAP_SIZE; y++)
+                    {
+                        for (int x = 0; x < WorldMap._MAP_SIZE; x++)
+                        {
+                            string[] tmp = GameManger.map.worldMap[y, x].MakeRoomToString();
+                            line[y * 3] += tmp[0];
+                            line[y * 3 + 1] += tmp[1];
+                            line[y * 3 + 2] += tmp[2];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (GameManger.map.isInventory)
+                {
+                    for (int y = 0; y < 15; y++)
+                    {
+                        //구매창
+                        if (y == GameManger.map.cursor.y)
+                        {
+                            line[y] += "▶";
+                        }
+                        else
+                        {
+                            line[y] += "　";
+                        }
+
+                        if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 10)
+                        {
+                            Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
+                            line[y] += y + GameManger.player.startInventoryIndex + ") ";
+                            line[y] += item.name + " ";
+                            line[y] += item.price;
+                            line[y] += item.count;
+                            line[y] += "\t\t\t";
+                        }
+                    }
+
+                }
+                else if (GameManger.map.isEquip)
+                {
+                }
+                else
+                {
+                    for (int y = 0; y < 3; y++)
+                    {
+                        if (y == GameManger.map.cursor.y)
+                        {
+                            line[y] += "▶";
+                        }
+                        else
+                        {
+                            line[y] += "　";
+                        }
+                    }
+
+                    line[0] += "인벤토리";
+                    if (GameManger.map.isMinimap)
+                    {
+                        line[1] += "미니맵 off";
+                    }
+                    else
+                    {
+                        line[1] += "미니맵 on";
+                    }
+                    line[2] += "장비";
+                }
+
+            }
+
+            for (int y = 0; y < GameManger.buffer._BUFFER_SIZE; y++)
+            {
+                 line[y] += "\t\t\t\t\t\t\t\t\t";
+            }
             return line;
         }
 
@@ -409,6 +519,7 @@ namespace Project1st.Game.Map.Fields
 
         public override bool Move(Coordinate axis)
         {
+
             bool isHold = false;
             bool isStun = false;
 
@@ -417,8 +528,6 @@ namespace Project1st.Game.Map.Fields
 
             int currX = GameManger.player.Hold(GameManger.player.GetNextX(GameManger.player.direction), FieldBase._FIELD_SIZE);
             int currY = GameManger.player.Hold(GameManger.player.GetNextY(GameManger.player.direction), FieldBase._FIELD_SIZE);
-
-
 
             for (int y = 0; y < FieldBase._FIELD_SIZE; y++)
             {
@@ -437,7 +546,7 @@ namespace Project1st.Game.Map.Fields
                 GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.road)
             {
                 isHold = GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
-                
+
             }
 
             //수풀로 이동
@@ -447,9 +556,13 @@ namespace Project1st.Game.Map.Fields
                 if (GameManger.random.Next(1, 101) <= 5)
                 {
                     GameManger.player.direction = 4;
+                    if (GameManger.player.inventory.Count > 0)
+                    {
+                        GameManger.player.inventory[GameManger.random.Next(GameManger.player.inventory.Count)].quality -= 0.01f * GameManger.random.Next(5);
+                    }
                     isStun = true;
                 }
-                
+
             }
             //벽으로 이동
             else if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.tree ||

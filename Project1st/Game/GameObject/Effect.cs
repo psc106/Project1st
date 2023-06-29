@@ -53,6 +53,7 @@ namespace Project1st.Game.GameObject
             int nextY = this.GetNextY(direction);
 
             if (nextX == -1 || nextY == -1 || nextX == FieldBase._FIELD_SIZE || nextY == FieldBase._FIELD_SIZE||
+                GameManger.currField.GetElementAt(nextX, nextY) == FieldBase.field_info.tree ||
                 GameManger.currField.GetElementAt(nextX, nextY) == FieldBase.field_info.wall)
             {
                 bulletTimer.Dispose();
@@ -61,8 +62,9 @@ namespace Project1st.Game.GameObject
                 return;
             }
 
-            if (GameManger.currField.GetElementAt(nextX, nextY) != FieldBase.field_info.wall &&
-                            GameManger.currField.FindEnemiesAt(nextX, nextY) == null)
+            if ((GameManger.currField.GetElementAt(nextX, nextY) != FieldBase.field_info.road ||
+                 GameManger.currField.GetElementAt(nextX, nextY) == FieldBase.field_info.empty) &&
+                 GameManger.currField.FindEnemiesAt(nextX, nextY) == null)
             {
                 this.Axis2D.x = nextX;
                 this.Axis2D.y = nextY;
