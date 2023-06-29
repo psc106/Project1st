@@ -50,6 +50,7 @@ namespace Project1st.Game.Map.Fields
 
         public Town(FieldBase field)
         {
+            isFog = field.isFog;
             gold = 2000;
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
@@ -73,12 +74,13 @@ namespace Project1st.Game.Map.Fields
             shop.Add(GameManger.db.database[0]);
             shop.Add(GameManger.db.database[1]);
             shop.Add(GameManger.db.database[2]);
+           // shop.Add(GameManger.db.database[3]);
 
             //무기
             int count = GameManger.random.Next(3);
             for (int i = 0; i < count; i++)
             {
-                int id = GameManger.random.Next(3, 9);
+                int id = GameManger.random.Next(4, 10);
                 if (shop.Find(x => x.itemId == id)==null)
                 {
                     shop.Add(GameManger.db.database[id]);
@@ -89,7 +91,7 @@ namespace Project1st.Game.Map.Fields
             count = GameManger.random.Next(2, 7);
             for (int i = 0; i < count; i++)
             {
-                int id = GameManger.random.Next(9, 51);
+                int id = GameManger.random.Next(10, 51);
                 if (shop.Find(x => x.itemId == id) == null)
                 {
                     shop.Add(GameManger.db.database[id]);

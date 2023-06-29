@@ -61,19 +61,5 @@ namespace Project1st.Game.Item
             this.quality = other.qualityMax;
         }
 
-        public static List<Items> CreateStandard()
-        {
-            List<Items> return_ = new List<Items>();
-
-            Items standard1 = new Items(0, 0, "포션", 100, int.MaxValue, 0);
-            Items standard2 = new Items(1, 0, "장작", 30, int.MaxValue, 10);
-            Items standard3 = new Items(2, 0, "수리도구", 70, int.MaxValue, 5);
-
-            return_.Add(standard1);
-            return_.Add(standard2);
-            return_.Add(standard3);
-
-            return return_;
-        }
     }
 }

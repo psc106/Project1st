@@ -20,23 +20,23 @@ namespace Project1st.Game.DataBase
         public void PutData()
         {
 
-            //기본 사용도구 0~2 3
+            //기본 사용도구 0~3 4
             database.Add(0, new Items(0, 0, "포션", 100, int.MaxValue, 1));
             database.Add(1, new Items(1, 0, "장작", 30, int.MaxValue, 3));
             database.Add(2, new Items(2, 0, "수리도구", 70, int.MaxValue, 5));
+            database.Add(3, new Items(2, 0, "", 70, int.MaxValue, 5));
 
-            //장비 3~8 6
-            database.Add(3, new Items(3, 1, "검", 600, 10, 4));
+            //장비 4~9 6
+            database.Add(9, new Items(3, 1, "검", 600, 10, 4));
             database.Add(4, new Items(4, 1, "대검", 1050, 10, 10));
             database.Add(5, new Items(5, 1, "창", 400, 10, 6));
             database.Add(6, new Items(6, 1, "도끼", 600, 10, 8));
             database.Add(7, new Items(7, 1, "단검", 150, 10, 2));
             database.Add(8, new Items(8, 1, "망치", 540, 10, 20));
 
-            //사치품? 9 ~50 42
-            database.Add(9, new Items(9, 2, "사과", 12, 1, 1));
+            //사치품? 10 ~50 41
             database.Add(10, new Items(10, 2, "책", 250, 1, 2));
-            database.Add(11, new Items(11, 2, "지팡이", 220, 1, 1));
+            database.Add(11, new Items(9, 2, "사과", 12, 1, 1));
             database.Add(12, new Items(12, 2, "갑옷", 301, 1, 20));
             database.Add(13, new Items(13, 2, "투구", 120, 1, 6));
             database.Add(14, new Items(14, 2, "장갑", 82, 1, 5));
