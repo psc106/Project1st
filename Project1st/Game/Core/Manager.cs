@@ -24,11 +24,13 @@ namespace Project1st.Game.Core
         {
             random = new Random();
 
+            db = new DB();
+            db.PutData();
+
             map = new WorldMap();
             buffer = new BufferPrinter();
             player = new Player();
 
-           db = new DB();
         }
     }
 }

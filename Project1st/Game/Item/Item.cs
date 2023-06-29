@@ -43,7 +43,7 @@ namespace Project1st.Game.Item
             this.weight = weight;
             this.isOwn = true;
 
-            this.count = GameManger.random.Next(3);
+            this.count = GameManger.random.Next(1, 10);
             this.quality = qualityMax;
         }
 

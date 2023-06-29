@@ -15,12 +15,17 @@ namespace Project1st.Game.DataBase
         {
             database = new Dictionary<int, Items>();
 
-            //기본 사용도구
+        }
+
+        public void PutData()
+        {
+
+            //기본 사용도구 0~2 3
             database.Add(0, new Items(0, 0, "포션", 100, int.MaxValue, 1));
             database.Add(1, new Items(1, 0, "장작", 30, int.MaxValue, 3));
             database.Add(2, new Items(2, 0, "수리도구", 70, int.MaxValue, 5));
 
-            //장비
+            //장비 3~8 6
             database.Add(3, new Items(3, 1, "검", 600, 10, 4));
             database.Add(4, new Items(4, 1, "대검", 1050, 10, 10));
             database.Add(5, new Items(5, 1, "창", 400, 10, 6));
@@ -28,9 +33,9 @@ namespace Project1st.Game.DataBase
             database.Add(7, new Items(7, 1, "단검", 150, 10, 2));
             database.Add(8, new Items(8, 1, "망치", 540, 10, 20));
 
-            //사치품?
-            database.Add(9, new Items(9,2,"사과", 2, 1, 1));
-            database.Add(10, new Items(10,2, "책", 250, 1, 2));
+            //사치품? 9 ~50 42
+            database.Add(9, new Items(9, 2, "사과", 12, 1, 1));
+            database.Add(10, new Items(10, 2, "책", 250, 1, 2));
             database.Add(11, new Items(11, 2, "지팡이", 220, 1, 1));
             database.Add(12, new Items(12, 2, "갑옷", 301, 1, 20));
             database.Add(13, new Items(13, 2, "투구", 120, 1, 6));
@@ -39,8 +44,8 @@ namespace Project1st.Game.DataBase
             database.Add(16, new Items(16, 2, "망토", 340, 1, 14));
             database.Add(17, new Items(17, 2, "향신료", 152, 1, 1));
             database.Add(18, new Items(18, 2, "소금", 60, 1, 1));
-            database.Add(19, new Items(19, 2, "수박", 4, 1, 2));
-            database.Add(20, new Items(20, 2, "감자", 1, 1, 1));
+            database.Add(19, new Items(19, 2, "수박", 14, 1, 2));
+            database.Add(20, new Items(20, 2, "감자", 11, 1, 1));
             database.Add(21, new Items(21, 2, "마법석", 1507, 1, 2));
             database.Add(22, new Items(22, 2, "허리띠", 60, 1, 1));
             database.Add(23, new Items(23, 2, "목걸이", 105, 1, 1));
@@ -67,10 +72,12 @@ namespace Project1st.Game.DataBase
             database.Add(44, new Items(44, 2, "비누", 77, 1, 1));
             database.Add(45, new Items(45, 2, "무", 23, 1, 2));
             database.Add(46, new Items(46, 2, "가방", 127, 1, 8));
-            database.Add(47, new Items(47, 2, "칫솔", 3, 1, 1));
+            database.Add(47, new Items(47, 2, "칫솔", 13, 1, 1));
             database.Add(48, new Items(48, 2, "보약", 3005, 1, 6));
             database.Add(49, new Items(49, 2, "가면", 123, 1, 2));
             database.Add(50, new Items(50, 2, "화장품", 236, 1, 1));
+
+            database.Add(100, new Items(100, 3, "땅문서", 100000, int.MaxValue, 0));
 
         }
     }

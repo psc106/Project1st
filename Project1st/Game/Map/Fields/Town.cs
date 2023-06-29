@@ -50,7 +50,7 @@ namespace Project1st.Game.Map.Fields
 
         public Town(FieldBase field)
         {
-            gold = 8000;
+            gold = 2000;
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
             type = 2;
@@ -67,12 +67,46 @@ namespace Project1st.Game.Map.Fields
 
                 }
             }
-            for (int i = 0; i < 60; i++)
+
+
+            //기본 판매 아이템
+            shop.Add(GameManger.db.database[0]);
+            shop.Add(GameManger.db.database[1]);
+            shop.Add(GameManger.db.database[2]);
+
+            //무기
+            int count = GameManger.random.Next(3);
+            for (int i = 0; i < count; i++)
             {
-                priceRate.Add(i, new PriceRate());
+                int id = GameManger.random.Next(3, 9);
+                if (shop.Find(x => x.itemId == id)==null)
+                {
+                    shop.Add(GameManger.db.database[id]);
+                }
             }
 
+            //판매물품
+            count = GameManger.random.Next(2, 7);
+            for (int i = 0; i < count; i++)
+            {
+                int id = GameManger.random.Next(9, 51);
+                if (shop.Find(x => x.itemId == id) == null)
+                {
+                    shop.Add(GameManger.db.database[id]);
+                }
+            }
 
+            for (int i = 0; i < 60; i++)
+            {
+                if (shop.Find(x => x.itemId == i) == null)
+                {
+                    priceRate.Add(i, new PriceRate(.5f));
+                }
+                else
+                {
+                    priceRate.Add(i, new PriceRate(1.1f));
+                }
+            }
         }
 
         public void Init()
@@ -169,7 +203,7 @@ namespace Project1st.Game.Map.Fields
                         Items item = shop[y + startShopIndex];
                         line[y] += y + startShopIndex + ") ";
                         line[y] += item.name + " ";
-                        line[y] += (int)(item.price * priceRate[item.itemId].rate) + " ";
+                        line[y] += (int)(item.price * priceRate[item.itemId].currRate) + " ";
                         line[y] += item.count;
                         line[y] += "\t\t\t";
                     }
@@ -196,7 +230,7 @@ namespace Project1st.Game.Map.Fields
                         Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
                         line[y] += y + GameManger.player.startInventoryIndex + ") ";
                         line[y] += item.name + " ";
-                        line[y] += (int)(item.price * priceRate[item.itemId].rate*0.7f) + " ";
+                        line[y] += (int)(item.price * priceRate[item.itemId].currRate * 0.7f) + " ";
                         line[y] += item.count;
                         line[y] += "\t\t";
 
@@ -413,9 +447,27 @@ namespace Project1st.Game.Map.Fields
             }
             else if (mainPosition == 2)
             {
+                cursorPosition.y = cursorPosition.y + axisY[GameManger.player.direction];
+                if (cursorPosition.y < 0)
+                {
+                    cursorPosition.y = 1;
+                }
+                else if (cursorPosition.y > 1)
+                {
+                    cursorPosition.y = 0;
+                }
             }
             else if (mainPosition == 3)
             {
+                cursorPosition.y = cursorPosition.y + axisY[GameManger.player.direction];
+                if (cursorPosition.y < 0)
+                {
+                    cursorPosition.y = 0;
+                }
+                else if (cursorPosition.y > 0)
+                {
+                    cursorPosition.y = 0;
+                }
             }
             else if (mainPosition == 4)
             {
