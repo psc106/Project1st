@@ -444,11 +444,20 @@ namespace Project1st.Game.Map.Fields
                         if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 10)
                         {
                             Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
-                            line[y] += y + GameManger.player.startInventoryIndex + ") ";
-                            line[y] += item.name + " ";
-                            line[y] += item.price;
-                            line[y] += item.count;
-                            line[y] += "\t\t\t";
+
+                            line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
+                            line[y] += $"{item.name,-6}";
+                                line[y] += $"{item.price,-6:N0} ";
+                            line[y] += $"{item.count,-3}";
+                            if (item.type == 2)
+                            {
+                                line[y] += $"{(int)(item.quality * 100),3}" + "%";
+                            }
+                            else
+                            {
+                                line[y] += "∞";
+                            }
+                            line[y] += "\t\t\t\t\t";
                         }
                     }
 
@@ -470,16 +479,16 @@ namespace Project1st.Game.Map.Fields
                         }
                     }
 
-                    line[0] += "인벤토리";
+                    line[0] += "인벤토리\t\t\t\t";
                     if (GameManger.map.isMinimap)
                     {
-                        line[1] += "미니맵 off";
+                        line[1] += "미니맵 off\t\t\t";
                     }
                     else
                     {
-                        line[1] += "미니맵 on";
+                        line[1] += "미니맵 on\t\t\t";
                     }
-                    line[2] += "장비";
+                    line[2] += "장비\t\t\t\t\t\t";
                 }
 
             }

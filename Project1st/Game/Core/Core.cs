@@ -47,13 +47,11 @@ namespace Project1st.Game.Core
             GameManger.currField.isCurrField = true;
 
             bool isWin = false;
-            bool isLose = false;
             bool isQuit = false;
 
             bool isMove = false;
             bool isStun = false;
 
-            bool isAttack = false;
 
             bool isYes = false;
             bool isNo = false;
@@ -70,7 +68,7 @@ namespace Project1st.Game.Core
             while (true)
             {
                 isMove = false;
-                isAttack = false;
+                
                 isYes = false;
                 isNo = false;
 
@@ -183,9 +181,9 @@ namespace Project1st.Game.Core
                                 GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
                                 if (GameManger.map.cursor.y < 0)
                                 {
-                                    GameManger.map.cursor.y = 3;
+                                    GameManger.map.cursor.y = 2;
                                 }
-                                else if (GameManger.map.cursor.y > 3)
+                                else if (GameManger.map.cursor.y > 2)
                                 {
                                     GameManger.map.cursor.y = 0;
                                 }
@@ -195,9 +193,9 @@ namespace Project1st.Game.Core
                                 GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
                                 if (GameManger.map.cursor.y < 0)
                                 {
-                                    GameManger.map.cursor.y = 3;
+                                    GameManger.map.cursor.y = 2;
                                 }
-                                else if (GameManger.map.cursor.y > 3)
+                                else if (GameManger.map.cursor.y > 2)
                                 {
                                     GameManger.map.cursor.y = 0;
                                 }
@@ -417,6 +415,8 @@ namespace Project1st.Game.Core
                                     {
                                         GameManger.player.inventory[itemIndex].count += 1;
                                     }
+
+                                    GameManger.player.inventory.OrderBy(x => x.itemId);
                                 }
                             }
                             //판매
@@ -437,9 +437,18 @@ namespace Project1st.Game.Core
                                     GameManger.player.weight += item.weight;
 
                                     //골드 교환
-                                    currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
-                                    GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
 
+
+                                    if (item.type == 2)
+                                    {
+                                        currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
+                                        GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
+                                    }
+                                    else
+                                    {
+                                        currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7);
+                                        GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7);
+                                    }
                                     //수량 감소
                                     item.count -= 1;
 
@@ -466,6 +475,7 @@ namespace Project1st.Game.Core
                                     {
                                         currTown.shop[itemIndex].count += 1;
                                     }
+                                    currTown.shop.OrderBy(x => x.isOwn==true);
                                 }
                             }
                         }

@@ -165,19 +165,19 @@ namespace Project1st.Game.Map.Fields
                     switch (y)
                     {
                         case 0:
-                            line[y] += " 상점                                                                ";
+                            line[y] += " 상점\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         case 1:
-                            line[y] += " 주점                                                                ";
+                            line[y] += " 주점\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         case 2:
-                            line[y] += " 여관                                                                ";
+                            line[y] += " 여관\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         case 3:
-                            line[y] += " 나가기                                                              ";
+                            line[y] += " 나가기\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         default:
-                            line[y] += "                                                                    ";
+                            line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                     }
                 }
@@ -203,11 +203,17 @@ namespace Project1st.Game.Map.Fields
                     if (y + startShopIndex < shop.Count && y < 30)
                     {
                         Items item = shop[y + startShopIndex];
-                        line[y] += y + startShopIndex + ") ";
-                        line[y] += item.name + " ";
-                        line[y] += (int)(item.price * priceRate[item.itemId].currRate) + " ";
-                        line[y] += item.count;
+                        line[y] += $"{y + startShopIndex + 1,2}" + ")";
+                        line[y] += $"{item.name,-6}";
+                        line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate),-6:N0} ";
+                        line[y] += $"{item.count,-3}";
                         line[y] += "\t\t\t";
+                    }
+                    else
+                    {
+                        line[y] += "\t\t\t\t\t";
+
+
                     }
 
                     //판매창
@@ -230,21 +236,34 @@ namespace Project1st.Game.Map.Fields
                     if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 30)
                     {
                         Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
-                        line[y] += y + GameManger.player.startInventoryIndex + ") ";
-                        line[y] += item.name + " ";
-                        line[y] += (int)(item.price * priceRate[item.itemId].currRate * 0.7f) + " ";
-                        line[y] += item.count;
-                        line[y] += "\t\t";
+                        line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
+                        line[y] += $"{item.name,-6}";
+                        if (item.type == 2)
+                        {
+                            line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate * 0.7f * item.quality),-6:N0} ";
+                        }
+                        else
+                        {
+                            line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate * 0.7f),-6:N0} ";
+                        }
+                        line[y] += $"{item.count,-3}";
+                        line[y] += "\t\t\t";
 
                     }
+                    else
+                    {
+                        line[y] += "\t\t\t\t\t";
 
+                    }
                     if (y == 30)
                     {
-                        line[y] += GameManger.currField.ReturnSelfToTown().gold;
-                        line[y] += "\t\t\t";
-                        line[y] += GameManger.player.gold;
-                        line[y] += "\t\t\t";
+                        line[30] = "\t";
+                        line[30] += GameManger.currField.ReturnSelfToTown().gold;
+                        line[30] += "\t\t\t\t\t\t";
+                        line[30] += GameManger.player.gold;
+                        line[y] += "\t\t";
                     }
+
                 }
                 else if (mainPosition == 2)
                 {
@@ -259,13 +278,13 @@ namespace Project1st.Game.Map.Fields
                     switch (y)
                     {
                         case 0:
-                            line[y] += " 주변 소문                                              ";
+                            line[y] += " 주변 소문\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         case 1:
-                            line[y] += " 위치 확인                                              ";
+                            line[y] += " 위치 확인\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         default:
-                            line[y] += "    ";
+                            line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                     }
                 }
@@ -282,10 +301,10 @@ namespace Project1st.Game.Map.Fields
                     switch (y)
                     {
                         case 0:
-                            line[y] += " 잠자기                                                   ";
+                            line[y] += " 잠자기\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         default:
-                            line[y] += "    ";
+                            line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                     }
                 }
