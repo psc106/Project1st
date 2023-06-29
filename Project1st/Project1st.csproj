@@ -54,6 +54,7 @@
     <Compile Include="Game\GameObject\Player.cs" />
     <Compile Include="Game\GameObject\Wagon.cs" />
     <Compile Include="Game\Item\Item.cs" />
+    <Compile Include="Game\Item\PriceRate.cs" />
     <Compile Include="Game\Map\Fields\Battle.cs" />
     <Compile Include="Game\Map\Fields\Ending.cs" />
     <Compile Include="Game\Map\Fields\FieldBase.cs" />

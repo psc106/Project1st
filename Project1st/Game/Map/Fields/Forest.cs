@@ -444,7 +444,7 @@ namespace Project1st.Game.Map.Fields
             if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.mud)
             {
                 isHold = GameManger.player.MoveAndHold(GameManger.player.direction, FieldBase._FIELD_SIZE, FieldBase._FIELD_SIZE);
-                if (GameManger.random.Next(1, 101) <= 10)
+                if (GameManger.random.Next(1, 101) <= 5)
                 {
                     GameManger.player.direction = 4;
                     isStun = true;

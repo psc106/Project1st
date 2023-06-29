@@ -22,6 +22,8 @@ namespace Project1st.Game.GameObject
         public float maxWeight;
 
         public int weapon;
+        public int bulletCount;
+        public int bulletCountMax;
 
         public bool isMeleeDelay;
         public bool isRangeDelay;
@@ -58,6 +60,7 @@ namespace Project1st.Game.GameObject
             maxWeight = 50;
             weight = 0;
             gold = 230;
+            bulletCountMax = 3;
             weapon = 0;
             light = 5;
             inventory = new List<Items>();
@@ -75,11 +78,11 @@ namespace Project1st.Game.GameObject
             GameManger.currField.SetFogInfo(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1);
 
             int light = GameManger.player.light;
-            if (GameManger.map.isDay)
+            if (GameManger.map.day ==0)
             {
                 light += 3;
             }
-            else
+            else if (GameManger.map.day == 1)
             {
                 light -= 2;
             }

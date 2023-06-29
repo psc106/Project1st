@@ -18,6 +18,8 @@ namespace Project1st.Game.Map.Fields
         public List<Enemy> enemies;
         public float[,] fogInfo;
 
+        public bool isWin;
+
         public Battle(Forest currField)
         {
             type = 3;
@@ -33,6 +35,7 @@ namespace Project1st.Game.Map.Fields
             enemyCount = GameManger.random.Next(7, 13);
             fieldInfo = new field_info[_FIELD_SIZE, _FIELD_SIZE];
             fogInfo = new float[_FIELD_SIZE, _FIELD_SIZE];
+            isWin = false;
 
             for (int y = 0; y < _FIELD_SIZE; y++)
             {
@@ -237,11 +240,18 @@ namespace Project1st.Game.Map.Fields
                         Effect currEffect = GameManger.player.Effects.FindAll(effect => (effect.Axis2D.x == x && effect.Axis2D.y == y)).FirstOrDefault();
                         if (currEffect != null)
                         {
-                            line[y] += ".11." + Effect.effectString[currEffect.type] + ".";
-                            GameManger.player.Effects.Remove(currEffect);
-                            continue;
+                            if (currEffect.isRemove)
+                            {
+                                GameManger.player.Effects.Remove(currEffect);
+                            }
+                            else
+                            {
+                                line[y] += ".11." + Effect.effectString[currEffect.type] + ".";
+                                continue;
+                            }
                         }
                     }
+
                     if (fogInfo[y, x] == 1)
                     {
                         //적 2순위

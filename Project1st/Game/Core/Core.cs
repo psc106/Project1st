@@ -42,7 +42,7 @@ namespace Project1st.Game.Core
         {
 
             //그리기 타이머
-            GameManger.buffer.printTimer = new Timer(PrintMap, line, 100, 100);
+            GameManger.buffer.printTimer = new Timer(SetPrintMap, line, 100, 100);
 
 
             GameManger.currField.isFog = false;
@@ -188,7 +188,7 @@ namespace Project1st.Game.Core
                                 if (item.count == 0)
                                 {
                                 }
-                                else if (GameManger.player.gold < (int)(item.price * currTown.priceRate[item.itemId].rate))
+                                else if (GameManger.player.gold < (int)(item.price * currTown.priceRate[item.itemId].currRate))
                                 {
                                 }
                                 else if (GameManger.player.maxWeight < item.weight + GameManger.player.weight)
@@ -198,25 +198,39 @@ namespace Project1st.Game.Core
                                 {
                                     //무게 증가
                                     GameManger.player.weight += item.weight;
-                                    
+
                                     //골드 교환
-                                    currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].rate);
-                                    GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].rate);
+                                    currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate);
+                                    GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate);
 
                                     //수량 감소
                                     item.count -= 1;
 
-                                    if (!item.isOwn &&item.count == 0)
+                                    if (item.itemId == 100)
                                     {
-                                        currTown.shop.RemoveAt(currTown.cursorPosition.y + currTown.startShopIndex);
-                                        if (currTown.cursorPosition.y + currTown.startShopIndex > currTown.shop.Count)
+
+                                        currTown.Exit();
+
+                                        GameManger.currField = new Ending(2);
+                                    }
+                                    else
+                                    {
+                                        if (!item.isOwn && item.count == 0)
                                         {
-                                            currTown.startShopIndex -= 1;
+                                            currTown.shop.RemoveAt(currTown.cursorPosition.y + currTown.startShopIndex);
+                                            if (currTown.cursorPosition.y + currTown.startShopIndex > currTown.shop.Count)
+                                            {
+                                                currTown.startShopIndex -= 1;
+                                                if (currTown.startShopIndex < 0)
+                                                {
+                                                    currTown.startShopIndex = 0;
+                                                }
+                                            }
                                         }
                                     }
-                                    
+
                                     //퀄리티 max인 같은 아이템에 저장
-                                    int itemIndex = GameManger.player.inventory.FindIndex(x => x.itemId == item.itemId && x.quality==1);
+                                    int itemIndex = GameManger.player.inventory.FindIndex(x => x.itemId == item.itemId && x.quality == 1);
                                     if (itemIndex == -1)
                                     {
                                         GameManger.player.inventory.Add(new Items(item));
@@ -236,7 +250,7 @@ namespace Project1st.Game.Core
                                 if (item.count == 0)
                                 {
                                 }
-                                else if (currTown.gold < (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7))
+                                else if (currTown.gold < (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7))
                                 {
                                 }
                                 else
@@ -245,8 +259,8 @@ namespace Project1st.Game.Core
                                     GameManger.player.weight += item.weight;
 
                                     //골드 교환
-                                    currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7 * item.quality);
-                                    GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].rate * 0.7 * item.quality);
+                                    currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
+                                    GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
 
                                     //수량 감소
                                     item.count -= 1;
@@ -256,7 +270,11 @@ namespace Project1st.Game.Core
                                         GameManger.player.inventory.RemoveAt(currTown.cursorPosition.y + GameManger.player.startInventoryIndex);
                                         if (currTown.cursorPosition.y + currTown.startShopIndex > currTown.shop.Count)
                                         {
-                                            currTown.startShopIndex -= 1;
+                                            GameManger.player.startInventoryIndex -= 1;
+                                            if (GameManger.player.startInventoryIndex < 0)
+                                            {
+                                                GameManger.player.startInventoryIndex = 0;
+                                            }
                                         }
                                     }
 
@@ -270,6 +288,24 @@ namespace Project1st.Game.Core
                                     {
                                         currTown.shop[itemIndex].count += 1;
                                     }
+                                }
+                            }
+                        }
+                        else if (currTown.mainPosition == 2)
+                        {
+                        }
+                        else if (currTown.mainPosition == 3)
+                        {                            
+                            if (currTown.cursorPosition.y == 0){
+                                if (GameManger.player.gold >= 5)
+                                {
+                                    GameManger.map.SetDayTimer(null);
+                                    GameManger.player.hitPoint = GameManger.player.hitPointMax;
+                                    GameManger.player.gold -= 5;
+
+                                    currTown.mainPosition = 0;
+                                    currTown.cursorPosition.x = 0;
+                                    currTown.cursorPosition.y = 0;
                                 }
                             }
                         }
@@ -361,6 +397,17 @@ namespace Project1st.Game.Core
                     //원거리 공격
                     if (isNo)
                     {
+                        if (GameManger.player.bulletCount < GameManger.player.bulletCountMax)
+                        {
+                            if (!GameManger.player.isRangeDelay)
+                            {
+                                GameManger.player.isRangeDelay = true;
+                                GameManger.player.rangeDelay = new Timer(GameManger.player.DelayRangeTimer, null, 300, 0);
+
+                                GameManger.player.Effects.Add(new Effect(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1, GameManger.player.direction));
+                                GameManger.player.bulletCount += 1;
+                            }
+                        }
                     }
 
                     //근접 공격
@@ -446,7 +493,7 @@ namespace Project1st.Game.Core
                         }
                     }
 
-                    if (isWin)
+                    if (!GameManger.currField.ReturnSelfToBattle().isWin && isWin)
                     {
                         GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint = GameManger.player.hitPoint;
                         GameManger.currField.StopEnemies();
@@ -474,7 +521,7 @@ namespace Project1st.Game.Core
             }
         }
 
-        public void PrintMap(Object obj)
+        public void SetPrintMap(Object obj)
         {
             GameManger.currField.ConvertMapToString(ref line);
             if (!GameManger.buffer.isWork)

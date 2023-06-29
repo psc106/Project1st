@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
+using Project1st.Game.Item;
 using Project1st.Game.Map.Fields;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,14 @@ namespace Project1st.Game.Map
         int[] axisX = { 1, -1, 0, 0 };
         int[] axisY = { 0, 0, -1, 1 };
         public FieldBase[,] worldMap;
-        public bool isDay;
+        public int day;
         public Timer dayTimer;
         public static Coordinate testPos;
 
 
         public WorldMap()
         {
-            isDay = true;
+            day = 0;
             worldMap = new FieldBase[_MAP_SIZE, _MAP_SIZE];
 
             for (int y = 0; y < _MAP_SIZE; y++)
@@ -266,6 +267,7 @@ namespace Project1st.Game.Map
 
             Town startTown = new Town(worldMap[1, 1]);
             Town finalTown = new Town(worldMap[_MAP_SIZE-1, _MAP_SIZE-1]);
+            finalTown.shop.Add(new Items(GameManger.db.database[100]));
 
             int tmpx = 1;
             int tmpy = 1;
@@ -390,18 +392,34 @@ namespace Project1st.Game.Map
 
         public void SetDayTimer(object obj)
         {
-            isDay = !isDay;
+            day += 1;
 
-            for(int y = 0; y<WorldMap._MAP_SIZE; y++){
-                for (int x = 0; x < WorldMap._MAP_SIZE; x++) {
-                    if (GameManger.map.worldMap[y, x].type == 2)
+            if(day == 2){
+
+                for (int y = 0; y < WorldMap._MAP_SIZE; y++)
+                {
+                    for (int x = 0; x < WorldMap._MAP_SIZE; x++)
                     {
-                        foreach (var a in GameManger.map.worldMap[y, x].ReturnSelfToTown().priceRate)
+                        if (GameManger.map.worldMap[y, x].type == 2)
                         {
-                            a.Value.ChangePriceRate();
+                            foreach (var a in GameManger.map.worldMap[y, x].ReturnSelfToTown().priceRate)
+                            {
+                                if (a.Value.keepTurn == 0)
+                                {
+                                    for (int i = 3; i < GameManger.map.worldMap[y, x].ReturnSelfToTown().shop.Count; i++)
+                                    {
+                                        if (GameManger.map.worldMap[y, x].ReturnSelfToTown().shop[i].count < 20)
+                                        {
+                                            GameManger.random.Next(3, 11);
+                                        }
+                                    }
+                                }
+                                a.Value.ChangePriceRate();
+                            }
                         }
                     }
                 }
+                day = 0;
             }
         }
 

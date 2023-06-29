@@ -59,16 +59,16 @@ namespace Project1st.Game.GameObject
 
         public void StartForestTimer()
         {
-            moveTimer = new Timer(MoveTimer, null, 2000, 400);
+            moveTimer = new Timer(SetMoveTimer, null, 2000, 400);
 
         }
         public void StartBattleTimer()
         {
-            moveTimer = new Timer(FightTimer, null, 0, 600 - (400 * ((EnemyHitPointMAX - hitPoint)/EnemyHitPointMAX)));
+            moveTimer = new Timer(SetFightTimer, null, 0, 600 - (400 * ((EnemyHitPointMAX - hitPoint)/EnemyHitPointMAX)));
 
         }
 
-        public void MoveTimer(object obj)
+        public void SetMoveTimer(object obj)
         {
             if (!isLive)
             {
@@ -90,9 +90,6 @@ namespace Project1st.Game.GameObject
                 this.Axis2D.y = next.Y;
                 path.RemoveAt(0);
             }
-            else
-            {
-            }
 
             //플레이어와 붙을 경우
             if (GameManger.player.Axis2D.x == this.Axis2D.x && GameManger.player.Axis2D.y == this.Axis2D.y)
@@ -112,7 +109,7 @@ namespace Project1st.Game.GameObject
             }
         }
 
-        public void FightTimer(object obj)
+        public void SetFightTimer(object obj)
         {
             if (!isLive)
             {
