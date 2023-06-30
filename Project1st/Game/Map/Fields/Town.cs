@@ -210,10 +210,12 @@ namespace Project1st.Game.Map.Fields
 
                         if (item.itemId == 3)
                         {
+                            line[y] += $"( - ) ";
                             line[y] += $"{Wagon.wagonCountMax-GameManger.player.wagonList.Count,-3}";
                         }
                         else
                         {
+                            line[y] += $"({item.weight,3}) ";
                             line[y] += $"{item.count,-3}";
                         }
                         line[y] += "\t\t\t";
@@ -243,8 +245,6 @@ namespace Project1st.Game.Map.Fields
                     }
 
 
-                    //////
-
                     Items myItem = null;
                     List<Items> currInventory = null;
                     Wagon currWagon = null;
@@ -267,6 +267,7 @@ namespace Project1st.Game.Map.Fields
                             {
                                 line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f),-6:N0} ";
                             }
+                            line[y] += $"({myItem.weight,3}) ";
                             line[y] += $"{myItem.count,-3}";
                             line[y] += "\t\t\t";
                         }
@@ -297,6 +298,7 @@ namespace Project1st.Game.Map.Fields
                             {
                                 line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f),-6:N0} ";
                             }
+                            line[y] += $"({myItem.weight,-3})";
                             line[y] += $"{myItem.count,-3}";
                             line[y] += "\t\t\t";
                         }
@@ -306,10 +308,8 @@ namespace Project1st.Game.Map.Fields
 
                         }
                     }
-                    ////
 
-/*
-                    if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 30)
+                    /*if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 30)
                     {
                         Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
                         line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
@@ -330,11 +330,11 @@ namespace Project1st.Game.Map.Fields
                     {
                         line[y] += "\t\t\t\t\t";
 
-                    }
+                    }*/
                     if (y == 30)
                     {
                         line[30] = "\t";
-                        line[30] += $"{ GameManger.currField.ReturnSelfToTown().gold, 8}";
+                        line[30] += $"{GameManger.currField.ReturnSelfToTown().gold,8}";
                         line[30] += "\t\t\t\t\t\t";
                         line[30] += $"{GameManger.player.gold,8}";
                         line[y] += "\t\t";
@@ -343,10 +343,10 @@ namespace Project1st.Game.Map.Fields
                     {
                         line[31] = "\t";
                         line[31] += "\t\t\t\t\t\t\t ";
-                        line[31] += $"{GameManger.player.weight, 4}"+"/";
+                        line[31] += $"{GameManger.player.weight,4}" + "/";
                         line[31] += $"{GameManger.player.maxWeight,-4}";
                         line[y] += "\t\t";
-                    }*/
+                    }
 
                 }
                 else if (mainPosition == 2)

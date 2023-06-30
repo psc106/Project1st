@@ -406,7 +406,7 @@ namespace Project1st.Game.Map
         {
             day += 1;
 
-            if (day == 2)
+            if (day >= 2)
             {
 
                 for (int y = 0; y < WorldMap._MAP_SIZE; y++)
@@ -419,11 +419,11 @@ namespace Project1st.Game.Map
                             {
                                 if (a.Value.keepTurn == 0)
                                 {
-                                    for (int i = 3; i < GameManger.map.worldMap[y, x].ReturnSelfToTown().shop.Count; i++)
+                                    for (int i = 0; i < GameManger.map.worldMap[y, x].ReturnSelfToTown().shop.Count; i++)
                                     {
                                         if (GameManger.map.worldMap[y, x].ReturnSelfToTown().shop[i].count < 20)
                                         {
-                                            GameManger.random.Next(3, 11);
+                                            GameManger.map.worldMap[y, x].ReturnSelfToTown().shop[i].count += GameManger.random.Next(3, 11);
                                         }
                                     }
                                 }
