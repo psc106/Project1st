@@ -27,12 +27,12 @@ namespace Project1st.Game.DataBase
             database.Add(3, new Items(3, 0, "마차　　　", 1000, int.MaxValue, -100));
 
             //장비 4~9 6
-            database.Add(4, new Items(5, 1, "대검　　　", 1050, 10, 10));
-            database.Add(5, new Items(6, 1, "창　　　　", 400, 10, 6));
-            database.Add(6, new Items(7, 1, "도끼　　　", 600, 10, 8));
-            database.Add(7, new Items(8, 1, "단검　　　", 150, 10, 2));
-            database.Add(8, new Items(9, 1, "망치　　　", 540, 10, 20));
-            database.Add(9, new Items(4, 1, "검　　　　", 600, 10, 4));
+            database.Add(4, new Items(4, 1, "대검　　　", 1050, 10, 10));
+            database.Add(5, new Items(5, 1, "창　　　　", 400, 10, 6));
+            database.Add(6, new Items(6, 1, "도끼　　　", 600, 10, 8));
+            database.Add(7, new Items(7, 1, "단검　　　", 150, 10, 2));
+            database.Add(8, new Items(8, 1, "망치　　　", 540, 10, 20));
+            database.Add(9, new Items(9, 1, "검　　　　", 600, 10, 4));
 
             //사치품? 10 ~50 41
             database.Add(10, new Items(10, 2, "책　　　　", 250, 1, 8));

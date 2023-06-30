@@ -132,6 +132,14 @@ namespace Project1st.Game.Core
                         if (!GameManger.currField.isMenu)
                         {
                             isStun = GameManger.currField.Move(GameManger.currFieldPos);
+                            if (GameManger.player.walk > 0)
+                            {
+                                GameManger.player.walk -= 1;
+                                if (GameManger.player.walk < 0)
+                                {
+                                    GameManger.player.light -= 3;
+                                }
+                            }
                         }
                         else
                         {
@@ -139,39 +147,107 @@ namespace Project1st.Game.Core
                             {
                                 //GameManger.map.cursor.x = GameManger.map.cursor.x + axisX[GameManger.player.direction];
                                 GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
+                                int nextX = 
+                                    GameManger.map.cursor.x + axisX[GameManger.player.direction];
 
-                                //구매창
-                                if (GameManger.player.inventory.Count > 10)
+                                if (nextX < 0)
                                 {
-                                    if (GameManger.map.cursor.y < 0)
+                                    GameManger.map.cursor.x = 0;
+                                }
+                                else if (nextX >= GameManger.player.wagonList.Count)
+                                {
+                                    GameManger.map.cursor.x = GameManger.player.wagonList.Count;
+                                }
+                                else
+                                {
+                                    GameManger.map.cursor.x = nextX;
+                                }
+
+                                if (GameManger.map.cursor.x != nextX)
+                                {
+                                    GameManger.map.cursor.y = 0;
+                                }
+
+                                if (GameManger.map.cursor.x == 0)
+                                {
+                                    //구매창
+                                    if (GameManger.player.inventory.Count > 10)
                                     {
-                                        GameManger.map.cursor.y = 0;
-                                        GameManger.player.startInventoryIndex -= 1;
-                                        if (GameManger.player.startInventoryIndex < 0)
+                                        if (GameManger.map.cursor.y < 0)
                                         {
-                                            GameManger.player.startInventoryIndex = 0;
+                                            GameManger.map.cursor.y = 0;
+                                            GameManger.player.startInventoryIndex -= 1;
+                                            if (GameManger.player.startInventoryIndex < 0)
+                                            {
+                                                GameManger.player.startInventoryIndex = 0;
+                                            }
                                         }
-                                    }
-                                    else if (GameManger.map.cursor.y >= 10)
-                                    {
-                                        GameManger.map.cursor.y = 9;
-                                        GameManger.player.startInventoryIndex += 1;
-                                        if (GameManger.player.inventory.Count - GameManger.player.startInventoryIndex < 10)
+                                        else if (GameManger.map.cursor.y >= 10)
                                         {
-                                            GameManger.player.startInventoryIndex = GameManger.player.inventory.Count - 10;
+                                            GameManger.map.cursor.y = 9;
+                                            GameManger.player.startInventoryIndex += 1;
+                                            if (GameManger.player.inventory.Count - GameManger.player.startInventoryIndex < 10)
+                                            {
+                                                GameManger.player.startInventoryIndex = GameManger.player.inventory.Count - 10;
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                        }
+
+                                        else if (GameManger.map.cursor.y >= GameManger.player.inventory.Count)
+                                        {
+                                            GameManger.map.cursor.y = GameManger.player.inventory.Count - 1;
                                         }
                                     }
 
                                 }
-                                else
+                                else if (GameManger.map.cursor.x >= 1)
                                 {
-                                    if (GameManger.map.cursor.y < 0)
+                                    if (GameManger.player.wagonList == null || GameManger.player.wagonList.Count == 0) continue; 
+                                    Wagon currWagon = GameManger.player.wagonList[GameManger.map.cursor.x-1];
+
+
+                                    List<Items> currInventory = currWagon.inventory;
+
+                                    //구매창
+                                    if (currInventory.Count > 10)
                                     {
-                                        GameManger.map.cursor.y = 0;
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                            currWagon.startWagonInvenIndex -= 1;
+                                            if (currWagon.startWagonInvenIndex < 0)
+                                            {
+                                                currWagon.startWagonInvenIndex = 0;
+                                            }
+                                        }
+                                        else if (GameManger.map.cursor.y >= 10)
+                                        {
+                                            GameManger.map.cursor.y = 9;
+                                            currWagon.startWagonInvenIndex += 1;
+                                            if (currInventory.Count - currWagon.startWagonInvenIndex < 10)
+                                            {
+                                                currWagon.startWagonInvenIndex = currInventory.Count - 10;
+                                            }
+                                        }
+
                                     }
-                                    else if (GameManger.map.cursor.y >= GameManger.player.inventory.Count)
+                                    else
                                     {
-                                        GameManger.map.cursor.y = GameManger.player.inventory.Count - 1;
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                        }
+                                        else if (GameManger.map.cursor.y >= currInventory.Count)
+                                        {
+                                            GameManger.map.cursor.y = currInventory.Count - 1;
+                                        }
                                     }
                                 }
 
@@ -179,13 +255,114 @@ namespace Project1st.Game.Core
                             else if (GameManger.map.isEquip)
                             {
                                 GameManger.map.cursor.y = GameManger.map.cursor.y + axisY[GameManger.player.direction];
-                                if (GameManger.map.cursor.y < 0)
+                                int nextX =
+                                    GameManger.map.cursor.x + axisX[GameManger.player.direction];
+
+                                if (nextX < 0)
                                 {
-                                    GameManger.map.cursor.y = 2;
+                                    GameManger.map.cursor.x = 0;
                                 }
-                                else if (GameManger.map.cursor.y > 2)
+                                else if (nextX >= GameManger.player.wagonList.Count)
+                                {
+                                    GameManger.map.cursor.x = GameManger.player.wagonList.Count;
+                                }
+                                else
+                                {
+                                    GameManger.map.cursor.x = nextX;
+                                }
+
+                                if (GameManger.map.cursor.x != nextX)
                                 {
                                     GameManger.map.cursor.y = 0;
+                                }
+
+                                List<Items> currInventory;
+                                List<Items> equipList;
+                                if (GameManger.map.cursor.x == 0)
+                                {
+                                    currInventory = GameManger.player.inventory;                                   
+                                    equipList = currInventory.FindAll(tmp => tmp.type == 1);
+
+                                    //구매창
+                                    if (equipList.Count > 10)
+                                    {
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                            GameManger.player.startInventoryIndex -= 1;
+                                            if (GameManger.player.startInventoryIndex < 0)
+                                            {
+                                                GameManger.player.startInventoryIndex = 0;
+                                            }
+                                        }
+                                        else if (GameManger.map.cursor.y >= 10)
+                                        {
+                                            GameManger.map.cursor.y = 9;
+                                            GameManger.player.startInventoryIndex += 1;
+                                            if (equipList.Count - GameManger.player.startInventoryIndex < 10)
+                                            {
+                                                GameManger.player.startInventoryIndex = equipList.Count - 10;
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                        }
+
+                                        else if (GameManger.map.cursor.y >= GameManger.player.inventory.Count)
+                                        {
+                                            GameManger.map.cursor.y = GameManger.player.inventory.Count - 1;
+                                        }
+                                    }
+
+                                }
+                                else if (GameManger.map.cursor.x >= 1)
+                                {
+
+                                    Wagon currWagon = GameManger.player.wagonList[GameManger.map.cursor.x - 1];
+                                    currInventory = currWagon.inventory;
+                                    equipList = currInventory.FindAll(tmp => tmp.type == 1);
+
+                                    if (GameManger.player.wagonList == null || GameManger.player.wagonList.Count == 0) continue;
+
+                                    //구매창
+                                    if (equipList.Count > 10)
+                                    {
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                            currWagon.startWagonInvenIndex -= 1;
+                                            if (currWagon.startWagonInvenIndex < 0)
+                                            {
+                                                currWagon.startWagonInvenIndex = 0;
+                                            }
+                                        }
+                                        else if (GameManger.map.cursor.y >= 10)
+                                        {
+                                            GameManger.map.cursor.y = 9;
+                                            currWagon.startWagonInvenIndex += 1;
+                                            if (equipList.Count - currWagon.startWagonInvenIndex < 10)
+                                            {
+                                                currWagon.startWagonInvenIndex = equipList.Count - 10;
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (GameManger.map.cursor.y < 0)
+                                        {
+                                            GameManger.map.cursor.y = 0;
+                                        }
+                                        else if (GameManger.map.cursor.y >= equipList.Count)
+                                        {
+                                            GameManger.map.cursor.y = equipList.Count - 1;
+                                        }
+                                    }
                                 }
                             }
                             else
@@ -223,6 +400,7 @@ namespace Project1st.Game.Core
                         {
                             if (GameManger.map.isInventory)
                             {
+                                GameManger.map.isEquip = false;
                                 GameManger.map.isInventory = false;
                                 GameManger.player.startInventoryIndex = 0;
                                 GameManger.map.cursor = new Coordinate(0, 0);
@@ -231,6 +409,7 @@ namespace Project1st.Game.Core
                             if (GameManger.map.isEquip)
                             {
                                 GameManger.map.isEquip = false;
+                                GameManger.map.isInventory = false;
                                 GameManger.player.startInventoryIndex = 0;
                                 GameManger.map.cursor = new Coordinate(0, 0);
                                 continue;
@@ -250,7 +429,7 @@ namespace Project1st.Game.Core
                             if (!GameManger.player.isMeleeDelay)
                             {
                                 GameManger.player.isMeleeDelay = true;
-                                GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, 1000, 0);
+                                GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, 3000, 0);
 
                                 int nextX = GameManger.player.Hold(GameManger.player.GetNextX(GameManger.player.direction), FieldBase._FIELD_SIZE);
                                 int nextY = GameManger.player.Hold(GameManger.player.GetNextY(GameManger.player.direction), FieldBase._FIELD_SIZE);
@@ -314,20 +493,93 @@ namespace Project1st.Game.Core
                                 GameManger.map.isMinimap = !GameManger.map.isMinimap;
 
                                 GameManger.currField.isMenu = false;
+                                continue;
                             }
 
-                            if (!GameManger.map.isInventory && GameManger.map.cursor.y == 0)
+                            if (!GameManger.map.isInventory && !GameManger.map.isEquip && GameManger.map.cursor.y == 0)
                             {
                                 GameManger.map.isInventory = true;
                                 GameManger.player.startInventoryIndex = 0;
+                                for (int i = 0; i < GameManger.player.wagonList.Count; i++)
+                                {
+                                    GameManger.player.wagonList[i].startWagonInvenIndex = 0;
+                                }
                                 GameManger.map.cursor = new Coordinate(0, 0);
+                                continue;
                             }
 
-                            if (!GameManger.map.isEquip && GameManger.map.cursor.y == 2)
+                            if (!GameManger.map.isInventory && !GameManger.map.isEquip && GameManger.map.cursor.y == 2)
                             {
                                 GameManger.map.isEquip = true;
                                 GameManger.player.startInventoryIndex = 0;
+                                for (int i = 0; i < GameManger.player.wagonList.Count; i++)
+                                {
+                                    GameManger.player.wagonList[i].startWagonInvenIndex = 0;
+                                }
                                 GameManger.map.cursor = new Coordinate(0, 0);
+                                continue;
+                            }
+
+                            if (GameManger.map.isInventory)
+                            {
+                                List<Items> currInventory;
+                                Items item;
+                                Wagon currWagon = null;
+
+                                if (GameManger.map.cursor.x == 0)
+                                {
+                                    currInventory = GameManger.player.inventory;
+                                    if (GameManger.map.cursor.y + GameManger.player.startInventoryIndex >= currInventory.Count) continue;
+                                    if (GameManger.map.cursor.y + GameManger.player.startInventoryIndex < 0) continue;
+                                    item = currInventory[GameManger.map.cursor.y + GameManger.player.startInventoryIndex];
+                                }
+                                else
+                                {
+                                    currWagon = GameManger.player.wagonList[GameManger.map.cursor.x - 1];
+                                    currInventory = currWagon.inventory;
+                                    item = currInventory[GameManger.map.cursor.y + currWagon.startWagonInvenIndex];
+                                }
+
+                                GameManger.player.use = GameManger.currField;
+
+                                if (GameManger.player.use.UseItem(item, currWagon))
+                                {
+
+                                }
+                                continue;
+                            }
+
+
+                            if (GameManger.map.isEquip)
+                            {
+                                List<Items> equipList;
+                                List<Items> currInventory;
+                                Items item;
+                                Wagon currWagon = null;
+
+                                if (GameManger.map.cursor.x == 0)
+                                {
+                                    currInventory = GameManger.player.inventory;
+                                    equipList = currInventory.FindAll(tmp => tmp.type == 1);
+                                    if (equipList == null || equipList.Count == 0) continue;
+                                    item = equipList[GameManger.map.cursor.y + GameManger.player.startInventoryIndex];
+                                }
+                                else
+                                {
+                                    currWagon = GameManger.player.wagonList[GameManger.map.cursor.x - 1];
+                                    currInventory = currWagon.inventory;
+                                    equipList = currInventory.FindAll(tmp => tmp.type == 1);
+                                    if (equipList == null || equipList.Count == 0) continue;
+                                    item = equipList[GameManger.map.cursor.y + currWagon.startWagonInvenIndex];
+                                }
+
+                                GameManger.player.equip = GameManger.currField;
+
+                                if (GameManger.player.equip.EquipItem(item, currWagon))
+                                {
+
+                                }
+                                continue;
                             }
                         }
                     }
@@ -385,7 +637,7 @@ namespace Project1st.Game.Core
                                         if (GameManger.player.wagonList.Count < Wagon.wagonCountMax)
                                         {
                                             GameManger.player.wagonList.Add(new Wagon());
-                                            GameManger.player.maxWeight += Wagon.wagonWeightMax;
+                                            GameManger.player.maxWeightSum += Wagon.wagonWeightMax;
                                             currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate);
                                             GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate);
                                             continue;
@@ -400,7 +652,7 @@ namespace Project1st.Game.Core
                                     Wagon currWagon = null;
 
                                     //현재 여유분이 존재할거 같다.
-                                    if (GameManger.player.maxWeight >= item.weight + GameManger.player.SumWeight())
+                                    if (GameManger.player.maxWeightSum >= item.weight + GameManger.player.SumWeight())
                                     {
                                         //1. 현재 플레이어의 인벤토리와 비교
                                         if (Player.playerWeightMax >= item.weight + GameManger.player.weight)
@@ -601,15 +853,71 @@ namespace Project1st.Game.Core
                         }
                         else if (currTown.mainPosition == 2)
                         {
+                            if (currTown.cursorPosition.y == 1)
+                            {
+                                if (GameManger.player.gold >= 500)
+                                {
+                                    GameManger.player.gold -= 500;
+
+                                    PubEvent events = new PubEvent();
+                                    
+                                    events.townX = GameManger.random.Next(WorldMap._MAP_SIZE);
+                                    events.townY = GameManger.random.Next(WorldMap._MAP_SIZE);
+                                    events.type = 1;
+
+                                    if (GameManger.map.worldMap[events.townY, events.townX].type == 1)
+                                    {
+                                        GameManger.map.worldMap[events.townY, events.townX].isFog = false;
+                                    }
+                                    else if (GameManger.map.worldMap[events.townY, events.townX].type == 2)
+                                    {
+                                        GameManger.map.worldMap[events.townY, events.townX].isFog = false;
+                                    }
+                                    GameManger.currField.ReturnSelfToTown().pubEvents.Add(events);
+                                }
+                            }
+                            else if (currTown.cursorPosition.y == 0)
+                            {
+                                if (GameManger.player.gold >= 500)
+                                {
+                                    GameManger.player.gold -= 500;
+
+                                    PubEvent events = new PubEvent();
+                                    events.type = 0;
+
+                                    Town townTmp = GameManger.map.townList[GameManger.random.Next(GameManger.map.townList.Count)];
+                                    int randomItemID = GameManger.random.Next(10, 51);
+                                    PriceRate priceTmp = townTmp.priceRate[randomItemID];
+
+
+                                    for (int i = 0; i < WorldMap._MAP_SIZE; i++)
+                                    {
+                                        for (int j = 0; j < WorldMap._MAP_SIZE; j++)
+                                        {
+                                            if (GameManger.map.worldMap[i, j].Equals(townTmp))
+                                            {
+                                                events.townX = j;
+                                                events.townY = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    events.itemId = randomItemID;
+                                    events.eventPrice = priceTmp;
+
+                                    GameManger.currField.ReturnSelfToTown().pubEvents.Add(events);
+                                }
+                            }
                         }
                         else if (currTown.mainPosition == 3)
                         {                            
                             if (currTown.cursorPosition.y == 0){
-                                if (GameManger.player.gold >= 5)
+                                if (GameManger.player.gold >= 100)
                                 {
                                     GameManger.map.SetDayTimer(null);
-                                    GameManger.player.hitPoint = GameManger.player.hitPointMax;
-                                    GameManger.player.gold -= 5;
+                                    GameManger.player.hitPoint = Player.hitPointMax;
+                                    GameManger.player.gold -= 100;
 
                                     currTown.mainPosition = 0;
                                     currTown.cursorPosition.x = 0;
@@ -729,47 +1037,52 @@ namespace Project1st.Game.Core
                         if (!GameManger.player.isMeleeDelay)
                         {
                             GameManger.player.isMeleeDelay = true;
-                            GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, 450, 0);
+                            GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, GameManger.player.weapon.weaponDelay, 0);
 
                             int nextX = GameManger.player.GetNextX(GameManger.player.direction);
                             int nextY = GameManger.player.GetNextY(GameManger.player.direction);
 
-                            GameManger.player.Effects.Add(new Effect(nextX, nextY, 1));
-
-                            if (GameManger.player.weapon == 1)
+                            if (GameManger.player.weapon.weaponType == 0)
                             {
+                                GameManger.player.Effects.Add(new Effect(nextX, nextY, GameManger.player.weapon.weaponType));
+                            }
+
+                            if (GameManger.player.weapon.weaponType == 1)
+                            {
+                                GameManger.player.Effects.Add(new Effect(nextX, nextY, GameManger.player.weapon.weaponType));
                                 if (GameManger.player.direction / 2 == 0)//양쪽 보는중
                                 {
-                                    GameManger.player.Effects.Add(new Effect(nextX, nextY + 1, 1));
-                                    GameManger.player.Effects.Add(new Effect(nextX, nextY - 1, 1));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY + 1, GameManger.player.weapon.weaponType));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY - 1, GameManger.player.weapon.weaponType));
                                 }
                                 else if (GameManger.player.direction / 2 == 1)//위쪽 보는중
                                 {
-                                    GameManger.player.Effects.Add(new Effect(nextX + 1, nextY, 1));
-                                    GameManger.player.Effects.Add(new Effect(nextX - 1, nextY, 1));
+                                    GameManger.player.Effects.Add(new Effect(nextX + 1, nextY, GameManger.player.weapon.weaponType));
+                                    GameManger.player.Effects.Add(new Effect(nextX - 1, nextY, GameManger.player.weapon.weaponType));
                                 }
                             }
-                            else if (GameManger.player.weapon == 2)
+                            else if (GameManger.player.weapon.weaponType == 2)
                             {
+                                GameManger.player.Effects.Add(new Effect(nextX, nextY, GameManger.player.weapon.weaponType));
                                 if (GameManger.player.direction == 0)//오른쪽 보는중
                                 {
-                                    //AttackEffect.Add(new MyEffect(nextX + 1, nextY, 0));
-                                    //AttackEffect.Add(new MyEffect(nextX + 2, nextY, 0));
+                                    GameManger.player.Effects.Add(new Effect(nextX + 1, nextY, GameManger.player.weapon.weaponType));
+                                    GameManger.player.Effects.Add(new Effect(nextX + 2, nextY, GameManger.player.weapon.weaponType));
                                 }
                                 else if (GameManger.player.direction == 1)//왼쪽 보는중
                                 {
-                                    //AttackEffect.Add(new MyEffect(nextX - 1, nextY, 0));
-                                    //AttackEffect.Add(new MyEffect(nextX - 2, nextY, 0));
+                                    GameManger.player.Effects.Add(new Effect(nextX - 1, nextY, GameManger.player.weapon.weaponType));
+                                    GameManger.player.Effects.Add(new Effect(nextX - 2, nextY, GameManger.player.weapon.weaponType));
                                 }
                                 else if (GameManger.player.direction == 2)//위쪽 보는중
                                 {
-                                    //AttackEffect.Add(new MyEffect(nextX, nextY - 1, 0));
-                                    //AttackEffect.Add(new MyEffect(nextX, nextY - 2, 0));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY - 1, GameManger.player.weapon.weaponType));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY - 2, GameManger.player.weapon.weaponType));
                                 }
                                 else if (GameManger.player.direction == 3)//아래쪽 보는중
                                 {
-                                    //AttackEffect.Add(new MyEffect(nextX, nextY + 1, 0));
-                                    //AttackEffect.Add(new MyEffect(nextX, nextY + 2, 0));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY + 1, GameManger.player.weapon.weaponType));
+                                    GameManger.player.Effects.Add(new Effect(nextX, nextY + 2, GameManger.player.weapon.weaponType));
                                 }
                             }
 
@@ -789,7 +1102,7 @@ namespace Project1st.Game.Core
                             {
                                 if (currEnemy.isLive)
                                 {
-                                    currEnemy.hitPoint -= GameManger.player.attckPoint;
+                                    currEnemy.hitPoint -= GameManger.player.weapon.weaponStr;
                                     currEnemy.moveTimer.Change(300, 600 - (400 * ((Enemy.EnemyHitPointMAX - currEnemy.hitPoint) / Enemy.EnemyHitPointMAX)));
                                     if (currEnemy.hitPoint <= 0)
                                     {
@@ -825,6 +1138,7 @@ namespace Project1st.Game.Core
                         GameManger.currField.isCurrField = true;
                         isWin = false;
 
+                        GameManger.player.gold += 1000;
                         GameManger.player.RemoveFog();
                     }
                 }

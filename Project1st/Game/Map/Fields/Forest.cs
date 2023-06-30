@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
+using Project1st.Game.Interface;
 using Project1st.Game.Item;
 using System.Collections.Generic;
 using System.Linq;
@@ -415,13 +416,28 @@ namespace Project1st.Game.Map.Fields
                 }
             }
 
+            line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player.hitPointMax,3}";
+            line[FieldBase._FIELD_SIZE + 1] += $"\t시야{GameManger.player.light-1, 2}";
+            line[FieldBase._FIELD_SIZE + 1] += $"\tDay {GameManger.map.daySum,-4}";
+            if (GameManger.map.day == 0)
+            {
+                line[FieldBase._FIELD_SIZE + 1] += "(낮)";
+            }
+            else
+            {
+                line[FieldBase._FIELD_SIZE + 1] += "(밤)";
+            }
+            line[FieldBase._FIELD_SIZE + 2] += $"장비) {GameManger.player.weapon.name, -4}";
+            line[FieldBase._FIELD_SIZE + 3] += $"골드) {GameManger.player.gold,10} gold";
+            line[FieldBase._FIELD_SIZE + 4] += $"현재 좌표 ({GameManger.currFieldPos.x,2}, {GameManger.currFieldPos.y,2})";
+
             for (int y = 0; y < GameManger.buffer._BUFFER_SIZE; y++)
             {
                 if (line[y].Length < FieldBase._FIELD_SIZE)
                 {
                     for (int i = line[y].Length; i < FieldBase._FIELD_SIZE; i++)
                     {
-                        line[y] += "．";
+                        line[y] += "　";
                     }
                 }
             }
@@ -458,29 +474,135 @@ namespace Project1st.Game.Map.Fields
                             line[y] += "　";
                         }
 
-                        if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 10)
+                        if (GameManger.map.cursor.x == 0)
                         {
-                            Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
+                            if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 10)
+                            {
+                                Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
 
-                            line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
-                            line[y] += $"{item.name,-6}";
+                                if (item.type == 0)
+                                {
+                                    line[y] += ".4.";
+                                }
+                                else
+                                {
+                                    line[y] += ".6.";
+                                }
+
+                                line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
+                                line[y] += $"{item.name,-6}";
                                 line[y] += $"{item.price,-6:N0} ";
-                            line[y] += $"{item.count,-3}";
-                            if (item.type == 2)
-                            {
-                                line[y] += $"{(int)(item.quality * 100),3}" + "%";
+                                line[y] += $"{item.count,-3}";
+                                if (item.type == 2)
+                                {
+                                    line[y] += $"{(int)(item.quality * 100),3}" + "%";
+                                }
+                                else
+                                {
+                                    line[y] += "∞";
+                                }
+                                line[y] += ".\t\t\t\t\t";
                             }
-                            else
+                        }
+                        else if (GameManger.map.cursor.x >= 1)
+                        {
+                            if (GameManger.player.wagonList == null || GameManger.player.wagonList.Count == 0) continue;
+                            Wagon currWagon = GameManger.player.wagonList[GameManger.map.cursor.x - 1];
+
+                            List<Items> currInventory = currWagon.inventory;
+
+                            if (y + currWagon.startWagonInvenIndex < currInventory.Count && y < 10)
                             {
-                                line[y] += "∞";
+                                Items item = currInventory[y + currWagon.startWagonInvenIndex];
+                                if (item.type == 0)
+                                {
+                                    line[y] += ".4.";
+                                }
+                                else if (item.type == 1)
+                                {
+                                    line[y] += ".6.";
+                                }
+                                else
+                                {
+                                    line[y] += ".8.";
+                                }
+
+                                line[y] += $"{y + currWagon.startWagonInvenIndex + 1,2}" + ")";
+                                line[y] += $"{item.name,-6}";
+                                line[y] += $"{item.price,-6:N0} ";
+                                line[y] += $"{item.count,-3}";
+                                if (item.type == 2)
+                                {
+                                    line[y] += $"{(int)(item.quality * 100),3}" + "%";
+                                }
+                                else
+                                {
+                                    line[y] += "∞";
+                                }
+                                line[y] += ".\t\t\t\t\t";
                             }
-                            line[y] += "\t\t\t\t\t";
                         }
                     }
 
                 }
                 else if (GameManger.map.isEquip)
                 {
+                    for (int y = 0; y < 15; y++)
+                    {
+                        //구매창
+                        if (y == GameManger.map.cursor.y)
+                        {
+                            line[y] += "▶";
+                        }
+                        else
+                        {
+                            line[y] += "　";
+                        }
+
+                        if (GameManger.map.cursor.x == 0)
+                        {
+                            List<Items> equipList = GameManger.player.inventory.FindAll(tmp => tmp.type == 1);
+
+                            if (y + GameManger.player.startInventoryIndex < equipList.Count && y < 10)
+                            {
+                                Items item = equipList[y + GameManger.player.startInventoryIndex];
+                                if (item.type == 0)
+                                {
+                                    line[y] += ".4.";
+                                }
+                                else if (item.type == 1)
+                                {
+                                    line[y] += ".8.";
+                                }
+                                else
+                                {
+                                    line[y] += ".10.";
+                                }
+                                line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
+                                line[y] += $"{item.name,-6} ";
+                                line[y] += $"{item.weaponStr,4} ";
+                                line[y] += $"{item.weaponDelay,5} ms";
+                                line[y] += ".\t\t\t\t\t";
+                            }
+                        }
+                        else if (GameManger.map.cursor.x >= 1)
+                        {
+                            if (GameManger.player.wagonList == null || GameManger.player.wagonList.Count == 0) continue;
+                            Wagon currWagon = GameManger.player.wagonList[GameManger.map.cursor.x - 1];
+
+                            List<Items> equipList = currWagon.inventory.FindAll(tmp => tmp.type == 1);
+
+                            if (y + currWagon.startWagonInvenIndex < equipList.Count && y < 10)
+                            {
+                                Items item = equipList[y + currWagon.startWagonInvenIndex];
+
+                                line[y] += $"{y + currWagon.startWagonInvenIndex + 1,2}" + ")";
+                                line[y] += $"{item.name,-6}";
+                                line[y] += "\t\t\t\t\t";
+                            }
+                        }
+                    }
+
                 }
                 else
                 {
@@ -691,7 +813,7 @@ namespace Project1st.Game.Map.Fields
             if (wagon != null)
             {
                 GameManger.player.wagonList.Remove(wagon);
-                GameManger.player.maxWeight -= 100;
+                GameManger.player.maxWeightSum -= 100;
             }
 
             GameManger.player.RemoveFog();
@@ -712,5 +834,6 @@ namespace Project1st.Game.Map.Fields
 
             return isStun;
         }
+
     }
 }

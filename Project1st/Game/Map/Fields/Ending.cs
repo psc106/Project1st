@@ -31,6 +31,11 @@ namespace Project1st.Game.Map.Fields
             {
                 line[0] = "실망입니다\t\t\t\t\t\t\t\t\t\t\t\t\t";
                 line[1] = "당신은 죽었습니다\t\t\t\t\t\t\t\t\t\t\t\t";
+                for (int i = 2; i < GameManger.buffer._BUFFER_SIZE; i++)
+                {
+                    line[i] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+
+                }
             }
 
             //승리
@@ -38,6 +43,10 @@ namespace Project1st.Game.Map.Fields
             {
                 line[0] = "축하합니다\t\t\t\t\t\t\t\t\t\t\t\t\t";
                 line[1] = "당신은 자수성가 했습니다\t\t\t\t\t\t\t\t\t\t\t\t";
+                for (int i = 2; i < GameManger.buffer._BUFFER_SIZE; i++)
+                {
+                    line[i] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+                }
             }
 
             return line;

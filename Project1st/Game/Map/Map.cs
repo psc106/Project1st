@@ -14,12 +14,13 @@ namespace Project1st.Game.Map
 {
     public class WorldMap
     {
-        public static readonly int _MAP_SIZE = 10;
+        public static readonly int _MAP_SIZE = 4;
 
         int[] axisX = { 1, -1, 0, 0 };
         int[] axisY = { 0, 0, -1, 1 };
         public FieldBase[,] worldMap;
         public int day;
+        public int daySum;
         public Timer dayTimer;
         public static Coordinate testPos;
 
@@ -29,11 +30,14 @@ namespace Project1st.Game.Map
         public bool isInventory;
         public bool isEquip;
 
+        public List<Town> townList;
 
         public WorldMap()
         {
             day = 0;
+            daySum = 0;
             worldMap = new FieldBase[_MAP_SIZE, _MAP_SIZE];
+            townList = new List<Town>();
 
             cursor = new Coordinate(0, 0);
             isMinimap = true;
@@ -280,6 +284,9 @@ namespace Project1st.Game.Map
             Town finalTown = new Town(worldMap[_MAP_SIZE - 1, _MAP_SIZE - 1]);
             finalTown.shop.Add(new Items(GameManger.db.database[100]));
 
+            townList.Add(startTown);
+            townList.Add(finalTown);
+
             int tmpx = 1;
             int tmpy = 1;
             worldMap[tmpy, tmpx] = startTown;
@@ -308,6 +315,8 @@ namespace Project1st.Game.Map
                     }
                 }
             }
+
+
             tmpx = _MAP_SIZE - 1;
             tmpy = _MAP_SIZE - 1;
             worldMap[_MAP_SIZE - 1, _MAP_SIZE - 1] = finalTown;
@@ -337,7 +346,7 @@ namespace Project1st.Game.Map
                 }
             }
             //int count = GameManger.random.Next(3, 6);
-            int count = 20;
+            int count = _MAP_SIZE;
 
             while (count > 0)
             {
@@ -368,7 +377,9 @@ namespace Project1st.Game.Map
 
                     else
                     {
-                        worldMap[tmpy, tmpx] = new Town(worldMap[tmpy, tmpx]);
+                        Town tmp = new Town(worldMap[tmpy, tmpx]);
+                        worldMap[tmpy, tmpx] = tmp;
+                        townList.Add(tmp);
                         count -= 1;
 
                         for (int i = 0; i < 4; i++)
@@ -405,32 +416,37 @@ namespace Project1st.Game.Map
         public void SetDayTimer(object obj)
         {
             day += 1;
+            if (GameManger.player.walk > 0)
+            {
+                GameManger.player.walk = -30;
+                if (GameManger.player.walk < 0)
+                {
+                    GameManger.player.walk = 0;
+                    GameManger.player.light -= 3;
+                }
+            }
 
             if (day >= 2)
             {
+                daySum += 1;
 
-                for (int y = 0; y < WorldMap._MAP_SIZE; y++)
+                for (int y = 0; y < townList.Count; y++)
                 {
-                    for (int x = 0; x < WorldMap._MAP_SIZE; x++)
+                    foreach (var townPriceTmp in townList[y].priceRate)
                     {
-                        if (GameManger.map.worldMap[y, x].type == 2)
+                        if (townPriceTmp.Value.keepTurn == 0)
                         {
-                            foreach (var a in GameManger.map.worldMap[y, x].ReturnSelfToTown().priceRate)
+                            for (int i = 0; i < townList[y].shop.Count; i++)
                             {
-                                if (a.Value.keepTurn == 0)
+                                if (townList[y].shop[i].count < 20)
                                 {
-                                    for (int i = 0; i < GameManger.map.worldMap[y, x].ReturnSelfToTown().shop.Count; i++)
-                                    {
-                                        if (GameManger.map.worldMap[y, x].ReturnSelfToTown().shop[i].count < 20)
-                                        {
-                                            GameManger.map.worldMap[y, x].ReturnSelfToTown().shop[i].count += GameManger.random.Next(3, 11);
-                                        }
-                                    }
+                                    townList[y].shop[i].count += GameManger.random.Next(3, 11);
                                 }
-                                a.Value.ChangePriceRate();
                             }
                         }
+                        townPriceTmp.Value.ChangePriceRate();
                     }
+                    townList[y].pubEvents.Clear();
                 }
                 day = 0;
             }

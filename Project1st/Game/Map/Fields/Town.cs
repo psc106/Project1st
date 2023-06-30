@@ -17,6 +17,8 @@ namespace Project1st.Game.Map.Fields
         int[] axisY = { 0, 0, -1, 1 };
 
         public List<Items> shop;
+        public List<PubEvent> pubEvents;
+
         //2.00 ~ 0.00
         public Dictionary<int, PriceRate> priceRate;
 
@@ -29,6 +31,7 @@ namespace Project1st.Game.Map.Fields
         public Town()
         {
             gold = 2000;
+            pubEvents = new List<PubEvent>();
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
             type = 2;
@@ -47,12 +50,15 @@ namespace Project1st.Game.Map.Fields
             {
                 priceRate.Add(i, new PriceRate());
             }
+
+            priceRate.Add(100, new PriceRate(1));
         }
 
         public Town(FieldBase field)
         {
             isFog = field.isFog;
             gold = 2000;
+            pubEvents = new List<PubEvent>();
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
             type = 2;
@@ -81,7 +87,7 @@ namespace Project1st.Game.Map.Fields
             int count = GameManger.random.Next(3);
             for (int i = 0; i < count; i++)
             {
-                int id = GameManger.random.Next(4, 10);
+                int id = GameManger.random.Next(4, 9);
                 if (shop.Find(x => x.itemId == id)==null)
                 {
                     shop.Add(GameManger.db.database[id]);
@@ -110,29 +116,7 @@ namespace Project1st.Game.Map.Fields
                     priceRate.Add(i, new PriceRate(1.1f));
                 }
             }
-        }
-
-        public void Init()
-        {
-            gold = 8000;
-            shop = new List<Items>();
-            priceRate = new Dictionary<int, PriceRate>();
-            type = 2;
-            mainPosition = 0;
-            cursorPosition = new Coordinate(0, 0);
-            startShopIndex = 0;
-            for (int i = 0; i < 4; i++)
-            {
-                if (portals[i] != null)
-                {
-                    fieldInfo[portals[i].axis.y, portals[i].axis.x] = field_info.portal;
-
-                }
-            }
-            for (int i = 0; i < 60; i++)
-            {
-                priceRate.Add(i, new PriceRate());
-            }
+            priceRate.Add(100, new PriceRate(1));
         }
 
         public void Enter()
@@ -204,21 +188,46 @@ namespace Project1st.Game.Map.Fields
                     if (y + startShopIndex < shop.Count && y < 30)
                     {
                         Items item = shop[y + startShopIndex];
+                        if (item.type == 0)
+                        {
+                            line[y] += ".4.";
+                        }
+                        else if (item.type == 1)
+                        {
+                            line[y] += ".8.";
+                        }
+                        else
+                        {
+                            line[y] += ".10.";
+                        }
+
                         line[y] += $"{y + startShopIndex + 1,2}" + ")";
                         line[y] += $"{item.name,-6}";
-                        line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate),-6:N0} ";
+                        if (item.itemId != 100)
+                        {
+                            line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate),-6:N0} ";
+                        }
+                        else
+                        {
+                            line[y] += $"{(int)(item.price),-6:N0} ";
+                        }
 
                         if (item.itemId == 3)
                         {
                             line[y] += $"( - ) ";
-                            line[y] += $"{Wagon.wagonCountMax-GameManger.player.wagonList.Count,-3}";
+                            line[y] += $"{Wagon.wagonCountMax - GameManger.player.wagonList.Count,-3}";
+                        }
+                        else if (item.itemId < 3)
+                        {
+                            line[y] += $"({item.weight,3}) ";
+                            line[y] += $"{"∞",-3}";
                         }
                         else
                         {
                             line[y] += $"({item.weight,3}) ";
                             line[y] += $"{item.count,-3}";
                         }
-                        line[y] += "\t\t\t";
+                        line[y] += ".\t\t\t";
                     }
                     else
                     {
@@ -255,8 +264,21 @@ namespace Project1st.Game.Map.Fields
 
                         if (y + GameManger.player.startInventoryIndex < currInventory.Count && y < 30)
                         {
+
                             if (currInventory == null || currInventory.Count == 0) continue;
                             myItem = currInventory[(y + GameManger.player.startInventoryIndex)];
+                            if (myItem.type == 0)
+                            {
+                                line[y] += ".4.";
+                            }
+                            else if (myItem.type == 1)
+                            {
+                                line[y] += ".8.";
+                            }
+                            else
+                            {
+                                line[y] += ".10.";
+                            }
                             line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
                             line[y] += $"{myItem.name,-6}";
                             if (myItem.type == 2)
@@ -269,7 +291,7 @@ namespace Project1st.Game.Map.Fields
                             }
                             line[y] += $"({myItem.weight,3}) ";
                             line[y] += $"{myItem.count,-3}";
-                            line[y] += "\t\t\t";
+                            line[y] += ".\t\t\t";
                         }
                         else
                         {
@@ -288,6 +310,20 @@ namespace Project1st.Game.Map.Fields
                             if (currInventory == null || currInventory.Count == 0) continue;
                             myItem = currInventory[(y + currWagon.startWagonInvenIndex)];
 
+                            if (myItem.type == 0)
+                            {
+                                line[y] += ".4.";
+                            }
+                            else if (myItem.type == 1)
+                            {
+                                line[y] += ".8.";
+                            }
+                            else
+                            {
+                                line[y] += ".10.";
+                            }
+
+
                             line[y] += $"{y + currWagon.startWagonInvenIndex + 1,2}" + ")";
                             line[y] += $"{myItem.name,-6}";
                             if (myItem.type == 2)
@@ -300,7 +336,7 @@ namespace Project1st.Game.Map.Fields
                             }
                             line[y] += $"({myItem.weight,-3})";
                             line[y] += $"{myItem.count,-3}";
-                            line[y] += "\t\t\t";
+                            line[y] += ".\t\t\t";
                         }
                         else
                         {
@@ -343,8 +379,20 @@ namespace Project1st.Game.Map.Fields
                     {
                         line[31] = "\t";
                         line[31] += "\t\t\t\t\t\t\t ";
-                        line[31] += $"{GameManger.player.weight,4}" + "/";
-                        line[31] += $"{GameManger.player.maxWeight,-4}";
+                        if (cursorPosition.x <= 1)
+                        {
+                            line[31] += $"{GameManger.player.weight,4}" + "/";
+                            line[31] += $"{Player.playerWeightMax,-4}";
+                            line[31] += $"{GameManger.player.SumWeight(),4}" + "/";
+                            line[31] += $"{GameManger.player.maxWeightSum,-4}";
+                        }
+                        else
+                        {
+                            line[31] += $"{GameManger.player.wagonList[cursorPosition.x - 2].weight,4}" + "/";
+                            line[31] += $"{Wagon.wagonWeightMax,-4}";
+                            line[31] += $"{GameManger.player.SumWeight(),4}" + "/";
+                            line[31] += $"{GameManger.player.maxWeightSum,-4}";
+                        }
                         line[y] += "\t\t";
                     }
 
@@ -385,7 +433,7 @@ namespace Project1st.Game.Map.Fields
                     switch (y)
                     {
                         case 0:
-                            line[y] += " 잠자기\t\t\t\t\t\t\t\t\t\t\t\t";
+                            line[y] += " 잠자기 .4.(100 Gold).\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         default:
                             line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
@@ -438,6 +486,16 @@ namespace Project1st.Game.Map.Fields
                 else
                 {
                     line[3] += " .6.남문.                                                                  ";
+                }
+            }
+
+            if (mainPosition == 2)
+            {
+                for (int i = 0; i < pubEvents.Count; i++)
+                {
+                    line[i + 5] = "";
+                    PubEvent pubEvent = GameManger.currField.ReturnSelfToTown().pubEvents[i];
+                    line[i + 5] += pubEvent.ShowEvent();
                 }
             }
 
