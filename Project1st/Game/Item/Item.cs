@@ -13,6 +13,12 @@ namespace Project1st.Game.Item
         public int itemId { private set; get; }
         //아이템type
         public int type { private set; get; }
+        //공격형태
+        public int weaponType { private set; get; }
+        //공격데미지
+        public int weaponStr { private set; get; }
+        //공격속도
+        public int weaponDelay { private set; get; }
         //이름
         public string name { private set; get; }
         //가격
@@ -31,6 +37,55 @@ namespace Project1st.Game.Item
 
         public Items()
         {
+            this.qualityMax = 10;
+            this.itemId = 9;
+            this.type = 1;
+            this.name = "검　　　　";
+            this.price = 0;
+            this.weight = 0;
+            this.isOwn = true;
+
+            if (type == 1)
+            {
+                switch (itemId)
+                {
+                    case 4:
+                        weaponType = 1;
+                        weaponDelay = 1300;
+                        weaponStr = 80;
+                        break;
+                    case 5:
+                        weaponType = 2;
+                        weaponDelay = 300;
+                        weaponStr = 30;
+                        break;
+                    case 6:
+                        weaponType = 1;
+                        weaponDelay = 800;
+                        weaponStr = 55;
+                        break;
+                    case 7:
+                        weaponType = 0;
+                        weaponDelay = 150;
+                        weaponStr = 15;
+                        break;
+                    case 8:
+                        weaponType = 1;
+                        weaponDelay = 3000;
+                        weaponStr = 200;
+                        break;
+                    case 9:
+                        weaponType = 2;
+                        weaponDelay = 450;
+                        weaponStr = 45;
+                        break;
+                    default:
+                        weaponType = 0;
+                        weaponDelay = 0;
+                        weaponStr = 0;
+                        break;
+                }
+            }
         }
 
         public Items(int itemId, int type, string name, int price, float qualityMax, float weight)
@@ -45,6 +100,48 @@ namespace Project1st.Game.Item
 
             this.count = GameManger.random.Next(1, 10);
             this.quality = qualityMax;
+
+            if (type == 1)
+            {
+                switch (itemId)
+                {
+                    case 4:
+                        weaponType = 1;
+                        weaponDelay = 1300;
+                        weaponStr = 60;
+                        break;
+                    case 5:
+                        weaponType = 2;
+                        weaponDelay = 300;
+                        weaponStr = 20;
+                        break;
+                    case 6:
+                        weaponType = 1;
+                        weaponDelay = 800;
+                        weaponStr = 45;
+                        break;
+                    case 7:
+                        weaponType = 0;
+                        weaponDelay = 150;
+                        weaponStr = 10;
+                        break;
+                    case 8:
+                        weaponType = 1;
+                        weaponDelay = 2500;
+                        weaponStr = 140;
+                        break;
+                    case 9:
+                        weaponType = 2;
+                        weaponDelay = 450;
+                        weaponStr = 35;
+                        break;
+                    default:
+                        weaponType = 0;
+                        weaponDelay = 0;
+                        weaponStr = 0;
+                        break;
+                }
+            }
         }
 
         public Items(Items other)
@@ -59,6 +156,49 @@ namespace Project1st.Game.Item
 
             this.count = 1;
             this.quality = other.qualityMax;
+
+
+            if (type == 1)
+            {
+                switch (itemId)
+                {
+                    case 4:
+                        weaponType = 1;
+                        weaponDelay = 1300;
+                        weaponStr = 60;
+                        break;
+                    case 5:
+                        weaponType = 2;
+                        weaponDelay = 300;
+                        weaponStr = 20;
+                        break;
+                    case 6:
+                        weaponType = 1;
+                        weaponDelay = 800;
+                        weaponStr = 45;
+                        break;
+                    case 7:
+                        weaponType = 0;
+                        weaponDelay = 150;
+                        weaponStr = 10;
+                        break;
+                    case 8:
+                        weaponType = 1;
+                        weaponDelay = 2500;
+                        weaponStr = 140;
+                        break;
+                    case 9:
+                        weaponType = 2;
+                        weaponDelay = 450;
+                        weaponStr = 35;
+                        break;
+                    default:
+                        weaponType = 0;
+                        weaponDelay = 0;
+                        weaponStr = 0;
+                        break;
+                }
+            }
         }
 
     }

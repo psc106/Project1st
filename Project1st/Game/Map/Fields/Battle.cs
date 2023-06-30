@@ -30,7 +30,9 @@ namespace Project1st.Game.Map.Fields
 
             GameManger.player = new Player();
             GameManger.currField = this;
+            GameManger.player.weapon = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.weapon;
             GameManger.player.hitPoint = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint;
+            GameManger.player.light = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.light;
 
             enemies = new List<Enemy>();
             enemyCount = GameManger.random.Next(7, 13);
@@ -337,11 +339,11 @@ namespace Project1st.Game.Map.Fields
                         {
                             if (tmp.isLive)
                             {
-                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX * 2 / 3)
+                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX / 3)
                                 {
                                     line[y] += ".8.";
                                 }
-                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX / 3)
+                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX *2 / 3)
                                 {
                                     line[y] += ".7.";
                                 }
@@ -478,6 +480,32 @@ namespace Project1st.Game.Map.Fields
                 }
 
                 line[y] += "  ";
+            }
+
+            try
+            {
+                line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player.hitPointMax,3}";
+                line[FieldBase._FIELD_SIZE + 1] += $"적 숫자{GameManger.currField.ReturnSelfToBattle().enemies.Count,2}/{GameManger.currField.ReturnSelfToBattle().enemyCount,2}";
+                line[FieldBase._FIELD_SIZE + 1] += "\t\t\t\t\t\t\t\t\t";
+            }
+            catch
+            {
+                line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player.hitPointMax,3}";
+                line[FieldBase._FIELD_SIZE + 1] += "                       ";
+                line[FieldBase._FIELD_SIZE + 1] += "\t\t\t\t\t\t\t\t\t";
+            }
+
+
+
+            for (int y = 0; y < GameManger.buffer._BUFFER_SIZE; y++)
+            {
+                if (line[y].Length < FieldBase._FIELD_SIZE)
+                {
+                    for (int i = line[y].Length; i < FieldBase._FIELD_SIZE; i++)
+                    {
+                        line[y] += "　";
+                    }
+                }
             }
 
             return line;

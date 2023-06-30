@@ -15,7 +15,7 @@ namespace Project1st.Game.GameObject
 {
     public class Enemy : MoveObject
     {
-        static public int EnemyHitPointMAX = 30;
+        public static readonly int EnemyHitPointMAX = 200;
 
         public Timer moveTimer;
         public Timer delayTimer;
@@ -25,6 +25,7 @@ namespace Project1st.Game.GameObject
         public bool isDelay;
         public bool isAttack;
 
+        public ObjectBase target;
 
         public Enemy()
         {
@@ -33,11 +34,26 @@ namespace Project1st.Game.GameObject
             isAttack = false;
             isMove = true;
             isLive = true;
-            hitPoint = EnemyHitPointMAX;
-            attckPoint = 1;
+            hitPoint = EnemyHitPointMAX - GameManger.random.Next(100);
+            attckPoint = GameManger.random.Next(2,11);
             ID = 0;
             path = new List<Location>();
 
+            if (GameManger.random.Next(100) >= 70)
+            {
+                target = GameManger.player;
+            }
+            else
+            {
+                /*if (GameManger.player.wagonList!=null && GameManger.player.wagonList.Count > 0)
+                {
+                    target = GameManger.player.wagonList[GameManger.random.Next(GameManger.player.wagonList.Count)];
+                }
+                else*/
+                {
+                    target = GameManger.player;
+                }
+            }
             StartBattleTimer();
         }
         public Enemy(int x, int y)
@@ -47,14 +63,49 @@ namespace Project1st.Game.GameObject
             isAttack = false;
             isMove = true;
             isLive = true;
-            hitPoint = EnemyHitPointMAX;
-            attckPoint = 0;
+            hitPoint = EnemyHitPointMAX - GameManger.random.Next(100);
+            attckPoint = 35;
             ID = 0;
             path = new List<Location>();
             Axis2D.x = x;
             Axis2D.y = y;
 
+            if (GameManger.random.Next(100) >= 70)
+            {
+                target = GameManger.player;
+            }
+            else
+            {
+                if (GameManger.player.wagonList != null && GameManger.player.wagonList.Count > 0)
+                {
+                    target = GameManger.player.wagonList[GameManger.random.Next(GameManger.player.wagonList.Count)];
+                }
+                else
+                {
+                    target = GameManger.player;
+                }
+            }
+
             StartForestTimer();
+        }
+
+        void SetTarget()
+        {
+            if (GameManger.random.Next(100) >= 70)
+            {
+                target = GameManger.player;
+            }
+            else
+            {
+                if (GameManger.player.wagonList != null && GameManger.player.wagonList.Count > 0)
+                {
+                    target = GameManger.player.wagonList[GameManger.random.Next(GameManger.player.wagonList.Count)];
+                }
+                else
+                {
+                    target = GameManger.player;
+                }
+            }
         }
 
 
@@ -78,6 +129,10 @@ namespace Project1st.Game.GameObject
 
             if (isMove)
             {
+                if (target == null)
+                {
+                    SetTarget();
+                }
                 path = EAlgorithm.Go(this);
                 isMove = false;
             }
@@ -100,7 +155,7 @@ namespace Project1st.Game.GameObject
                 {
                     for (int i = 0; i < wagon.Count; i++)
                     {
-                        wagon[i].hitPoint -= 50;
+                        wagon[i].hitPoint -= attckPoint;
                         if (wagon[i].hitPoint <= 0)
                         {
                             GameManger.player.wagonList.Remove(wagon[i]);
@@ -179,8 +234,8 @@ namespace Project1st.Game.GameObject
                     isDelay = true;
                     delayTimer = new Timer(DelayTimer, null, 600 - (300 * ((EnemyHitPointMAX - hitPoint) / EnemyHitPointMAX)),100);
 
-                    GameManger.player.hitPoint -= 1;
-                    if (GameManger.player.hitPoint == 0)
+                    GameManger.player.hitPoint -= attckPoint;
+                    if (GameManger.player.hitPoint<=0)
                     {
                         GameManger.player.isLive = false;
                         //게임오버 엔딩

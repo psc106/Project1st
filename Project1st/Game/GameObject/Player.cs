@@ -1,4 +1,5 @@
 ﻿using Project1st.Game.Core;
+using Project1st.Game.Interface;
 using Project1st.Game.Item;
 using Project1st.Game.Map;
 using Project1st.Game.Map.Fields;
@@ -13,13 +14,17 @@ namespace Project1st.Game.GameObject
 {
     public class Player : MoveObject
     {
+        public IUseItem use;
+        public IEquipItem equip;
+
         public Timer meleeDelay;
         public Timer rangeDelay;
 
         public int gold;
         public int light;
+        public int walk;
 
-        public int weapon;
+        public Items weapon;
         public int bulletCount;
         public int bulletCountMax;
 
@@ -31,9 +36,11 @@ namespace Project1st.Game.GameObject
         public List<Wagon> wagonList;
 
         public static readonly float playerWeightMax = 50;
+        public static readonly int hitPointMax = 100;
+
+        public float maxWeightSum;
         public float weight;
-        public float maxWeight;
-        public int hitPointMax;
+
         public List<Items> inventory;
         public int startInventoryIndex;
 
@@ -51,7 +58,7 @@ namespace Project1st.Game.GameObject
 
         public float SumWeight()
         {
-            float sum = 0;
+            float sum = weight;
             foreach (var tmp in wagonList)
             {
                 sum += tmp.weight;
@@ -63,23 +70,38 @@ namespace Project1st.Game.GameObject
         public override void Init()
         {
             base.Init();
-            hitPointMax = 100;
-            hitPoint = 100;
-            attckPoint = 10;
+            hitPoint = hitPointMax;
+            maxWeightSum = playerWeightMax;
             ID = 0;
             isMeleeDelay = false;
             isRangeDelay = false;
-            maxWeight = playerWeightMax;
             weight = 0;
-            gold = 23000;
+            gold = 10000;
             bulletCountMax = 3;
-            weapon = 0;
+            weapon = new Items();
+            attckPoint = weapon.weaponStr;
             light = 5;
+            walk = 0;
             inventory = new List<Items>();
             Effects = new List<Effect>();
             wagonList = new List<Wagon>();
 
             startInventoryIndex = 0;
+        }
+
+        public int GetRealView()
+        {
+            int light = this.light;
+
+            if (GameManger.map.day == 0)
+            {
+                light += 3;
+            }
+            else if (GameManger.map.day == 1)
+            {
+                light -= 2;
+            }
+            return (((light - 1) * 2) - 2) * (light - 1) + 1;
         }
 
         public void RemoveFog()
@@ -89,16 +111,9 @@ namespace Project1st.Game.GameObject
             q.Enqueue(GameManger.player.Axis2D);
             GameManger.currField.SetFogInfo(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1);
 
-            int light = GameManger.player.light;
-            if (GameManger.map.day ==0)
-            {
-                light += 3;
-            }
-            else if (GameManger.map.day == 1)
-            {
-                light -= 2;
-            }
-            light = (((light - 1) * 2) - 2) * (light - 1) + 1;
+            int light = GetRealView();
+
+            
             for (int i = 0; i < light; i++)
             {
                 Coordinate tmp = q.Dequeue();
@@ -130,7 +145,6 @@ namespace Project1st.Game.GameObject
                 }
             }
         }
-
 
         public void DelayMeleeTimer(object obj)
         {

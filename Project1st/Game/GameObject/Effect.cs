@@ -12,7 +12,7 @@ namespace Project1st.Game.GameObject
 {
     public class Effect : MoveObject
     {
-        public static string[] effectString = { "／", "€", "Δ", "⇔", "˚" };
+        public static string[] effectString = { "／", "⇔", "Δ", "€", "˚" };
         public int type;
         public bool isRemove;
 
