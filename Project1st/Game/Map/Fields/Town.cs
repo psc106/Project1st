@@ -1,4 +1,5 @@
 ﻿using Project1st.Game.Core;
+using Project1st.Game.GameObject;
 using Project1st.Game.Item;
 using System;
 using System.Collections.Generic;
@@ -206,7 +207,15 @@ namespace Project1st.Game.Map.Fields
                         line[y] += $"{y + startShopIndex + 1,2}" + ")";
                         line[y] += $"{item.name,-6}";
                         line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate),-6:N0} ";
-                        line[y] += $"{item.count,-3}";
+
+                        if (item.itemId == 3)
+                        {
+                            line[y] += $"{Wagon.wagonCountMax-GameManger.player.wagonList.Count,-3}";
+                        }
+                        else
+                        {
+                            line[y] += $"{item.count,-3}";
+                        }
                         line[y] += "\t\t\t";
                     }
                     else
@@ -217,7 +226,7 @@ namespace Project1st.Game.Map.Fields
                     }
 
                     //판매창
-                    if (cursorPosition.x == 1)
+                    if (cursorPosition.x >= 1)
                     {
                         if (y == cursorPosition.y)
                         {
@@ -233,6 +242,73 @@ namespace Project1st.Game.Map.Fields
                         line[y] += "　";
                     }
 
+
+                    //////
+
+                    Items myItem = null;
+                    List<Items> currInventory = null;
+                    Wagon currWagon = null;
+
+                    if (cursorPosition.x <= 1)
+                    {
+                        currInventory = GameManger.player.inventory;
+
+                        if (y + GameManger.player.startInventoryIndex < currInventory.Count && y < 30)
+                        {
+                            if (currInventory == null || currInventory.Count == 0) continue;
+                            myItem = currInventory[(y + GameManger.player.startInventoryIndex)];
+                            line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
+                            line[y] += $"{myItem.name,-6}";
+                            if (myItem.type == 2)
+                            {
+                                line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f * myItem.quality),-6:N0} ";
+                            }
+                            else
+                            {
+                                line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f),-6:N0} ";
+                            }
+                            line[y] += $"{myItem.count,-3}";
+                            line[y] += "\t\t\t";
+                        }
+                        else
+                        {
+                            line[y] += "\t\t\t\t\t";
+
+                        }
+                    }
+                    else
+                    {
+                        if (GameManger.player.wagonList.Count == 0) continue;
+                        currWagon = GameManger.player.wagonList[cursorPosition.x - 2];
+                        currInventory = currWagon.inventory;
+
+                        if (y + currWagon.startWagonInvenIndex < currInventory.Count && y < 30)
+                        {
+                            if (currInventory == null || currInventory.Count == 0) continue;
+                            myItem = currInventory[(y + currWagon.startWagonInvenIndex)];
+
+                            line[y] += $"{y + currWagon.startWagonInvenIndex + 1,2}" + ")";
+                            line[y] += $"{myItem.name,-6}";
+                            if (myItem.type == 2)
+                            {
+                                line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f * myItem.quality),-6:N0} ";
+                            }
+                            else
+                            {
+                                line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f),-6:N0} ";
+                            }
+                            line[y] += $"{myItem.count,-3}";
+                            line[y] += "\t\t\t";
+                        }
+                        else
+                        {
+                            line[y] += "\t\t\t\t\t";
+
+                        }
+                    }
+                    ////
+
+/*
                     if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 30)
                     {
                         Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
@@ -270,7 +346,7 @@ namespace Project1st.Game.Map.Fields
                         line[31] += $"{GameManger.player.weight, 4}"+"/";
                         line[31] += $"{GameManger.player.maxWeight,-4}";
                         line[y] += "\t\t";
-                    }
+                    }*/
 
                 }
                 else if (mainPosition == 2)
@@ -394,9 +470,9 @@ namespace Project1st.Game.Map.Fields
                 {
                     cursorPosition.x = 0;
                 }
-                else if (cursorPosition.x > 1)
+                else if (cursorPosition.x > GameManger.player.wagonList.Count+1)
                 {
-                    cursorPosition.x = 1;
+                    cursorPosition.x = GameManger.player.wagonList.Count + 1;
                 }
 
                 //구매창
@@ -437,26 +513,72 @@ namespace Project1st.Game.Map.Fields
                     }
                 }
                 //판매창
-                else if (cursorPosition.x == 1)
+                else if (cursorPosition.x >= 1)
                 {
-                    if (GameManger.player.inventory.Count > 30)
+                    List<Items> currInventory = null;
+                    Wagon currWagon = null;
+
+                    if (cursorPosition.x == 1)
+                    {
+                        currInventory = GameManger.player.inventory;
+                        if (currInventory == null || currInventory.Count == 0) { }
+                    }
+                    else
+                    {
+                        currWagon = GameManger.player.wagonList[cursorPosition.x - 2];
+                        currInventory = currWagon.inventory;
+                        if (currInventory == null || currInventory.Count == 0) { }
+                    }
+
+                    if (currInventory.Count > 30)
                     {
                         if (cursorPosition.y < 0)
                         {
                             cursorPosition.y = 0;
-                            GameManger.player.startInventoryIndex -= 1;
-                            if (GameManger.player.startInventoryIndex < 0)
+
+                            if (cursorPosition.x == 1)
                             {
-                                GameManger.player.startInventoryIndex = 0;
+                                GameManger.player.startInventoryIndex -= 1;
+                                if (GameManger.player.startInventoryIndex < 0)
+                                {
+                                    GameManger.player.startInventoryIndex = 0;
+                                }
+                            }
+                            else
+                            {
+                                currWagon.startWagonInvenIndex -= 1;
+                                if (currWagon.startWagonInvenIndex < 0)
+                                {
+                                    currWagon.startWagonInvenIndex = 0;
+                                }
                             }
                         }
                         else if (cursorPosition.y >= 30)
                         {
                             cursorPosition.y = 29;
-                            GameManger.player.startInventoryIndex += 1;
-                            if (GameManger.player.inventory.Count - GameManger.player.startInventoryIndex < 30)
+                            if (cursorPosition.x == 1)
                             {
-                                GameManger.player.startInventoryIndex = GameManger.player.inventory.Count - 30;
+                                GameManger.player.startInventoryIndex -= 1;
+                                if (GameManger.player.startInventoryIndex < 0)
+                                {
+                                    GameManger.player.startInventoryIndex = 0;
+                                }
+                                if (currInventory.Count - GameManger.player.startInventoryIndex < 30)
+                                {
+                                    GameManger.player.startInventoryIndex = currInventory.Count - 30;
+                                }
+                            }
+                            else
+                            {
+                                currWagon.startWagonInvenIndex -= 1;
+                                if (currWagon.startWagonInvenIndex < 0)
+                                {
+                                    currWagon.startWagonInvenIndex = 0;
+                                }
+                                if (currInventory.Count - currWagon.startWagonInvenIndex < 30)
+                                {
+                                    currWagon.startWagonInvenIndex = currInventory.Count - 30;
+                                }
                             }
                         }
 
@@ -467,9 +589,13 @@ namespace Project1st.Game.Map.Fields
                         {
                             cursorPosition.y = 0;
                         }
-                        else if (cursorPosition.y >= GameManger.player.inventory.Count)
+                        else if (cursorPosition.y > currInventory.Count-1 && currInventory.Count==0)
                         {
-                            cursorPosition.y = GameManger.player.inventory.Count - 1;
+                            cursorPosition.y = 0;
+                        }
+                        else if (cursorPosition.y > currInventory.Count - 1 && currInventory.Count > 0)
+                        {
+                            cursorPosition.y = currInventory.Count - 1;
                         }
                     }
                 }

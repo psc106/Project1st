@@ -282,8 +282,18 @@ namespace Project1st.Game.Core
                                 //벽 공격
                                 if (GameManger.currField.fieldInfo[nextY, nextX] == FieldBase.field_info.tree)
                                 {
-                                    GameManger.currField.fieldInfo[nextY, nextX] = 0;
-                                    continue;
+                                    Items tool = GameManger.player.inventory.Find(x => x.itemId == 1);
+
+                                    if (GameManger.player.inventory.Find(x => x.itemId == 1) != null)
+                                    {
+                                        tool.count -= 1;
+                                        if (tool.count <= 0)
+                                        {
+                                            GameManger.player.inventory.Remove(tool);
+                                        }
+                                        GameManger.currField.fieldInfo[nextY, nextX] = 0;
+                                        continue;
+                                    }
                                 }
 
                                 //함정 공격
@@ -367,23 +377,74 @@ namespace Project1st.Game.Core
                                 else if (GameManger.player.gold < (int)(item.price * currTown.priceRate[item.itemId].currRate))
                                 {
                                 }
-                                else if (GameManger.player.maxWeight < item.weight + GameManger.player.weight)
-                                {
-                                }
                                 else
                                 {
                                     //마차구매시
                                     if (item.itemId == 3)
                                     {
-                                        GameManger.player.wagonList.Add(new Wagon());
-                                        GameManger.player.maxWeight += 100;
-                                        currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate);
-                                        GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate);
+                                        if (GameManger.player.wagonList.Count < Wagon.wagonCountMax)
+                                        {
+                                            GameManger.player.wagonList.Add(new Wagon());
+                                            GameManger.player.maxWeight += Wagon.wagonWeightMax;
+                                            currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate);
+                                            GameManger.player.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate);
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+
+                                    List<Items> currInventory = null;
+                                    Wagon currWagon = null;
+
+                                    //현재 여유분이 존재할거 같다.
+                                    if (GameManger.player.maxWeight >= item.weight + GameManger.player.SumWeight())
+                                    {
+                                        //1. 현재 플레이어의 인벤토리와 비교
+                                        if (Player.playerWeightMax >= item.weight + GameManger.player.weight)
+                                        {
+                                            currInventory = GameManger.player.inventory;
+                                        }
+                                        //2. 웨건 리스트와 비교
+                                        else if (GameManger.player.wagonList.Count > 0)
+                                        {
+                                            foreach (var tmp in GameManger.player.wagonList)
+                                            {
+                                                //발견시 바로 그 웨건 인벤토리 사용
+                                                if (Wagon.wagonWeightMax >= item.weight + tmp.weight)
+                                                {
+                                                    currWagon = tmp;
+                                                    currInventory = tmp.inventory;
+                                                    break;
+                                                }
+                                            }
+
+                                            //웨건 인벤토리에 여유분이 있지만 나눠져서 있을경우 null이 되어서 구매 실패
+                                            if (currInventory == null) continue;
+                                        }
+                                        //혹시모를 예외사항
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    //여유분이 안될경우
+                                    else
+                                    {
                                         continue;
                                     }
 
                                     //무게 증가
-                                    GameManger.player.weight += item.weight;
+                                    if (currWagon == null)
+                                    {
+                                        GameManger.player.weight += item.weight;
+                                    }
+                                    else
+                                    {
+                                        currWagon.weight += item.weight;
+                                    }
 
                                     //골드 교환
                                     currTown.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate);
@@ -416,24 +477,49 @@ namespace Project1st.Game.Core
                                     }
 
                                     //퀄리티 max인 같은 아이템에 저장
-                                    int itemIndex = GameManger.player.inventory.FindIndex(x => x.itemId == item.itemId && x.quality == 1);
-                                    if (itemIndex == -1)
+                                    int itemIndex;
+                                    //사용아이템 무조건 한곳에 모음
+                                    if (item.itemId < 10)
                                     {
-                                        GameManger.player.inventory.Add(new Items(item));
+                                        itemIndex = currInventory.FindIndex(x => x.itemId == item.itemId && x.quality == int.MaxValue);
                                     }
                                     else
                                     {
-                                        GameManger.player.inventory[itemIndex].count += 1;
+                                        itemIndex = currInventory.FindIndex(x => x.itemId == item.itemId && x.quality == 1);
                                     }
 
-                                    GameManger.player.inventory.OrderBy(x => x.itemId);
+                                    if (itemIndex == -1)
+                                    {
+                                        currInventory.Add(new Items(item));
+                                    }
+                                    else
+                                    {
+                                        currInventory[itemIndex].count += 1;
+                                    }
+
+                                    currInventory.OrderBy(x => x.itemId);
                                 }
                             }
                             //판매
-                            else if (currTown.cursorPosition.x == 1)
+                            else if (currTown.cursorPosition.x >= 1)
                             {
+                                Items item = null;
+                                List<Items> currInventory = null;
+                                Wagon currWagon = null;
 
-                                Items item = GameManger.player.inventory[(currTown.cursorPosition.y + GameManger.player.startInventoryIndex)];
+                                if (currTown.cursorPosition.x == 1)
+                                {
+                                    currInventory = GameManger.player.inventory;
+                                    if (currInventory == null || currInventory.Count == 0) continue;
+                                    item = currInventory[(currTown.cursorPosition.y + GameManger.player.startInventoryIndex)];
+                                }
+                                else
+                                {
+                                    currWagon = GameManger.player.wagonList[currTown.cursorPosition.x - 2];
+                                    currInventory = currWagon.inventory; 
+                                    if (currInventory == null || currInventory.Count == 0) continue;
+                                    item = currInventory[(currTown.cursorPosition.y + currWagon.startWagonInvenIndex)];
+                                }
 
                                 if (item.count == 0)
                                 {
@@ -443,12 +529,17 @@ namespace Project1st.Game.Core
                                 }
                                 else
                                 {
-                                    //무게 감소
-                                    GameManger.player.weight += item.weight;
+                                    if (currTown.cursorPosition.x == 1)
+                                    {
+                                        //무게 감소
+                                        GameManger.player.weight -= item.weight;
+                                    }
+                                    else
+                                    {
+                                        currWagon.weight -= item.weight;
+                                    }
 
                                     //골드 교환
-
-
                                     if (item.type == 2)
                                     {
                                         currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7 * item.quality);
@@ -459,19 +550,38 @@ namespace Project1st.Game.Core
                                         currTown.gold -= (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7);
                                         GameManger.player.gold += (int)(item.price * currTown.priceRate[item.itemId].currRate * 0.7);
                                     }
-                                    //수량 감소
-                                    item.count -= 1;
 
-                                    if (!item.isOwn && item.count == 0)
+                                    //아이템 감소
+                                    item.count -= 1;
+                                    if (item.count == 0)
                                     {
-                                        GameManger.player.inventory.RemoveAt(currTown.cursorPosition.y + GameManger.player.startInventoryIndex);
-                                        if (currTown.cursorPosition.y + currTown.startShopIndex > currTown.shop.Count)
+                                        currInventory.Remove(item);
+                                        if (currTown.cursorPosition.x == 1)
                                         {
-                                            GameManger.player.startInventoryIndex -= 1;
-                                            if (GameManger.player.startInventoryIndex < 0)
+                                            if (currTown.cursorPosition.y + GameManger.player.startInventoryIndex > currInventory.Count)
                                             {
-                                                GameManger.player.startInventoryIndex = 0;
+                                                GameManger.player.startInventoryIndex -= 1;
+                                                if (GameManger.player.startInventoryIndex < 0)
+                                                {
+                                                    GameManger.player.startInventoryIndex = 0;
+                                                }
                                             }
+                                        }
+                                        else
+                                        {
+                                            if (currTown.cursorPosition.y + currWagon.startWagonInvenIndex > currInventory.Count)
+                                            {
+                                                currWagon.startWagonInvenIndex -= 1;
+                                                if (currWagon.startWagonInvenIndex < 0)
+                                                {
+                                                    currWagon.startWagonInvenIndex = 0;
+                                                }
+                                            }
+                                        }
+
+                                        if (currTown.cursorPosition.y >= currInventory.Count)
+                                        {
+                                            currTown.cursorPosition.y = currInventory.Count - 1;
                                         }
                                     }
 
@@ -668,6 +778,7 @@ namespace Project1st.Game.Core
                         for (int i = 0; i < GameManger.player.Effects.Count; i++)
                         {
                             if (GameManger.player.Effects[i].type == -1) continue;
+                            if (GameManger.player.Effects[i] == null) continue;
 
                             int nextX = GameManger.player.Effects[i].Axis2D.x;
                             int nextY = GameManger.player.Effects[i].Axis2D.y;

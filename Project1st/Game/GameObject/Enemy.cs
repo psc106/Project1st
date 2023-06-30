@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Algorithm;
 using Project1st.Game.Core;
+using Project1st.Game.Item;
 using Project1st.Game.Map;
 using Project1st.Game.Map.Fields;
 using System;
@@ -91,21 +92,58 @@ namespace Project1st.Game.GameObject
                 path.RemoveAt(0);
             }
 
-            //플레이어와 붙을 경우
-            if (GameManger.player.Axis2D.x == this.Axis2D.x && GameManger.player.Axis2D.y == this.Axis2D.y)
+            if (isLive)
             {
-                GameManger.currField.StopEnemies();
-                if (GameManger.currField.GetCreateTimer() != null)
+                List<Wagon> wagon = GameManger.player.wagonList.FindAll(tmp => tmp.Axis2D.x == this.Axis2D.x && tmp.Axis2D.y == this.Axis2D.y);
+                //마차와 붙을 경우
+                if (wagon != null && wagon.Count > 0)
                 {
-                    GameManger.currField.GetCreateTimer().Dispose();
+                    for (int i = 0; i < wagon.Count; i++)
+                    {
+                        wagon[i].hitPoint -= 50;
+                        if (wagon[i].hitPoint <= 0)
+                        {
+                            GameManger.player.wagonList.Remove(wagon[i]);
+                            continue;
+                        }
+
+                        if (GameManger.player.inventory.Count > 0)
+                        {
+                            Items item = GameManger.player.inventory[GameManger.random.Next(GameManger.player.inventory.Count)];
+                            if (item.itemId >= 10)
+                            {
+                                item.quality -= 0.01f * GameManger.random.Next(5);
+                                if (item.quality < 0)
+                                {
+                                    item.quality = 0;
+                                }
+                            }
+                        }
+                    }
+
+                    moveTimer.Dispose();
+                    GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
+                    return;
                 }
 
-                moveTimer.Dispose();
-                GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
 
-                //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                //플레이어와 붙을 경우
+                if (GameManger.player.Axis2D.x == this.Axis2D.x && GameManger.player.Axis2D.y == this.Axis2D.y)
+                {
+                    GameManger.currField.StopEnemies();
+                    if (GameManger.currField.GetCreateTimer() != null)
+                    {
+                        GameManger.currField.GetCreateTimer().Dispose();
+                    }
 
-                new Battle(GameManger.currField.ReturnSelfToForest());
+                    moveTimer.Dispose();
+                    GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
+
+                    //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+                    new Battle(GameManger.currField.ReturnSelfToForest());
+                    return;
+                }
             }
         }
 

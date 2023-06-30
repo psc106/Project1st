@@ -1,13 +1,9 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
 using Project1st.Game.Item;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Project1st.Game.Map.Fields
 {
@@ -323,7 +319,28 @@ namespace Project1st.Game.Map.Fields
                     Wagon wagon = GameManger.player.wagonList.Find(tmp => tmp.Axis2D.x == x && tmp.Axis2D.y == y);
                     if (wagon != null)
                     {
-                        line[y] += ".9.ㅇ.";
+                        if (wagon.inventory.Count > 0)
+                        {
+                            if (wagon.hitPoint <= Wagon.wagonHitPointMax / 2)
+                            {
+                                line[y] += ".11.ㅇ.";
+                            }
+                            else
+                            {
+                                line[y] += ".2.ㅇ.";
+                            }
+                        }
+                        else
+                        {
+                            if (wagon.hitPoint <= Wagon.wagonHitPointMax / 2)
+                            {
+                                line[y] += ".9.ㅇ.";
+                            }
+                            else
+                            {
+                                line[y] += ".3.ㅇ.";
+                            }
+                        }
                         continue;
                     }
 
@@ -567,7 +584,16 @@ namespace Project1st.Game.Map.Fields
                     GameManger.player.direction = 4;
                     if (GameManger.player.inventory.Count > 0)
                     {
-                        GameManger.player.inventory[GameManger.random.Next(GameManger.player.inventory.Count)].quality -= 0.01f * GameManger.random.Next(5);
+
+                        Items item = GameManger.player.inventory[GameManger.random.Next(GameManger.player.inventory.Count)];
+                        if (item.itemId >= 10)
+                        {
+                            item.quality -= 0.01f * GameManger.random.Next(5);
+                            if (item.quality < 0)
+                            {
+                                item.quality = 0;
+                            }
+                        }
                     }
                     isStun = true;
                 }

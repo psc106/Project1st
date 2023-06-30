@@ -62,45 +62,59 @@ namespace Project1st.Game.Core
                         Color color = (Color)int.Parse(splitString[i]);
                         switch (color)
                         {
+                            //0
                             case Color.WHITE:
                                 Console.ForegroundColor = ConsoleColor.White;
                                 break;
+                            //1
                             case Color.RED:
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 break;
+                            //2
                             case Color.GREEN:
                                 Console.ForegroundColor = ConsoleColor.Green;
                                 break;
+                            //3
                             case Color.BLUE:
                                 Console.ForegroundColor = ConsoleColor.Blue;
                                 break;
+                            //4
                             case Color.YELLOW:
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 break;
+                            //5
                             case Color.CYAN:
                                 Console.ForegroundColor = ConsoleColor.Cyan;
                                 break;
+                            //6
                             case Color.DARK_GRAY:
                                 Console.ForegroundColor = ConsoleColor.DarkGray;
                                 break;
+                            //7
                             case Color.DARK_RED:
                                 Console.ForegroundColor = ConsoleColor.DarkRed;
                                 break;
+                            //8
                             case Color.DARK_MAGENTA:
                                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
                                 break;
+                            //9
                             case Color.DARK_BLUE:
                                 Console.ForegroundColor = ConsoleColor.DarkBlue;
                                 break;
+                            //10
                             case Color.DARK_CYAN:
                                 Console.ForegroundColor = ConsoleColor.DarkCyan;
                                 break;
+                            //11
                             case Color.DARK_GREEN:
                                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                                 break;
+                            //12
                             case Color.DARK_YELLOW:
                                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                                 break;
+                            //99?
                             case Color.BLACK:
                                 Console.ForegroundColor = ConsoleColor.Black;
                                 break;

@@ -270,10 +270,54 @@ namespace Project1st.Game.Map.Fields
                         Effect firstEffect = currEffect.FirstOrDefault();
                         if (firstEffect != null)
                         {
-                            if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y) continue;
+                            if (GameManger.player.Axis2D.x == x && GameManger.player.Axis2D.y == y)
+                            {
+                                if (GameManger.player.hitPoint < 20)
+                                {
+                                    line[y] += ".6.";
 
+                                }
+                                else if (GameManger.player.hitPoint < 50)
+                                {
+                                    line[y] += ".5.";
 
-                            line[y] += ".11." + Effect.effectString[firstEffect.type] + ".";
+                                }
+                                else if (GameManger.player.hitPoint < 200)
+                                {
+                                    line[y] += ".4.";
+
+                                }
+                                else if (GameManger.player.hitPoint < 9999)
+                                {
+                                    line[y] += ".0.";
+
+                                }
+                                switch (GameManger.player.direction)
+                                {
+                                    case 0:
+                                        line[y] += "▶.";
+                                        break;
+                                    case 1:
+                                        line[y] += "◀.";
+                                        break;
+                                    case 2:
+                                        line[y] += "▲.";
+                                        break;
+                                    case 3:
+                                        line[y] += "▼.";
+                                        break;
+                                    case 4:
+                                        line[y] += "！.";
+                                        break;
+                                    default:
+                                        line[y] += "나.";
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                line[y] += ".11." + Effect.effectString[firstEffect.type] + ".";                             
+                            }
                             if (firstEffect.type != 4)
                             {
                                 GameManger.player.Effects.Remove(firstEffect);

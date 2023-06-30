@@ -18,8 +18,6 @@ namespace Project1st.Game.GameObject
 
         public int gold;
         public int light;
-        public float weight;
-        public float maxWeight;
 
         public int weapon;
         public int bulletCount;
@@ -28,11 +26,14 @@ namespace Project1st.Game.GameObject
         public bool isMeleeDelay;
         public bool isRangeDelay;
 
-        public int hitPointMax;
-
         public List<Effect> Effects;
 
         public List<Wagon> wagonList;
+
+        public static readonly float playerWeightMax = 50;
+        public float weight;
+        public float maxWeight;
+        public int hitPointMax;
         public List<Items> inventory;
         public int startInventoryIndex;
 
@@ -48,6 +49,17 @@ namespace Project1st.Game.GameObject
 
         }
 
+        public float SumWeight()
+        {
+            float sum = 0;
+            foreach (var tmp in wagonList)
+            {
+                sum += tmp.weight;
+            }
+
+            return sum;
+        }
+
         public override void Init()
         {
             base.Init();
@@ -57,7 +69,7 @@ namespace Project1st.Game.GameObject
             ID = 0;
             isMeleeDelay = false;
             isRangeDelay = false;
-            maxWeight = 50;
+            maxWeight = playerWeightMax;
             weight = 0;
             gold = 23000;
             bulletCountMax = 3;
