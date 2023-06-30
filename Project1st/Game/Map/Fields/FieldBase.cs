@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.GameObject;
+using Project1st.Game.Interface;
 using Project1st.Game.Item;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace Project1st.Game.Map.Fields
 {
 
-    public class FieldBase
+    public class FieldBase : IUseItem, IEquipItem
     {
         protected int[] AXIS_X = { 1, -1, 0, 0, 0, 0 };
         protected int[] AXIS_Y = { 0, 0, -1, 1, 0, 0 };
@@ -262,10 +263,99 @@ namespace Project1st.Game.Map.Fields
             return null;
         }
 
-    }
+        public bool UseItem(Items item, Wagon currWagon)
+        {
+            if (item.type == 0)
+            {
+                //포션
+                if (item.itemId == 0)
+                {
+                    if (GameManger.player.hitPoint == Player.hitPointMax)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        item.count -= 1;
+                        if (item.count == 0)
+                        {
+                            if (!GameManger.player.inventory.Remove(item))
+                            currWagon.inventory.Remove(item);
+                        }
+                        GameManger.player.hitPoint += 20;
+                        if (GameManger.player.hitPoint > Player.hitPointMax)
+                        {
+                            GameManger.player.hitPoint = Player.hitPointMax;
+                        }
+                        return true;
+                    }
+                }
 
-    public class City : FieldBase
-    {
+                //공구
+                if (item.itemId == 1)
+                {
+                    
+                    if (currWagon.hitPoint == Wagon.wagonHitPointMax)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        item.count -= 1;
+                        if (item.count == 0)
+                        {
+                            if (!GameManger.player.inventory.Remove(item))
+                                currWagon.inventory.Remove(item);
+                        }
+                        currWagon.hitPoint += 40;
+                        if (currWagon.hitPoint > Wagon.wagonHitPointMax)
+                        {
+                            currWagon.hitPoint = Wagon.wagonHitPointMax;
+                        }
+                        return true;
+                    }
+                }
+
+                //등불
+                if (item.itemId == 2)
+                {
+                    if (GameManger.player.walk > 0)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        item.count -= 1;
+                        if (item.count == 0)
+                        {
+                            if (!GameManger.player.inventory.Remove(item))
+                                currWagon.inventory.Remove(item);
+                        }
+                        GameManger.player.light += 3;
+                        GameManger.player.walk = 100;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool EquipItem(Items item, Wagon currWagon)
+        {
+            if (item.type == 1)
+            {
+                GameManger.player.weapon = item;
+                GameManger.player.attckPoint = item.weaponStr;
+
+                item.count -= 1;
+                if (item.count == 0)
+                {
+                    if (!GameManger.player.inventory.Remove(item))
+                        currWagon.inventory.Remove(item);
+                }
+            }
+            return false;
+        }
     }
 
 
