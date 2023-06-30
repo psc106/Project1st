@@ -35,7 +35,7 @@ namespace Project1st.Game.Algorithm
         public static List<Location> Go(Enemy enemy)
         {
             Location start = new Location(enemy);
-            Location target = new Location(GameManger.player);
+            Location target = new Location(enemy.target);
 
             // algorithm  
             Location current = null;
