@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game.DataBase
 {
+    //test용 database.
+    //상점에 값을 넣기 위한 클래스이다.
     public class DB
     {
         public Dictionary<int, Items> database;

@@ -9,11 +9,14 @@ namespace Project1st.Game.Item
 {
     public class PriceRate
     {
-        //플레이어가 팔때
+        //현재 시세 비율
         public float currRate;
+        //기본 시세 비율
         public float mainRate;
 
+        //시세 유지 시간
         public int keepTurn;
+        //다음 시세 상태
         public state nextState;
 
         public enum state
@@ -37,6 +40,7 @@ namespace Project1st.Game.Item
             this.nextState = state.keep;
         }
 
+        //매 일 keepturn을 감소시키고 시간이 되면 시세를 변경한다. 
         public void ChangePriceRate()
         {
             if (keepTurn == 0)
@@ -87,6 +91,6 @@ namespace Project1st.Game.Item
             {
                 keepTurn -= 1;
             }
-        }
+        }//[ChangePriceRate] end
     }
 }

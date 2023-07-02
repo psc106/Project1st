@@ -11,13 +11,21 @@ using System.Xml.Linq;
 
 namespace Project1st.Game.Algorithm
 {
+    //a* 알고리즘 노드
     public class Location
     {
+        //좌표값
         public int X;
         public int Y;
+
+        //F = 이동한 횟수
         public int F;
+        //G = 현재 위치와 목표 위치간의 절대 거리값
         public int G;
+        //H = F+G
         public int H;
+
+        //이동전 노드 정보 저장
         public Location Parent;
 
         public Location()
@@ -25,8 +33,8 @@ namespace Project1st.Game.Algorithm
         }
         public Location(ObjectBase obj)
         {
-            X = obj.Axis2D.x;
-            Y = obj.Axis2D.y;
+            X = obj.axis.x;
+            Y = obj.axis.y;
         }
     }
 
@@ -34,10 +42,11 @@ namespace Project1st.Game.Algorithm
     {
         public static List<Location> Go(Enemy enemy)
         {
+            //시작 위치와 목표 위치 설정
             Location start = new Location(enemy);
             Location target = new Location(enemy.target);
 
-            // algorithm  
+
             Location current = null;
             List<Location> openList = new List<Location>();
             List<Location> closedList = new List<Location>();

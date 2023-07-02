@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game.Map.Fields
 {
-
+    //필드 베이스 클래스
     public class FieldBase : IUseItem, IEquipItem
     {
         public static readonly int _FIELD_SIZE = 15;
@@ -20,12 +20,16 @@ namespace Project1st.Game.Map.Fields
         {
             road = 0, empty, mud, tree, wall, portal, error = 90
         }
+        public enum field_type : byte
+        {
+           nothing = 0, forest, town, battle, ending
+        }
 
         //0-길 1-빈땅 2-진창 3-나무 4-포탈
         public Portal[] portals;
         public field_info[,] fieldInfo;
 
-        public int type;
+        public field_type type;
         public bool isFog;
         public bool isCurrField;
         public bool isMenu;
@@ -34,7 +38,7 @@ namespace Project1st.Game.Map.Fields
         public FieldBase()
         {
             isMenu = false;
-            type = 0;
+            type = field_type.nothing;
             portals = new Portal[4];
             fieldInfo = new field_info[_FIELD_SIZE, _FIELD_SIZE];
 
@@ -51,7 +55,7 @@ namespace Project1st.Game.Map.Fields
         public FieldBase(int flag)
         {
             isMenu = false;
-            type = 0;
+            type = field_type.nothing;
 
             portals = new Portal[4];
             fieldInfo = new field_info[_FIELD_SIZE, _FIELD_SIZE];
@@ -82,6 +86,37 @@ namespace Project1st.Game.Map.Fields
         }
 
 
+
+        //입력 처리
+        public virtual bool PressYesEvent()
+        {
+            return false;
+        }
+        public virtual void PressNoEvent()
+        {
+        }
+        public virtual bool PressMoveEvent()
+        {
+            return false;
+        }
+        public virtual void PressMenuEvent()
+        {
+        }
+        //
+
+        //입장
+        public virtual void InitEnter()
+        {
+        }
+
+        //퇴장
+        public virtual void Exit()
+        {
+        }
+
+        #region virtual 메서드
+
+
         public virtual void CreateDoor(int index)
         {
             switch (index)
@@ -100,38 +135,6 @@ namespace Project1st.Game.Map.Fields
                     break;
             }
         }
-
-        public virtual bool PressYesEvent()
-        {
-            return false;
-        }
-        public virtual void PressNoEvent()
-        {
-        }
-        public virtual bool PressMoveEvent()
-        {
-            return false;
-        }
-        public virtual void PressMenuEvent()
-        {
-        }
-
-
-
-        public virtual void InitEnter()
-        {
-        }
-
-        public virtual void Exit()
-        {
-        }
-
-
-
-        public virtual float[,] GetFogInfo()
-        {
-            return null;
-        }
         public virtual float GetFogInfo(int x, int y)
         {
             return 1;
@@ -139,8 +142,6 @@ namespace Project1st.Game.Map.Fields
         public virtual void SetFogInfo(int x, int y, float info)
         {
         }
-
-
         public virtual List<Enemy> GetEnemies()
         {
             return null;
@@ -155,15 +156,6 @@ namespace Project1st.Game.Map.Fields
         public virtual void CreateEnemy(object obj)
         {
         }
-
-        public field_info GetElementAt(int x, int y)
-        {
-            if (fieldInfo == null) return field_info.error;
-            return fieldInfo[y, x];
-        }
-        public virtual void RemoveEnemy(int index)
-        {
-        }
         public virtual void RemoveEnemy(int x, int y)
         {
         }
@@ -171,30 +163,39 @@ namespace Project1st.Game.Map.Fields
         {
             return null;
         }
-        public virtual Player FindPlayerAt(int x, int y)
-        {
-            return null;
-        }
+       
         public virtual void StopEnemies()
         {
         }
         public virtual void PlayEnemies()
         {
         }
+        public virtual void PlayEnemies(int time)
+        {
+        }
+
+        #endregion
+
+        public field_info GetElementAt(int x, int y)
+        {
+            if (fieldInfo == null) return field_info.error;
+            return fieldInfo[y, x];
+        }
 
         public Battle ReturnSelfToBattle()
         {
-            if(type == 3) return (Battle)this;
+            if(type == field_type.battle) return (Battle)this;
             return null;
         }
 
         public Forest ReturnSelfToForest()
         {
 
-            if (type == 1) return (Forest)this;
+            if (type == field_type.forest) return (Forest)this;
             return null;
         }
 
+        //플레이어의 아이템 사용
         public bool UseItem(Items item, Wagon currWagon)
         {
             if (item.type == 0)
@@ -263,7 +264,7 @@ namespace Project1st.Game.Map.Fields
                             if (!GameManger.player.inventory.Remove(item))
                                 currWagon.inventory.Remove(item);
                         }
-                        GameManger.player.light += 3;
+                        GameManger.player.light += 2;
                         GameManger.player.walk = 100;
                         return true;
                     }
@@ -272,6 +273,8 @@ namespace Project1st.Game.Map.Fields
             return false;
         }
 
+        //플레이어의 장비 변경.
+        //장비 사용시 이전 장비 삭제
         public bool EquipItem(Items item, Wagon currWagon)
         {
             if (item.type == 1)
@@ -287,12 +290,16 @@ namespace Project1st.Game.Map.Fields
             }
             return false;
         }
+
+        //각 필드마다 다른 형태로 변환해서 출력한다.
         public virtual string[] ConvertMapToString(ref string[] strings)
         {
             strings = null;
             return null;
         }
 
+
+        //미니맵용 스트링 output
         public string[] MakeRoomToString()
         {
             string[] line = new string[3];
@@ -323,19 +330,19 @@ namespace Project1st.Game.Map.Fields
 
             if (!this.isFog)
             {
-                if (!this.isCurrField && this.type == 1)
+                if (!this.isCurrField && this.type == field_type.forest)
                 {
                     line[1] += "□";
                 }
-                else if (!this.isCurrField && this.type == 2)
+                else if (!this.isCurrField && this.type == field_type.town)
                 {
                     line[1] += "☆";
                 }
-                else if (this.isCurrField && this.type == 1)
+                else if (this.isCurrField && this.type == field_type.forest)
                 {
                     line[1] += "■";
                 }
-                else if (this.isCurrField && this.type == 2)
+                else if (this.isCurrField && this.type == field_type.town)
                 {
                     line[1] += "★";
                 }
@@ -367,6 +374,7 @@ namespace Project1st.Game.Map.Fields
     }
 
 
+    //포탈
     public class Portal
     {
         public Coordinate axis;

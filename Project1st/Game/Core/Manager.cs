@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game.Core
 {
+    //게임 매니저
+    //static으로 이뤄진 값들이며 각 클래스들은 이를 참조하여 동작한다.
     public static class GameManger
     {
         public static BufferPrinter buffer;
@@ -31,7 +33,7 @@ namespace Project1st.Game.Core
             worldMap = new WorldMap();
             buffer = new BufferPrinter();
             player = new Player();
-            currFieldPos = new Coordinate(1, 1);
+            currFieldPos = new Coordinate(0, 0);
 
         }
     }

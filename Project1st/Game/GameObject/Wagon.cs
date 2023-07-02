@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game.GameObject
 {
+    //마차 클래스
     public class Wagon : MoveObject
     {
         public static readonly int _WAGON_COUNT_MAX = 10;
@@ -16,7 +17,6 @@ namespace Project1st.Game.GameObject
         public float weight;
         public List<Items> inventory;
         public int startInvenIndex;
-
 
         public Wagon()
         {
@@ -29,8 +29,8 @@ namespace Project1st.Game.GameObject
 
         public void Follow(int x, int y)
         {
-            this.Axis2D.x = x;
-            this.Axis2D.y = y;
+            this.axis.x = x;
+            this.axis.y = y;
         }
 
     }

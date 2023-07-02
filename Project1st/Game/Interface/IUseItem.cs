@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game.Interface
 {
+
+    //fieldBase에 상속하고 구현
     public interface IUseItem
     {
         bool UseItem(Items item, Wagon obj);

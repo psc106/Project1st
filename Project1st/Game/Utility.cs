@@ -1,5 +1,6 @@
 ﻿using Project1st.Game.Core;
 using Project1st.Game.Item;
+using Project1st.Game.Map.Fields;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Project1st.Game
 {
+ 
+    //좌표 저장
     public class Coordinate
     {
         public int x;
@@ -21,6 +24,7 @@ namespace Project1st.Game
         }
     }
 
+    //안개 정보 저장
     public class FogView
     {
         public int x;
@@ -48,7 +52,7 @@ namespace Project1st.Game
 
             if (GameManger.worldMap.day == 0)
             {
-                tmpLight += 3;
+                tmpLight += 2;
             }
             else if (GameManger.worldMap.day == 1)
             {
@@ -75,6 +79,7 @@ namespace Project1st.Game
 
     }
 
+    //주점 정보 저장
     public class PubEvent
     {
         public int type;
@@ -88,17 +93,24 @@ namespace Project1st.Game
             string str = "";
             if (type == 0)
             {
-                str += $"[{townX}, {townY}]에서 ";
+                if (townX != -1 || townY != -1)
+                {
+                    str += $"[?, ?]에서 ";
+                }
+                else
+                {
+                    str += $"[{townX}, {townY}]에서 ";
+                }
                 str += $"{eventPrice.keepTurn}일 뒤에 {GameManger.db.database[itemId].name,4}이 가격을 {eventPrice.nextState}합니다";
             }
             else if (type == 1)
             {
-                if (GameManger.worldMap.map[townY, townX].type == 1)
+                if (GameManger.worldMap.map[townY, townX].type == FieldBase.field_type.forest)
                 {
                     str += $"[{townX}, {townY}] ";
                     str += "엔 숲길뿐이 없다";
                 }
-                else if (GameManger.worldMap.map[townY, townX].type == 2)
+                else if (GameManger.worldMap.map[townY, townX].type == FieldBase.field_type.town)
                 {
                     str += $"[{townX}, {townY}] ";
                     str += "에 마을이 있다";

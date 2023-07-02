@@ -13,15 +13,18 @@ namespace Project1st.Game.Map.Fields
 
     public class Town : FieldBase
     {
+        //상점
         public List<Items> shop;
-        public List<PubEvent> pubEvents;
+        public int startShopIndex;
+        public int gold;
 
-        //2.00 ~ 0.00
+        //아이템 시세
         public Dictionary<int, PriceRate> priceRate;
 
-        public int startShopIndex;
+        //주점
+        public List<PubEvent> pubEvents;
 
-        public int gold;
+        //커서위치
         public int mainPosition;
         public Coordinate cursorPosition;
 
@@ -31,7 +34,7 @@ namespace Project1st.Game.Map.Fields
             pubEvents = new List<PubEvent>();
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
-            type = 2;
+            type = FieldBase.field_type.town;
             mainPosition = 0;
             cursorPosition = new Coordinate(0, 0);
             startShopIndex = 0;
@@ -53,26 +56,32 @@ namespace Project1st.Game.Map.Fields
 
         public Town(FieldBase field)
         {
+            //필드 정보
+            type = FieldBase.field_type.town;
             isFog = field.isFog;
-            gold = 2000;
-            pubEvents = new List<PubEvent>();
+            
+            //상점 세팅
             shop = new List<Items>();
             priceRate = new Dictionary<int, PriceRate>();
-            type = 2;
-            mainPosition = 0;
+            gold = 2000;
+            
+            //주점
+            pubEvents = new List<PubEvent>();
+
+            //커서 세팅
             cursorPosition = new Coordinate(0, 0);
+            mainPosition = 0;
             startShopIndex = 0;
 
+            //필드 정보에 포탈 세팅
             portals = field.portals;
             for (int i = 0; i < 4; i++)
             {
                 if (portals[i] != null)
                 {
                     fieldInfo[portals[i].axis.y, portals[i].axis.x] = field_info.portal;
-
                 }
             }
-
 
             //기본 판매 아이템
             shop.Add(GameManger.db.database[0]);
@@ -102,20 +111,24 @@ namespace Project1st.Game.Map.Fields
                 }
             }
 
-            for (int i = 0; i < 60; i++)
+            //시세 추가
+            for (int i = 0; i < 51; i++)
             {
-                if (shop.Find(x => x.itemId == i) == null)
+                if (shop.Find(x => x.itemId == i) != null)
                 {
+                    //상점에서 파는건 50% 깎음
                     priceRate.Add(i, new PriceRate(.5f));
                 }
                 else
                 {
+                    //상점에서 안파는건 110%
                     priceRate.Add(i, new PriceRate(1.1f));
                 }
             }
             priceRate.Add(100, new PriceRate(1));
         }
 
+        //입장
         public override void InitEnter()
         {
             mainPosition = 0;
@@ -123,17 +136,26 @@ namespace Project1st.Game.Map.Fields
             GameManger.worldMap.dayTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         }
 
+        //퇴장
         public override void Exit()
         {
-            GameManger.worldMap.dayTimer.Change(100, 60000);
+            GameManger.currField.isFog = false;
+            GameManger.currField.isCurrField = false;
+            GameManger.worldMap.dayTimer.Change(0, 60000);
         }
 
+        //이동키
+        //메뉴 이벤트
         public override void PressMenuEvent()
         {
-
+            //마을 메뉴(4개)
+            //상점
+            //주점
+            //여관
+            //나가기
             if (mainPosition == 0)
             {
-                cursorPosition.y = cursorPosition.y + WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
+                cursorPosition.y += WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
 
                 if (cursorPosition.y < 0)
                 {
@@ -145,10 +167,11 @@ namespace Project1st.Game.Map.Fields
                 }
             }
 
+            //상점 메뉴
             else if (mainPosition == 1)
             {
-                cursorPosition.x = cursorPosition.x + WorldMap._AXIS_MATRIX_X[GameManger.player.direction];
-                cursorPosition.y = cursorPosition.y + WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
+                cursorPosition.x += WorldMap._AXIS_MATRIX_X[GameManger.player.direction];
+                cursorPosition.y += WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
 
                 if (cursorPosition.x < 0)
                 {
@@ -159,9 +182,10 @@ namespace Project1st.Game.Map.Fields
                     cursorPosition.x = GameManger.player.wagonList.Count + 1;
                 }
 
-                //구매창
+                //x가 제일 왼쪽 = 구매창
                 if (cursorPosition.x == 0)
                 {
+                    //최대 30개 출력
                     if (shop.Count > 30)
                     {
                         if (cursorPosition.y < 0)
@@ -184,6 +208,7 @@ namespace Project1st.Game.Map.Fields
                         }
 
                     }
+                    //30개 미만일 경우
                     else
                     {
                         if (cursorPosition.y < 0)
@@ -195,27 +220,43 @@ namespace Project1st.Game.Map.Fields
                             cursorPosition.y = shop.Count - 1;
                         }
                     }
-                }
+                }//[구매] end
+
                 //판매창
+                //1번->플레이어
+                //2번 이상 -> 마차
                 else if (cursorPosition.x >= 1)
                 {
                     List<Items> currInventory = null;
                     Wagon currWagon = null;
 
+                    //플레이어
                     if (cursorPosition.x == 1)
                     {
                         currInventory = GameManger.player.inventory;
-                        if (currInventory == null || currInventory.Count == 0) { }
+                        if (currInventory == null || currInventory.Count == 0)
+                        {
+                            cursorPosition.y = 0;
+                            return;
+                        }
                     }
+                    //마차
                     else
                     {
                         currWagon = GameManger.player.wagonList[cursorPosition.x - 2];
                         currInventory = currWagon.inventory;
-                        if (currInventory == null || currInventory.Count == 0) { }
+                        if (currInventory == null || currInventory.Count == 0)
+                        {
+                            cursorPosition.y = 0;
+                            return;
+                        }
                     }
 
+                    //30개 넘는 인벤토리 일경우
                     if (currInventory.Count > 30)
                     {
+                        //양 끝에 갈 경우 해당 방향으로 드래그 된다.
+                        //제일 위
                         if (cursorPosition.y < 0)
                         {
                             cursorPosition.y = 0;
@@ -237,6 +278,7 @@ namespace Project1st.Game.Map.Fields
                                 }
                             }
                         }
+                        //제일 아래
                         else if (cursorPosition.y >= 30)
                         {
                             cursorPosition.y = 29;
@@ -265,8 +307,8 @@ namespace Project1st.Game.Map.Fields
                                 }
                             }
                         }
-
                     }
+                    //30개 이하
                     else
                     {
                         if (cursorPosition.y < 0)
@@ -282,11 +324,15 @@ namespace Project1st.Game.Map.Fields
                             cursorPosition.y = currInventory.Count - 1;
                         }
                     }
-                }
-            }
+                }//[판매] end
+            }//[상점] end
+
+            //주점
+            //소문듣기
+            //위치파악
             else if (mainPosition == 2)
             {
-                cursorPosition.y = cursorPosition.y + WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
+                cursorPosition.y += WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
                 if (cursorPosition.y < 0)
                 {
                     cursorPosition.y = 1;
@@ -296,9 +342,12 @@ namespace Project1st.Game.Map.Fields
                     cursorPosition.y = 0;
                 }
             }
+
+            //여관
+            //잠자기
             else if (mainPosition == 3)
             {
-                cursorPosition.y = cursorPosition.y + WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
+                cursorPosition.y += WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
                 if (cursorPosition.y < 0)
                 {
                     cursorPosition.y = 0;
@@ -308,9 +357,14 @@ namespace Project1st.Game.Map.Fields
                     cursorPosition.y = 0;
                 }
             }
+            //나가기
+            //동
+            //서
+            //북
+            //남
             else if (mainPosition == 4)
             {
-                cursorPosition.y = cursorPosition.y + WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
+                cursorPosition.y += WorldMap._AXIS_MATRIX_Y[GameManger.player.direction];
 
                 if (cursorPosition.y < 0)
                 {
@@ -324,9 +378,11 @@ namespace Project1st.Game.Map.Fields
             }
         }
 
+
+        //확인키 입력 처리
         public override bool PressYesEvent()
         {
-
+            //마을 메뉴 -> 해당 메뉴로 입장
             if (mainPosition == 0)
             {
                 mainPosition = (cursorPosition.y + 1);
@@ -336,17 +392,22 @@ namespace Project1st.Game.Map.Fields
                 startShopIndex = 0;
                 GameManger.player.startInvenIndex = 0;
             }
+
+            //상점 메뉴-> 구매/판매
             else if (mainPosition == 1)
             {
 
                 //구매
                 if (cursorPosition.x == 0)
                 {
+                    //현재 아이템 인덱스 = 시작 인덱스+현재 커서 위치
                     Items item = shop[(cursorPosition.y + startShopIndex)];
 
+                    //아이템 갯수 0일경우 넘어감
                     if (item.count == 0)
                     {
                     }
+                    //골드 부족할 경우 넘어감
                     else if (GameManger.player.gold < (int)(item.price * priceRate[item.itemId].currRate))
                     {
                     }
@@ -359,7 +420,7 @@ namespace Project1st.Game.Map.Fields
                             {
                                 GameManger.player.wagonList.Add(new Wagon());
                                 GameManger.player.maxWeightSum += Wagon._WAGON_WEIGHT_MAX;
-                                gold += (int)(item.price * priceRate[item.itemId].currRate);
+                                this.gold += (int)(item.price * priceRate[item.itemId].currRate);
                                 GameManger.player.gold -= (int)(item.price * priceRate[item.itemId].currRate);
                                 return false;
                             }
@@ -429,17 +490,29 @@ namespace Project1st.Game.Map.Fields
                         //수량 감소
                         item.count -= 1;
 
+                        if (item.itemId < 4)
+                        {
+                            item.count = 10;
+                        }
+
+
+                        //집 구매시
                         if (item.itemId == 100)
                         {
 
                             Exit();
 
+                            //엔딩
                             GameManger.currField = new Ending(2);
                         }
+
+                        //다른 아이템 구매시
                         else
                         {
+                            //해당 상점에서 파는 아이템이 아니라면
                             if (!item.isOwn && item.count == 0)
                             {
+                                //상점에서 삭제한다.
                                 shop.RemoveAt(cursorPosition.y + startShopIndex);
                                 if (cursorPosition.y + startShopIndex > shop.Count)
                                 {
@@ -452,9 +525,10 @@ namespace Project1st.Game.Map.Fields
                             }
                         }
 
-                        //퀄리티 max인 같은 아이템에 저장
                         int itemIndex;
                         //사용아이템 무조건 한곳에 모음
+                        //장비아이템 따로따로 모음
+                        //퀄리티 max인 같은 아이템에 저장
                         if (item.itemId < 10)
                         {
                             itemIndex = currInventory.FindIndex(x => x.itemId == item.itemId && x.quality == int.MaxValue);
@@ -464,18 +538,22 @@ namespace Project1st.Game.Map.Fields
                             itemIndex = currInventory.FindIndex(x => x.itemId == item.itemId && x.quality == 1);
                         }
 
+                        //아이템 없으면 새로 생성
                         if (itemIndex == -1)
                         {
                             currInventory.Add(new Items(item));
                         }
+                        //있으면 +1
                         else
                         {
                             currInventory[itemIndex].count += 1;
                         }
 
+                        //정렬
                         currInventory.OrderBy(x => x.itemId);
                     }
                 }
+
                 //판매
                 else if (cursorPosition.x >= 1)
                 {
@@ -581,9 +659,61 @@ namespace Project1st.Game.Map.Fields
                     }
                 }
             }
+
+            //주점 일 경우
             else if (mainPosition == 2)
             {
-                if (cursorPosition.y == 1)
+                //최대 10개까지 가능
+                if (pubEvents.Count > 10)
+                {
+                    return false;
+                }
+
+                //소문듣기
+                if (cursorPosition.y == 0)
+                {
+                    if (GameManger.player.gold >= 500)
+                    {
+                        GameManger.player.gold -= 500;
+
+                        PubEvent events = new PubEvent();
+                        events.type = 0;
+
+                        //시세 알려줌
+                        Town townTmp = GameManger.worldMap.townList[GameManger.random.Next(GameManger.worldMap.townList.Count)];
+                        int randomItemID = GameManger.random.Next(10, 51);
+                        PriceRate priceTmp = townTmp.priceRate[randomItemID];
+
+                        //알고 있는 마을이면 좌표도 알려줌
+                        if (!townTmp.isFog)
+                        {
+                            for (int i = 0; i < WorldMap._MAP_SIZE; i++)
+                            {
+                                for (int j = 0; j < WorldMap._MAP_SIZE; j++)
+                                {
+                                    if (GameManger.worldMap.map[i, j].Equals(townTmp))
+                                    {
+                                        events.townX = j;
+                                        events.townY = i;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            events.townX = -1;
+                            events.townY = -1;
+                        }
+
+                        events.itemId = randomItemID;
+                        events.eventPrice = priceTmp;
+
+                        pubEvents.Add(events);
+                    }
+                }
+                //위치 보기
+                else if (cursorPosition.y == 1)
                 {
                     if (pubEvents.Count > 10)
                     {
@@ -599,63 +729,42 @@ namespace Project1st.Game.Map.Fields
                         events.townY = GameManger.random.Next(WorldMap._MAP_SIZE);
                         events.type = 1;
 
-                        if (GameManger.worldMap.map[events.townY, events.townX].type == 1)
+                        //해당 위치 미니맵에 보여짐
+                        if (GameManger.worldMap.map[events.townY, events.townX].type == FieldBase.field_type.forest)
                         {
                             GameManger.worldMap.map[events.townY, events.townX].isFog = false;
                         }
-                        else if (GameManger.worldMap.map[events.townY, events.townX].type == 2)
+                        else if (GameManger.worldMap.map[events.townY, events.townX].type == FieldBase.field_type.town)
                         {
                             GameManger.worldMap.map[events.townY, events.townX].isFog = false;
                         }
-                        pubEvents.Add(events);
-                    }
-                }
-                else if (cursorPosition.y == 0)
-                {
-                    if (pubEvents.Count > 10)
-                    {
-                        return false;
-                    }
-                    if (GameManger.player.gold >= 500)
-                    {
-                        GameManger.player.gold -= 500;
-
-                        PubEvent events = new PubEvent();
-                        events.type = 0;
-
-                        Town townTmp = GameManger.worldMap.townList[GameManger.random.Next(GameManger.worldMap.townList.Count)];
-                        int randomItemID = GameManger.random.Next(10, 51);
-                        PriceRate priceTmp = townTmp.priceRate[randomItemID];
-
-
-                        for (int i = 0; i < WorldMap._MAP_SIZE; i++)
-                        {
-                            for (int j = 0; j < WorldMap._MAP_SIZE; j++)
-                            {
-                                if (GameManger.worldMap.map[i, j].Equals(townTmp))
-                                {
-                                    events.townX = j;
-                                    events.townY = i;
-                                    break;
-                                }
-                            }
-                        }
-
-                        events.itemId = randomItemID;
-                        events.eventPrice = priceTmp;
-
                         pubEvents.Add(events);
                     }
                 }
             }
+
+            //여관일 경우
             else if (mainPosition == 3)
             {
                 if (cursorPosition.y == 0)
                 {
                     if (GameManger.player.gold >= 100)
                     {
+                        //반나절 지남
                         GameManger.worldMap.SetDayTimer(null);
+                        
+                        //플레이어 체력회복
                         GameManger.player.hitPoint = Player._PLAYER_HITPOINT_MAX;
+
+                        //마차 체력회복
+                        if (GameManger.player.wagonList.Count > 0)
+                        {
+                            for (int i = 0; i < GameManger.player.wagonList.Count; i++)
+                            {
+                                GameManger.player.wagonList[i].hitPoint = Wagon._WAGON_HITPOINT_MAX;
+                            }
+                        }
+
                         GameManger.player.gold -= 100;
 
                         mainPosition = 0;
@@ -664,6 +773,8 @@ namespace Project1st.Game.Map.Fields
                     }
                 }
             }
+
+            //나가기 메뉴
             else if (mainPosition == 4)
             {
                 if (GameManger.currField.portals[cursorPosition.y] != null)
@@ -671,48 +782,50 @@ namespace Project1st.Game.Map.Fields
 
                     GameManger.currFieldPos.y += WorldMap._AXIS_MATRIX_Y[cursorPosition.y];
                     GameManger.currFieldPos.x += WorldMap._AXIS_MATRIX_X[cursorPosition.y];
-                    GameManger.currField.isFog = false;
-                    GameManger.currField.isCurrField = false;
 
+                    //퇴장 메서드
                     Exit();
 
+                    //다음 필드 재설정
                     GameManger.currField = GameManger.worldMap.map[GameManger.currFieldPos.y, GameManger.currFieldPos.x];
 
+                    //다음 맵의 포탈의 위치로 플레이어 이동
                     if (cursorPosition.y == 0)
                     {
-                        GameManger.player.Axis2D.x = GameManger.currField.portals[1].axis.x;
-                        GameManger.player.Axis2D.y = GameManger.currField.portals[1].axis.y;
+                        GameManger.player.axis.x = GameManger.currField.portals[1].axis.x;
+                        GameManger.player.axis.y = GameManger.currField.portals[1].axis.y;
                     }
                     else if (cursorPosition.y == 1)
                     {
-                        GameManger.player.Axis2D.x = GameManger.currField.portals[0].axis.x;
-                        GameManger.player.Axis2D.y = GameManger.currField.portals[0].axis.y;
+                        GameManger.player.axis.x = GameManger.currField.portals[0].axis.x;
+                        GameManger.player.axis.y = GameManger.currField.portals[0].axis.y;
                     }
                     else if (cursorPosition.y == 2)
                     {
-                        GameManger.player.Axis2D.x = GameManger.currField.portals[3].axis.x;
-                        GameManger.player.Axis2D.y = GameManger.currField.portals[3].axis.y;
+                        GameManger.player.axis.x = GameManger.currField.portals[3].axis.x;
+                        GameManger.player.axis.y = GameManger.currField.portals[3].axis.y;
                     }
                     else if (cursorPosition.y == 3)
                     {
-                        GameManger.player.Axis2D.x = GameManger.currField.portals[2].axis.x;
-                        GameManger.player.Axis2D.y = GameManger.currField.portals[2].axis.y;
+                        GameManger.player.axis.x = GameManger.currField.portals[2].axis.x;
+                        GameManger.player.axis.y = GameManger.currField.portals[2].axis.y;
                     }
 
-                    if (GameManger.currField.type == 1)
-                    {
-                        GameManger.currField.InitEnter();
-                    }
-
+                    //필드입장
+                    GameManger.currField.InitEnter();
+                    
+                    //마차 위치도 플레이어랑 같은 곳으로 설정
                     for (int i = 0; i < GameManger.player.wagonList.Count; i++)
                     {
-                        GameManger.player.wagonList[i].Axis2D.x = GameManger.player.Axis2D.x;
-                        GameManger.player.wagonList[i].Axis2D.y = GameManger.player.Axis2D.y;
+                        GameManger.player.wagonList[i].axis.x = GameManger.player.axis.x;
+                        GameManger.player.wagonList[i].axis.y = GameManger.player.axis.y;
                     }
                 }
             }
             return false;
         }
+
+        //취소키 누를시 제일 상단 메뉴로 돌아감
         public override void PressNoEvent()
         {
             if (mainPosition != 0)
@@ -725,12 +838,14 @@ namespace Project1st.Game.Map.Fields
         }
 
 
+        //출력정보 스트링 변환
         public override string[] ConvertMapToString(ref string[] line)
         {
 
             for (int y = 0; y < line.Length; y++)
             {
                 line[y] = "";
+                //마을 메뉴
                 if (mainPosition == 0)
                 {
                     if (y == cursorPosition.y)
@@ -760,6 +875,8 @@ namespace Project1st.Game.Map.Fields
                             break;
                     }
                 }
+
+                //상점 메뉴
                 else if (mainPosition == 1)
                 {
                     //구매창
@@ -779,9 +896,11 @@ namespace Project1st.Game.Map.Fields
                         line[y] += "　";
                     }
 
+                    //30개만 출력한다.
                     if (y + startShopIndex < shop.Count && y < 30)
                     {
                         Items item = shop[y + startShopIndex];
+                        //종류마다 색구분
                         if (item.type == 0)
                         {
                             line[y] += ".4.";
@@ -795,6 +914,7 @@ namespace Project1st.Game.Map.Fields
                             line[y] += ".10.";
                         }
 
+                        //번호)이름 가격 무게 수량
                         line[y] += $"{y + startShopIndex + 1,2}" + ")";
                         line[y] += $"{item.name,-6}";
                         if (item.itemId != 100)
@@ -825,9 +945,12 @@ namespace Project1st.Game.Map.Fields
                     }
                     else
                     {
-                        line[y] += "\t\t\t\t\t";
-
-
+                        line[y] += $"{" ",2}" + " ";
+                        line[y] += $"{"　　　　　",-6}";
+                        line[y] += $"{" ",-6} ";
+                        line[y] += $" {" ",3}  ";
+                        line[y] += $"{" ",-3}";
+                        line[y] += "\t\t\t";
                     }
 
                     //판매창
@@ -852,6 +975,7 @@ namespace Project1st.Game.Map.Fields
                     List<Items> currInventory = null;
                     Wagon currWagon = null;
 
+                    //플레이어 인벤토리
                     if (cursorPosition.x <= 1)
                     {
                         currInventory = GameManger.player.inventory;
@@ -873,6 +997,7 @@ namespace Project1st.Game.Map.Fields
                             {
                                 line[y] += ".10.";
                             }
+                            //번호)이름 가격 무게 수량(상태)
                             line[y] += $"{y + GameManger.player.startInvenIndex + 1,2}" + ")";
                             line[y] += $"{myItem.name,-6}";
                             if (myItem.type == 2)
@@ -885,6 +1010,16 @@ namespace Project1st.Game.Map.Fields
                             }
                             line[y] += $"({myItem.weight,3}) ";
                             line[y] += $"{myItem.count,-3}";
+
+
+                            if (myItem.type == 2)
+                            {
+                                line[y] += $"({myItem.quality,5})";
+                            }
+                            else
+                            {
+                                line[y] += $"({"  -  ",5})";
+                            }
                             line[y] += ".\t\t\t";
                         }
                         else
@@ -893,6 +1028,8 @@ namespace Project1st.Game.Map.Fields
 
                         }
                     }
+
+                    //마차 인벤토리
                     else
                     {
                         if (GameManger.player.wagonList.Count == 0) continue;
@@ -928,8 +1065,17 @@ namespace Project1st.Game.Map.Fields
                             {
                                 line[y] += $"{(int)(myItem.price * priceRate[myItem.itemId].currRate * 0.7f),-6:N0} ";
                             }
-                            line[y] += $"({myItem.weight,-3})";
+                            line[y] += $"({myItem.weight,3})";
                             line[y] += $"{myItem.count,-3}";
+
+                            if (myItem.type == 2)
+                            {
+                                line[y] += $"({myItem.quality,5})";
+                            }
+                            else
+                            {
+                                line[y] += $"({"  -  ",5})";
+                            }
                             line[y] += ".\t\t\t";
                         }
                         else
@@ -939,28 +1085,7 @@ namespace Project1st.Game.Map.Fields
                         }
                     }
 
-                    /*if (y + GameManger.player.startInventoryIndex < GameManger.player.inventory.Count && y < 30)
-                    {
-                        Items item = GameManger.player.inventory[y + GameManger.player.startInventoryIndex];
-                        line[y] += $"{y + GameManger.player.startInventoryIndex + 1,2}" + ")";
-                        line[y] += $"{item.name,-6}";
-                        if (item.type == 2)
-                        {
-                            line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate * 0.7f * item.quality),-6:N0} ";
-                        }
-                        else
-                        {
-                            line[y] += $"{(int)(item.price * priceRate[item.itemId].currRate * 0.7f),-6:N0} ";
-                        }
-                        line[y] += $"{item.count,-3}";
-                        line[y] += "\t\t\t";
-
-                    }
-                    else
-                    {
-                        line[y] += "\t\t\t\t\t";
-
-                    }*/
+                    //골드 정보
                     if (y == 30)
                     {
                         line[30] = "\t";
@@ -969,6 +1094,7 @@ namespace Project1st.Game.Map.Fields
                         line[30] += $"{GameManger.player.gold,8}";
                         line[y] += "\t\t";
                     }
+                    //무게 정보
                     if (y == 31)
                     {
                         line[31] = "\t";
@@ -991,6 +1117,8 @@ namespace Project1st.Game.Map.Fields
                     }
 
                 }
+
+                //주점
                 else if (mainPosition == 2)
                 {
                     if (y == cursorPosition.y)
@@ -1004,16 +1132,18 @@ namespace Project1st.Game.Map.Fields
                     switch (y)
                     {
                         case 0:
-                            line[y] += " 주변 소문\t\t\t\t\t\t\t\t\t\t\t\t";
+                            line[y] += " 주변 소문.4.(500 Gold).\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         case 1:
-                            line[y] += " 위치 확인\t\t\t\t\t\t\t\t\t\t\t\t";
+                            line[y] += " 위치 확인.4.(500 Gold).\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                         default:
                             line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                     }
                 }
+
+                //여관
                 else if (mainPosition == 3)
                 {
                     if (y == cursorPosition.y)
@@ -1034,6 +1164,8 @@ namespace Project1st.Game.Map.Fields
                             break;
                     }
                 }
+
+                //나가기
                 if (mainPosition == 4)
                 {
                     if (y == cursorPosition.y)
@@ -1047,8 +1179,10 @@ namespace Project1st.Game.Map.Fields
                 }
             }
 
+            //나가기 메뉴
             if (mainPosition == 4)
             {
+                //포탈 유무에 따라서 텍스트 색이 달라짐
                 if (portals[0] != null)
                 {
                     line[0] += " .2.동문.                                                                 ";
@@ -1083,8 +1217,10 @@ namespace Project1st.Game.Map.Fields
                 }
             }
 
+            //주점 메뉴
             if (mainPosition == 2)
             {
+                //주점에서 들은 소식들 출력
                 for (int i = 0; i < pubEvents.Count; i++)
                 {
                     line[i + 5] = "";
