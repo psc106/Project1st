@@ -35,14 +35,14 @@ namespace Project1st.Game.GameObject
 
         public List<Wagon> wagonList;
 
-        public static readonly float playerWeightMax = 50;
-        public static readonly int hitPointMax = 100;
+        public static readonly float _PLAYER_WEIGHT_MAX = 50;
+        public static readonly int _PLAYER_HITPOINT_MAX = 99900;
 
         public float maxWeightSum;
         public float weight;
 
         public List<Items> inventory;
-        public int startInventoryIndex;
+        public int startInvenIndex;
 
         public Player()
         {
@@ -54,6 +54,20 @@ namespace Project1st.Game.GameObject
             Axis2D.x = x;
             Axis2D.y = y;
 
+        }
+
+        //전투하는 플레이어 생성
+        public Player(Player player)
+        {
+            this.equip = player.equip;
+            this.weapon = player.weapon;
+            this.attckPoint = player.attckPoint;
+            this.hitPoint = player.hitPoint;
+            this.isMeleeDelay = false;
+            this.isRangeDelay = false;
+            this.bulletCountMax = 3;
+            this.light = player.light;
+            this.Effects = new List<Effect>();
         }
 
         public float SumWeight()
@@ -70,8 +84,8 @@ namespace Project1st.Game.GameObject
         public override void Init()
         {
             base.Init();
-            hitPoint = hitPointMax;
-            maxWeightSum = playerWeightMax;
+            hitPoint = _PLAYER_HITPOINT_MAX;
+            maxWeightSum = _PLAYER_WEIGHT_MAX;
             ID = 0;
             isMeleeDelay = false;
             isRangeDelay = false;
@@ -79,73 +93,91 @@ namespace Project1st.Game.GameObject
             gold = 10000;
             bulletCountMax = 3;
             weapon = new Items();
-            attckPoint = weapon.weaponStr;
+            //원거리 공격력
+            attckPoint = 25;
             light = 5;
             walk = 0;
             inventory = new List<Items>();
             Effects = new List<Effect>();
             wagonList = new List<Wagon>();
 
-            startInventoryIndex = 0;
+            startInvenIndex = 0;
         }
-
-        public int GetRealView()
-        {
-            int light = this.light;
-
-            if (GameManger.map.day == 0)
-            {
-                light += 3;
-            }
-            else if (GameManger.map.day == 1)
-            {
-                light -= 2;
-            }
-            return (((light - 1) * 2) - 2) * (light - 1) + 1;
-        }
-
         public void RemoveFog()
         {
-            Queue<Coordinate> q = new Queue<Coordinate>();
+            int tmpLight = FogView.GetCurrTimeLight(this.light);
 
-            q.Enqueue(GameManger.player.Axis2D);
+            Queue<FogView> q = new Queue<FogView>();
+
+            q.Enqueue(new FogView(GameManger.player.Axis2D, 0));
             GameManger.currField.SetFogInfo(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1);
 
-            int light = GetRealView();
-
-            
-            for (int i = 0; i < light; i++)
+            for (int i = 0; i < FogView.GetRealView(tmpLight); i++)
             {
-                Coordinate tmp = q.Dequeue();
+                if (q == null || q.Count == 0) return;
+                FogView tmpFog = q.Dequeue();
 
-                if ((tmp.x <= -1 || tmp.y <= -1 || tmp.x >= FieldBase._FIELD_SIZE || tmp.y >= FieldBase._FIELD_SIZE))
-                { }
-                else
+                if (tmpFog.depth == tmpLight)
                 {
-                    GameManger.currField.SetFogInfo(tmp.x, tmp.y, 1);
+                    return;
                 }
+
                 for (int j = 0; j < 4; j++)
                 {
-                    int tmpX = (tmp.x + AXIS_X[j]);
-                    int tmpY = (tmp.y + AXIS_Y[j]);
-                    q.Enqueue(new Coordinate(tmpX, tmpY));
-                }
-            }
+                    int tmpX = (tmpFog.x + _OBJECT_AXIS_MATRIX_X[j]);
+                    int tmpY = (tmpFog.y + _OBJECT_AXIS_MATRIX_Y[j]);
+                    
 
-            foreach (var tmp in q)
-            {
-                if ((tmp.x <= -1 || tmp.y <= -1 || tmp.x >= FieldBase._FIELD_SIZE || tmp.y >= FieldBase._FIELD_SIZE))
-                {
-                    continue;
-                }
-
-                if (GameManger.currField.GetFogInfo(tmp.x, tmp.y) != 1)
-                {
-                    GameManger.currField.SetFogInfo(tmp.x, tmp.y, 1);
+                    if ((tmpX<= -1 || tmpY <= -1 || tmpX >= FieldBase._FIELD_SIZE || tmpY >= FieldBase._FIELD_SIZE))
+                    {
+                        continue;
+                    }
+                    if (GameManger.currField.GetFogInfo(tmpX, tmpY) == 1)
+                    {
+                        continue;
+                    }
+                    GameManger.currField.SetFogInfo(tmpX, tmpY, 1);
+                    q.Enqueue(new FogView(tmpX, tmpY, tmpFog.depth+1));
                 }
             }
         }
 
+        public void RemoveFog(int light)
+        {
+            Queue<FogView> q = new Queue<FogView>();
+
+            q.Enqueue(new FogView(GameManger.player.Axis2D, 0));
+            GameManger.currField.SetFogInfo(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1);
+
+            for (int i = 0; i < FogView.GetRealView(light); i++)
+            {
+                if (q == null || q.Count == 0) return;
+                FogView tmpFog = q.Dequeue();
+
+                if (tmpFog.depth == light)
+                {
+                    return;
+                }
+
+                for (int j = 0; j < 4; j++)
+                {
+                    int tmpX = (tmpFog.x + _OBJECT_AXIS_MATRIX_X[j]);
+                    int tmpY = (tmpFog.y + _OBJECT_AXIS_MATRIX_Y[j]);
+
+
+                    if ((tmpX <= -1 || tmpY <= -1 || tmpX >= FieldBase._FIELD_SIZE || tmpY >= FieldBase._FIELD_SIZE))
+                    {
+                        continue;
+                    }
+                    if (GameManger.currField.GetFogInfo(tmpX, tmpY) == 1)
+                    {
+                        continue;
+                    }
+                    GameManger.currField.SetFogInfo(tmpX, tmpY, 1);
+                    q.Enqueue(new FogView(tmpX, tmpY, tmpFog.depth + 1));
+                }
+            }
+        }
         public void DelayMeleeTimer(object obj)
         {
             isMeleeDelay = false;

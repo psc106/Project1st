@@ -21,6 +21,60 @@ namespace Project1st.Game
         }
     }
 
+    public class FogView
+    {
+        public int x;
+        public int y;
+        public int depth;
+
+        public FogView() { }
+        public FogView(int x, int y, int depth)
+        {
+            this.x = x;
+            this.y = y;
+            this.depth = depth;
+        }
+        public FogView(Coordinate axis, int depth)
+        {
+            this.x = axis.x;
+            this.y = axis.y;
+            this.depth = depth;
+        }
+
+
+        public static int GetCurrTimeLight(int tmpLight)
+        {
+            //int tmpLight = this.light;
+
+            if (GameManger.worldMap.day == 0)
+            {
+                tmpLight += 3;
+            }
+            else if (GameManger.worldMap.day == 1)
+            {
+                tmpLight -= 2;
+            }
+
+            return tmpLight;
+        }
+
+        public static int GetRealView(int tmpLight)
+        {
+            //int tmpLight = GetCurrTimeLight();
+
+            //1x4 (1) (4(1-1)+1)4
+            //5x4 (2) (4(2-1)+4(1-1)+1)4
+            //13x4(3) ((4(3-1))+(4(2-1))+4(1-1)+1)4
+            int sum = 0;
+            for (int i = 0; i < tmpLight; i++)
+            {
+                sum += i * 4;
+            }
+            return (sum + 1);
+        }
+
+    }
+
     public class PubEvent
     {
         public int type;
@@ -39,12 +93,12 @@ namespace Project1st.Game
             }
             else if (type == 1)
             {
-                if (GameManger.map.worldMap[townY, townX].type == 1)
+                if (GameManger.worldMap.map[townY, townX].type == 1)
                 {
                     str += $"[{townX}, {townY}] ";
                     str += "엔 숲길뿐이 없다";
                 }
-                else if (GameManger.map.worldMap[townY, townX].type == 2)
+                else if (GameManger.worldMap.map[townY, townX].type == 2)
                 {
                     str += $"[{townX}, {townY}] ";
                     str += "에 마을이 있다";
