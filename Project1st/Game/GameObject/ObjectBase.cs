@@ -26,8 +26,8 @@ namespace Project1st.Game.GameObject
         public int ID;
         public bool isLive;
 
-        protected int[] AXIS_X = { 1, -1, 0, 0, 0, 0 };
-        protected int[] AXIS_Y = { 0, 0, -1, 1, 0, 0 };
+        protected readonly int[] _OBJECT_AXIS_MATRIX_X = { 1, -1, 0, 0, 0, 0 };
+        protected readonly int[] _OBJECT_AXIS_MATRIX_Y = { 0, 0, -1, 1, 0, 0 };
 
         public int hitPoint;
         public int attckPoint;
@@ -49,12 +49,12 @@ namespace Project1st.Game.GameObject
 
         public int GetNextX(int direction)
         {
-            return Axis2D.x + AXIS_X[direction];
+            return Axis2D.x + _OBJECT_AXIS_MATRIX_X[direction];
         }
 
         public int GetNextY(int direction)
         {
-            return Axis2D.y + AXIS_Y[direction];
+            return Axis2D.y + _OBJECT_AXIS_MATRIX_Y[direction];
         }
         public int Hold(int axis, int size)
         {
@@ -71,8 +71,8 @@ namespace Project1st.Game.GameObject
 
         public bool MoveAndHold(int direction, int XSize, int YSize)
         {
-            Axis2D.x += AXIS_X[direction];
-            Axis2D.y += AXIS_Y[direction];
+            Axis2D.x += _OBJECT_AXIS_MATRIX_X[direction];
+            Axis2D.y += _OBJECT_AXIS_MATRIX_Y[direction];
 
             return HoldX(XSize) || HoldY(YSize);
         }

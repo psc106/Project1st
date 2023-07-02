@@ -14,9 +14,6 @@ namespace Project1st.Game.Map.Fields
 
     public class FieldBase : IUseItem, IEquipItem
     {
-        protected int[] AXIS_X = { 1, -1, 0, 0, 0, 0 };
-        protected int[] AXIS_Y = { 0, 0, -1, 1, 0, 0 };
-
         public static readonly int _FIELD_SIZE = 15;
 
         public enum field_info : byte
@@ -32,6 +29,7 @@ namespace Project1st.Game.Map.Fields
         public bool isFog;
         public bool isCurrField;
         public bool isMenu;
+        public bool isWin = false;
 
         public FieldBase()
         {
@@ -103,6 +101,33 @@ namespace Project1st.Game.Map.Fields
             }
         }
 
+        public virtual bool PressYesEvent()
+        {
+            return false;
+        }
+        public virtual void PressNoEvent()
+        {
+        }
+        public virtual bool PressMoveEvent()
+        {
+            return false;
+        }
+        public virtual void PressMenuEvent()
+        {
+        }
+
+
+
+        public virtual void InitEnter()
+        {
+        }
+
+        public virtual void Exit()
+        {
+        }
+
+
+
         public virtual float[,] GetFogInfo()
         {
             return null;
@@ -115,11 +140,6 @@ namespace Project1st.Game.Map.Fields
         {
         }
 
-        public virtual string[] ConvertMapToString(ref string[] strings)
-        {
-            strings = null;
-            return null;
-        }
 
         public virtual List<Enemy> GetEnemies()
         {
@@ -162,97 +182,9 @@ namespace Project1st.Game.Map.Fields
         {
         }
 
-        public string[] MakeRoomToString()
-        {
-            string[] line = new string[3];
-
-            for (int y = 0; y < line.Length; y++)
-            {
-                line[y] = "";
-
-            }
-
-            if (!this.isFog && this.portals[2] != null)
-            {
-                line[0] += "　↓　";
-            }
-            else
-            {
-                line[0] += "　　　";
-            }
-
-            if (!this.isFog && this.portals[1] != null)
-            {
-                line[1] += "→";
-            }
-            else
-            {
-                line[1] += "　";
-            }
-
-            if (!this.isFog)
-            {
-                if (!this.isCurrField && this.type==1)
-                {
-                    line[1] += "□";
-                }
-                else if(!this.isCurrField && this.type==2)
-                {
-                    line[1] += "☆";
-                }
-                else if (this.isCurrField && this.type == 1)
-                {
-                    line[1] += "■";
-                }
-                else if (this.isCurrField && this.type == 2)
-                {
-                    line[1] += "★";
-                }
-            }
-            else
-            {
-                line[1] += "　";
-            }
-
-            if (!this.isFog && this.portals[0] != null)
-            {
-                line[1] += "←";
-            }
-            else
-            {
-                line[1] += "　";
-            }
-                if (!this.isFog && this.portals[3] != null)
-            {
-                line[2] += "　↑　";
-            }
-            else
-            {
-                line[2] += "　　　";
-            }
-
-            return line;
-        }
-
-        public virtual bool Move(Coordinate axis)
-        {
-            return false;
-        }
-        public virtual bool Move()
-        {
-            return false;
-        }
-
         public Battle ReturnSelfToBattle()
         {
             if(type == 3) return (Battle)this;
-            return null;
-        }
-
-        public Town ReturnSelfToTown()
-        {
-
-            if (type == 2) return (Town)this;
             return null;
         }
 
@@ -270,7 +202,7 @@ namespace Project1st.Game.Map.Fields
                 //포션
                 if (item.itemId == 0)
                 {
-                    if (GameManger.player.hitPoint == Player.hitPointMax)
+                    if (GameManger.player.hitPoint == Player._PLAYER_HITPOINT_MAX)
                     {
                         return false;
                     }
@@ -283,9 +215,9 @@ namespace Project1st.Game.Map.Fields
                             currWagon.inventory.Remove(item);
                         }
                         GameManger.player.hitPoint += 20;
-                        if (GameManger.player.hitPoint > Player.hitPointMax)
+                        if (GameManger.player.hitPoint > Player._PLAYER_HITPOINT_MAX)
                         {
-                            GameManger.player.hitPoint = Player.hitPointMax;
+                            GameManger.player.hitPoint = Player._PLAYER_HITPOINT_MAX;
                         }
                         return true;
                     }
@@ -295,7 +227,7 @@ namespace Project1st.Game.Map.Fields
                 if (item.itemId == 1)
                 {
                     
-                    if (currWagon.hitPoint == Wagon.wagonHitPointMax)
+                    if (currWagon.hitPoint == Wagon._WAGON_HITPOINT_MAX)
                     {
                         return false;
                     }
@@ -308,9 +240,9 @@ namespace Project1st.Game.Map.Fields
                                 currWagon.inventory.Remove(item);
                         }
                         currWagon.hitPoint += 40;
-                        if (currWagon.hitPoint > Wagon.wagonHitPointMax)
+                        if (currWagon.hitPoint > Wagon._WAGON_HITPOINT_MAX)
                         {
-                            currWagon.hitPoint = Wagon.wagonHitPointMax;
+                            currWagon.hitPoint = Wagon._WAGON_HITPOINT_MAX;
                         }
                         return true;
                     }
@@ -345,7 +277,6 @@ namespace Project1st.Game.Map.Fields
             if (item.type == 1)
             {
                 GameManger.player.weapon = item;
-                GameManger.player.attckPoint = item.weaponStr;
 
                 item.count -= 1;
                 if (item.count == 0)
@@ -355,6 +286,83 @@ namespace Project1st.Game.Map.Fields
                 }
             }
             return false;
+        }
+        public virtual string[] ConvertMapToString(ref string[] strings)
+        {
+            strings = null;
+            return null;
+        }
+
+        public string[] MakeRoomToString()
+        {
+            string[] line = new string[3];
+
+            for (int y = 0; y < line.Length; y++)
+            {
+                line[y] = "";
+
+            }
+
+            if (!this.isFog && this.portals[2] != null)
+            {
+                line[0] += "　↓　";
+            }
+            else
+            {
+                line[0] += "　　　";
+            }
+
+            if (!this.isFog && this.portals[1] != null)
+            {
+                line[1] += "→";
+            }
+            else
+            {
+                line[1] += "　";
+            }
+
+            if (!this.isFog)
+            {
+                if (!this.isCurrField && this.type == 1)
+                {
+                    line[1] += "□";
+                }
+                else if (!this.isCurrField && this.type == 2)
+                {
+                    line[1] += "☆";
+                }
+                else if (this.isCurrField && this.type == 1)
+                {
+                    line[1] += "■";
+                }
+                else if (this.isCurrField && this.type == 2)
+                {
+                    line[1] += "★";
+                }
+            }
+            else
+            {
+                line[1] += "　";
+            }
+
+            if (!this.isFog && this.portals[0] != null)
+            {
+                line[1] += "←";
+            }
+            else
+            {
+                line[1] += "　";
+            }
+            if (!this.isFog && this.portals[3] != null)
+            {
+                line[2] += "　↑　";
+            }
+            else
+            {
+                line[2] += "　　　";
+            }
+
+            return line;
         }
     }
 

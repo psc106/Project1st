@@ -16,9 +16,10 @@ namespace Project1st.Game.Map
     {
         public static readonly int _MAP_SIZE = 4;
 
-        int[] axisX = { 1, -1, 0, 0 };
-        int[] axisY = { 0, 0, -1, 1 };
-        public FieldBase[,] worldMap;
+        public static readonly int[] _AXIS_MATRIX_X = { 1, -1, 0, 0 ,0,0};
+        public static readonly int[] _AXIS_MATRIX_Y = { 0, 0, -1, 1 ,0,0};
+
+        public FieldBase[,] map;
         public int day;
         public int daySum;
         public Timer dayTimer;
@@ -36,7 +37,7 @@ namespace Project1st.Game.Map
         {
             day = 0;
             daySum = 0;
-            worldMap = new FieldBase[_MAP_SIZE, _MAP_SIZE];
+            map = new FieldBase[_MAP_SIZE, _MAP_SIZE];
             townList = new List<Town>();
 
             cursor = new Coordinate(0, 0);
@@ -52,60 +53,60 @@ namespace Project1st.Game.Map
                     //홀수 행, 짝수 열
                     if (y % 2 == 0 && x % 2 == 1)
                     {
-                        worldMap[y, x] = new Forest(GameManger.random.Next(0, 16));
+                        map[y, x] = new Forest(GameManger.random.Next(0, 16));
 
-                        if (x == 0 && worldMap[y, x].portals[1] != null)
+                        if (x == 0 && map[y, x].portals[1] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[1];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[1] = null;
+                            Portal currPortal = map[y, x].portals[1];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[1] = null;
                         }
-                        if (x == _MAP_SIZE - 1 && worldMap[y, x].portals[0] != null)
+                        if (x == _MAP_SIZE - 1 && map[y, x].portals[0] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[0];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[0] = null;
+                            Portal currPortal = map[y, x].portals[0];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[0] = null;
                         }
-                        if (y == _MAP_SIZE - 1 && worldMap[y, x].portals[3] != null)
+                        if (y == _MAP_SIZE - 1 && map[y, x].portals[3] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[3];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[3] = null;
+                            Portal currPortal = map[y, x].portals[3];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[3] = null;
                         }
-                        if (y == 0 && worldMap[y, x].portals[2] != null)
+                        if (y == 0 && map[y, x].portals[2] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[2];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[2] = null;
+                            Portal currPortal = map[y, x].portals[2];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[2] = null;
                         }
                     }
                     else if (y % 2 == 1 && x % 2 == 0)
                     {
 
-                        worldMap[y, x] = new Forest(GameManger.random.Next(0, 16));
-                        if (x == 0 && worldMap[y, x].portals[1] != null)
+                        map[y, x] = new Forest(GameManger.random.Next(0, 16));
+                        if (x == 0 && map[y, x].portals[1] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[1];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[1] = null;
+                            Portal currPortal = map[y, x].portals[1];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[1] = null;
                         }
-                        if (x == _MAP_SIZE - 1 && worldMap[y, x].portals[0] != null)
+                        if (x == _MAP_SIZE - 1 && map[y, x].portals[0] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[0];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[0] = null;
+                            Portal currPortal = map[y, x].portals[0];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[0] = null;
                         }
-                        if (y == _MAP_SIZE - 1 && worldMap[y, x].portals[3] != null)
+                        if (y == _MAP_SIZE - 1 && map[y, x].portals[3] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[3];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[3] = null;
+                            Portal currPortal = map[y, x].portals[3];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[3] = null;
                         }
-                        if (y == 0 && worldMap[y, x].portals[2] != null)
+                        if (y == 0 && map[y, x].portals[2] != null)
                         {
-                            Portal currPortal = worldMap[y, x].portals[2];
-                            worldMap[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
-                            worldMap[y, x].portals[2] = null;
+                            Portal currPortal = map[y, x].portals[2];
+                            map[y, x].fieldInfo[currPortal.axis.y, currPortal.axis.x] = FieldBase.field_info.empty;
+                            map[y, x].portals[2] = null;
                         }
                     }
 
@@ -127,9 +128,9 @@ namespace Project1st.Game.Map
                         if (y == _MAP_SIZE - 1 && cnt == 3) continue;
                         if (y == 0 && cnt == 2) continue;
 
-                        if (worldMap[y, x].portals[cnt] == null)
+                        if (map[y, x].portals[cnt] == null)
                         {
-                            worldMap[y, x].CreateDoor(cnt);
+                            map[y, x].CreateDoor(cnt);
                             cnt += 1;
                             if (cnt == 4)
                             {
@@ -144,9 +145,9 @@ namespace Project1st.Game.Map
                         if (y == _MAP_SIZE - 1 && cnt == 3) continue;
                         if (y == 0 && cnt == 2) continue;
 
-                        if (worldMap[y, x].portals[cnt] == null)
+                        if (map[y, x].portals[cnt] == null)
                         {
-                            worldMap[y, x].CreateDoor(cnt);
+                            map[y, x].CreateDoor(cnt);
                             cnt += 1;
                             if (cnt == 4)
                             {
@@ -166,50 +167,50 @@ namespace Project1st.Game.Map
                     //홀수 행, 짝수 열
                     if ((y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1))
                     {
-                        worldMap[y, x] = new Forest();
-                        if (x != 0 && worldMap[y, x - 1].portals[0] != null)
+                        map[y, x] = new Forest();
+                        if (x != 0 && map[y, x - 1].portals[0] != null)
                         {
-                            Portal nextDoor = worldMap[y, x - 1].portals[0];
+                            Portal nextDoor = map[y, x - 1].portals[0];
 
-                            worldMap[y, x].portals[1] = new Portal(0, nextDoor.axis.y);
-                            Portal currDoor = worldMap[y, x].portals[1];
+                            map[y, x].portals[1] = new Portal(0, nextDoor.axis.y);
+                            Portal currDoor = map[y, x].portals[1];
 
 
-                            worldMap[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                            map[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
 
                         }
 
-                        if (x != _MAP_SIZE - 1 && worldMap[y, x + 1].portals[1] != null)
+                        if (x != _MAP_SIZE - 1 && map[y, x + 1].portals[1] != null)
                         {
-                            Portal nextDoor = worldMap[y, x + 1].portals[1];
+                            Portal nextDoor = map[y, x + 1].portals[1];
 
-                            worldMap[y, x].portals[0] = new Portal(FieldBase._FIELD_SIZE - 1, nextDoor.axis.y);
-                            Portal currDoor = worldMap[y, x].portals[0];
+                            map[y, x].portals[0] = new Portal(FieldBase._FIELD_SIZE - 1, nextDoor.axis.y);
+                            Portal currDoor = map[y, x].portals[0];
 
-                            worldMap[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                            map[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
 
 
                         }
 
-                        if (y != _MAP_SIZE - 1 && worldMap[y + 1, x].portals[2] != null)
+                        if (y != _MAP_SIZE - 1 && map[y + 1, x].portals[2] != null)
                         {
-                            Portal nextDoor = worldMap[y + 1, x].portals[2];
+                            Portal nextDoor = map[y + 1, x].portals[2];
 
-                            worldMap[y, x].portals[3] = new Portal(nextDoor.axis.x, FieldBase._FIELD_SIZE - 1);
-                            Portal currDoor = worldMap[y, x].portals[3];
+                            map[y, x].portals[3] = new Portal(nextDoor.axis.x, FieldBase._FIELD_SIZE - 1);
+                            Portal currDoor = map[y, x].portals[3];
 
-                            worldMap[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                            map[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
 
                         }
 
-                        if (y != 0 && worldMap[y - 1, x].portals[3] != null)
+                        if (y != 0 && map[y - 1, x].portals[3] != null)
                         {
-                            Portal nextDoor = worldMap[y - 1, x].portals[3];
+                            Portal nextDoor = map[y - 1, x].portals[3];
 
-                            worldMap[y, x].portals[2] = new Portal(nextDoor.axis.x, 0);
-                            Portal currDoor = worldMap[y, x].portals[2];
+                            map[y, x].portals[2] = new Portal(nextDoor.axis.x, 0);
+                            Portal currDoor = map[y, x].portals[2];
 
-                            worldMap[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                            map[y, x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
 
                         }
                     }
@@ -228,60 +229,60 @@ namespace Project1st.Game.Map
                     {
                         continue;
                     }
-                    if(connect.x != 0 && worldMap[connect.y, connect.x].portals[1] == null)
+                    if(connect.x != 0 && map[connect.y, connect.x].portals[1] == null)
                     {
-                        worldMap[connect.y, connect.x - 1].CreateDoor(0);
-                        Portal nextDoor = worldMap[connect.y, connect.x - 1].portals[0];
+                        map[connect.y, connect.x - 1].CreateDoor(0);
+                        Portal nextDoor = map[connect.y, connect.x - 1].portals[0];
 
-                        worldMap[connect.y, connect.x].portals[1] = new Portal(0, nextDoor.axis.y);
-                        Portal currDoor = worldMap[connect.y, connect.x].portals[1];
+                        map[connect.y, connect.x].portals[1] = new Portal(0, nextDoor.axis.y);
+                        Portal currDoor = map[connect.y, connect.x].portals[1];
 
 
-                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
-                        worldMap[connect.y, connect.x - 1].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y, connect.x - 1].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
 
                     }
-                    if (connect.x != _MAP_SIZE - 1 && worldMap[connect.y, connect.x].portals[0] == null)
+                    if (connect.x != _MAP_SIZE - 1 && map[connect.y, connect.x].portals[0] == null)
                     {
-                        worldMap[connect.y, connect.x + 1].CreateDoor(1);
-                        Portal nextDoor = worldMap[connect.y, connect.x + 1].portals[1];
+                        map[connect.y, connect.x + 1].CreateDoor(1);
+                        Portal nextDoor = map[connect.y, connect.x + 1].portals[1];
 
-                        worldMap[connect.y, connect.x].portals[0] = new Portal(FieldBase._FIELD_SIZE - 1, nextDoor.axis.y);
-                        Portal currDoor = worldMap[connect.y, connect.x].portals[0];
+                        map[connect.y, connect.x].portals[0] = new Portal(FieldBase._FIELD_SIZE - 1, nextDoor.axis.y);
+                        Portal currDoor = map[connect.y, connect.x].portals[0];
 
-                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
-                        worldMap[connect.y, connect.x + 1].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y, connect.x + 1].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
                     }
 
-                    if (connect.y != _MAP_SIZE - 1 && worldMap[connect.y, connect.x].portals[3] == null)
+                    if (connect.y != _MAP_SIZE - 1 && map[connect.y, connect.x].portals[3] == null)
                     {
-                        worldMap[connect.y + 1, connect.x].CreateDoor(2);
-                        Portal nextDoor = worldMap[connect.y + 1, connect.x].portals[2];
+                        map[connect.y + 1, connect.x].CreateDoor(2);
+                        Portal nextDoor = map[connect.y + 1, connect.x].portals[2];
 
-                        worldMap[connect.y, connect.x].portals[3] = new Portal(nextDoor.axis.x, FieldBase._FIELD_SIZE - 1);
-                        Portal currDoor = worldMap[connect.y, connect.x].portals[3];
+                        map[connect.y, connect.x].portals[3] = new Portal(nextDoor.axis.x, FieldBase._FIELD_SIZE - 1);
+                        Portal currDoor = map[connect.y, connect.x].portals[3];
 
-                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
-                        worldMap[connect.y + 1, connect.x].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y + 1, connect.x].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
                     }
 
-                    if (connect.y != 0 && worldMap[connect.y, connect.x].portals[2] == null)
+                    if (connect.y != 0 && map[connect.y, connect.x].portals[2] == null)
                     {
-                        worldMap[connect.y - 1, connect.x].CreateDoor(3);
-                        Portal nextDoor = worldMap[connect.y - 1, connect.x].portals[3];
+                        map[connect.y - 1, connect.x].CreateDoor(3);
+                        Portal nextDoor = map[connect.y - 1, connect.x].portals[3];
 
-                        worldMap[connect.y, connect.x].portals[2] = new Portal(nextDoor.axis.x, 0);
-                        Portal currDoor = worldMap[connect.y, connect.x].portals[2];
+                        map[connect.y, connect.x].portals[2] = new Portal(nextDoor.axis.x, 0);
+                        Portal currDoor = map[connect.y, connect.x].portals[2];
 
-                        worldMap[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
-                        worldMap[connect.y - 1, connect.x].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y, connect.x].fieldInfo[currDoor.axis.y, currDoor.axis.x] = FieldBase.field_info.portal;
+                        map[connect.y - 1, connect.x].fieldInfo[nextDoor.axis.y, nextDoor.axis.x] = FieldBase.field_info.portal;
                     }
 
                 }
             }
 
-            Town startTown = new Town(worldMap[1, 1]);
-            Town finalTown = new Town(worldMap[_MAP_SIZE - 1, _MAP_SIZE - 1]);
+            Town startTown = new Town(map[1, 1]);
+            Town finalTown = new Town(map[_MAP_SIZE - 1, _MAP_SIZE - 1]);
             finalTown.shop.Add(new Items(GameManger.db.database[100]));
 
             townList.Add(startTown);
@@ -289,27 +290,27 @@ namespace Project1st.Game.Map
 
             int tmpx = 1;
             int tmpy = 1;
-            worldMap[tmpy, tmpx] = startTown;
+            map[tmpy, tmpx] = startTown;
 
             for (int i = 0; i < 4; i++)
             {
-                if (worldMap[tmpy, tmpx].portals[i] != null)
+                if (map[tmpy, tmpx].portals[i] != null)
                 {
                     switch (i)
                     {
                         case 0:
-                            worldMap[tmpy, tmpx + 1].portals[1].isTown = true;
+                            map[tmpy, tmpx + 1].portals[1].isTown = true;
                             break;
                         case 1:
-                            worldMap[tmpy, tmpx - 1].portals[0].isTown = true;
+                            map[tmpy, tmpx - 1].portals[0].isTown = true;
                             break;
 
                         case 2:
-                            worldMap[tmpy - 1, tmpx].portals[3].isTown = true;
+                            map[tmpy - 1, tmpx].portals[3].isTown = true;
                             break;
 
                         case 3:
-                            worldMap[tmpy + 1, tmpx].portals[2].isTown = true;
+                            map[tmpy + 1, tmpx].portals[2].isTown = true;
                             break;
 
                     }
@@ -319,27 +320,27 @@ namespace Project1st.Game.Map
 
             tmpx = _MAP_SIZE - 1;
             tmpy = _MAP_SIZE - 1;
-            worldMap[_MAP_SIZE - 1, _MAP_SIZE - 1] = finalTown;
+            map[_MAP_SIZE - 1, _MAP_SIZE - 1] = finalTown;
 
             for (int i = 0; i < 4; i++)
             {
-                if (worldMap[tmpy, tmpx].portals[i] != null)
+                if (map[tmpy, tmpx].portals[i] != null)
                 {
                     switch (i)
                     {
                         case 0:
-                            worldMap[tmpy, tmpx + 1].portals[1].isTown = true;
+                            map[tmpy, tmpx + 1].portals[1].isTown = true;
                             break;
                         case 1:
-                            worldMap[tmpy, tmpx - 1].portals[0].isTown = true;
+                            map[tmpy, tmpx - 1].portals[0].isTown = true;
                             break;
 
                         case 2:
-                            worldMap[tmpy - 1, tmpx].portals[3].isTown = true;
+                            map[tmpy - 1, tmpx].portals[3].isTown = true;
                             break;
 
                         case 3:
-                            worldMap[tmpy + 1, tmpx].portals[2].isTown = true;
+                            map[tmpy + 1, tmpx].portals[2].isTown = true;
                             break;
 
                     }
@@ -353,54 +354,54 @@ namespace Project1st.Game.Map
                 tmpx = GameManger.random.Next(0, _MAP_SIZE);
                 tmpy = GameManger.random.Next(0, _MAP_SIZE);
 
-                if (worldMap[tmpy, tmpx].type != 2)
+                if (map[tmpy, tmpx].type != 2)
                 {
-                    if (tmpx != 0 && worldMap[tmpy, tmpx - 1].type == 2)
+                    if (tmpx != 0 && map[tmpy, tmpx - 1].type == 2)
                     {
                         continue;
                     }
 
-                    else if (tmpx != _MAP_SIZE - 1 && worldMap[tmpy, tmpx + 1].type == 2)
+                    else if (tmpx != _MAP_SIZE - 1 && map[tmpy, tmpx + 1].type == 2)
                     {
                         continue;
                     }
 
-                    else if (tmpy != _MAP_SIZE - 1 && worldMap[tmpy + 1, tmpx].type == 2)
+                    else if (tmpy != _MAP_SIZE - 1 && map[tmpy + 1, tmpx].type == 2)
                     {
                         continue;
                     }
 
-                    else if (tmpy != 0 && worldMap[tmpy - 1, tmpx].type == 2)
+                    else if (tmpy != 0 && map[tmpy - 1, tmpx].type == 2)
                     {
                         continue;
                     }
 
                     else
                     {
-                        Town tmp = new Town(worldMap[tmpy, tmpx]);
-                        worldMap[tmpy, tmpx] = tmp;
+                        Town tmp = new Town(map[tmpy, tmpx]);
+                        map[tmpy, tmpx] = tmp;
                         townList.Add(tmp);
                         count -= 1;
 
                         for (int i = 0; i < 4; i++)
                         {
-                            if (worldMap[tmpy, tmpx].portals[i] != null)
+                            if (map[tmpy, tmpx].portals[i] != null)
                             {
                                 switch (i)
                                 {
                                     case 0:
-                                        worldMap[tmpy, tmpx + 1].portals[1].isTown = true;
+                                        map[tmpy, tmpx + 1].portals[1].isTown = true;
                                         break;
                                     case 1:
-                                        worldMap[tmpy, tmpx - 1].portals[0].isTown = true;
+                                        map[tmpy, tmpx - 1].portals[0].isTown = true;
                                         break;
 
                                     case 2:
-                                        worldMap[tmpy - 1, tmpx].portals[3].isTown = true;
+                                        map[tmpy - 1, tmpx].portals[3].isTown = true;
                                         break;
 
                                     case 3:
-                                        worldMap[tmpy + 1, tmpx].portals[2].isTown = true;
+                                        map[tmpy + 1, tmpx].portals[2].isTown = true;
                                         break;
 
                                 }
@@ -455,23 +456,23 @@ namespace Project1st.Game.Map
         Coordinate check(int x, int y)
         {
             if (x == -1 || x == _MAP_SIZE || y == -1 || y == _MAP_SIZE) return null;
-            if (worldMap[y, x].isFog) return null;
+            if (map[y, x].isFog) return null;
 
             Coordinate last = null;
 
             for (int i = 0; i < 4; i++)
             {
-                if (worldMap[y, x].portals[i] != null)
+                if (map[y, x].portals[i] != null)
                 {
-                    worldMap[y, x].isFog = true;
-                    last = check(x + axisX[i], y + axisY[i]);
+                    map[y, x].isFog = true;
+                    last = check(x + _AXIS_MATRIX_X[i], y + _AXIS_MATRIX_Y[i]);
                 }
             }
 
             if (last == null)
             {
 
-                worldMap[y, x].isFog = true;
+                map[y, x].isFog = true;
                 return new Coordinate(x, y);
             }
             else

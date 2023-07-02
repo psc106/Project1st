@@ -48,7 +48,6 @@
     <Compile Include="Game\Core\Graphic.cs" />
     <Compile Include="Game\Core\Manager.cs" />
     <Compile Include="Game\Interface\IEquipItem.cs" />
-    <Compile Include="Game\Interface\IMove.cs" />
     <Compile Include="Game\Interface\IUseItem.cs" />
     <Compile Include="Game\Item\DataBase\DataBase.cs" />
     <Compile Include="Game\GameObject\Effect.cs" />

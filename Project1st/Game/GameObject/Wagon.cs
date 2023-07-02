@@ -9,20 +9,20 @@ namespace Project1st.Game.GameObject
 {
     public class Wagon : MoveObject
     {
-        public static readonly int wagonCountMax = 10;
-        public static readonly int wagonHitPointMax = 99;
-        public static readonly float wagonWeightMax = 100;
+        public static readonly int _WAGON_COUNT_MAX = 10;
+        public static readonly int _WAGON_HITPOINT_MAX = 99;
+        public static readonly float _WAGON_WEIGHT_MAX = 100;
 
         public float weight;
         public List<Items> inventory;
-        public int startWagonInvenIndex;
+        public int startInvenIndex;
 
 
         public Wagon()
         {
-            hitPoint = wagonHitPointMax;
+            hitPoint = _WAGON_HITPOINT_MAX;
             weight = 0;
-            startWagonInvenIndex = 0;
+            startInvenIndex = 0;
 
             inventory = new List<Items>();
         }

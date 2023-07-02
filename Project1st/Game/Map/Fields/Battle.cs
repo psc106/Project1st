@@ -19,20 +19,15 @@ namespace Project1st.Game.Map.Fields
         public List<Enemy> enemies;
         public float[,] fogInfo;
 
-        public bool isWin;
-
-        public Battle(Forest currField)
+        public Battle()
         {
             type = 3;
 
             beforePlayerInfo = GameManger.player;
             beforeFieldInfo = GameManger.currField;
 
-            GameManger.player = new Player();
+            GameManger.player = new Player(beforePlayerInfo);
             GameManger.currField = this;
-            GameManger.player.weapon = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.weapon;
-            GameManger.player.hitPoint = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint;
-            GameManger.player.light = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.light;
 
             enemies = new List<Enemy>();
             enemyCount = GameManger.random.Next(7, 13);
@@ -89,9 +84,7 @@ namespace Project1st.Game.Map.Fields
                     }
                 }
             }
-
             GameManger.player.RemoveFog();
-
         }
         public override Enemy FindEnemiesAt(int x, int y)
         {
@@ -161,7 +154,8 @@ namespace Project1st.Game.Map.Fields
         {
             return enemies;
         }
-        public override bool Move()
+
+        public override bool PressMoveEvent()
         {
             bool isStun = false;
 
@@ -170,19 +164,6 @@ namespace Project1st.Game.Map.Fields
 
             int currX = GameManger.player.Hold(GameManger.player.GetNextX(GameManger.player.direction), FieldBase._FIELD_SIZE);
             int currY = GameManger.player.Hold(GameManger.player.GetNextY(GameManger.player.direction), FieldBase._FIELD_SIZE);
-
-
-            for (int y = 0; y < FieldBase._FIELD_SIZE; y++)
-            {
-                for (int x = 0; x < FieldBase._FIELD_SIZE; x++)
-                {
-                    if (GameManger.currField.GetFogInfo(x, y) == 1)
-                    {
-                        GameManger.currField.SetFogInfo(x, y, 0.5f);
-                    }
-
-                }
-            }
 
             //빈칸으로 이동
             if (GameManger.currField.fieldInfo[currY, currX] == FieldBase.field_info.empty ||
@@ -224,9 +205,117 @@ namespace Project1st.Game.Map.Fields
                 GameManger.player.Axis2D.y = beforeY;
                 //GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == enemy.Axis2D.x && x.Axis2D.y == enemy.Axis2D.y);
             }
-            GameManger.player.RemoveFog();
 
             return isStun;
+        }
+
+
+        public override void PressNoEvent()
+        {
+            if (GameManger.player.direction >= 0 && GameManger.player.direction <= 3)
+            {
+                if (GameManger.player.bulletCount < GameManger.player.bulletCountMax)
+                {
+                    if (!GameManger.player.isRangeDelay)
+                    {
+                        GameManger.player.isRangeDelay = true;
+                        GameManger.player.rangeDelay = new Timer(GameManger.player.DelayRangeTimer, null, 300, 0);
+
+                        GameManger.player.Effects.Add(new Effect(GameManger.player.Axis2D.x, GameManger.player.Axis2D.y, 1, GameManger.player.direction));
+                        GameManger.player.bulletCount += 1;
+                    }
+                }
+            }
+        }
+
+        public override bool PressYesEvent()
+        {
+
+            if (!GameManger.player.isMeleeDelay)
+            {
+                GameManger.player.isMeleeDelay = true;
+                GameManger.player.meleeDelay = new Timer(GameManger.player.DelayMeleeTimer, null, GameManger.player.weapon.weaponDelay, 0);
+
+                int nextX = GameManger.player.GetNextX(GameManger.player.direction);
+                int nextY = GameManger.player.GetNextY(GameManger.player.direction);
+
+                if (GameManger.player.weapon.weaponType == 0)
+                {
+                    GameManger.player.Effects.Add(new Effect(nextX, nextY, GameManger.player.weapon.weaponType));
+                }
+
+                if (GameManger.player.weapon.weaponType == 1)
+                {
+                    GameManger.player.Effects.Add(new Effect(nextX, nextY, GameManger.player.weapon.weaponType));
+                    if (GameManger.player.direction / 2 == 0)//양쪽 보는중
+                    {
+                        GameManger.player.Effects.Add(new Effect(nextX, nextY + 1, GameManger.player.weapon.weaponType));
+                        GameManger.player.Effects.Add(new Effect(nextX, nextY - 1, GameManger.player.weapon.weaponType));
+                    }
+                    else if (GameManger.player.direction / 2 == 1)//위쪽 보는중
+                    {
+                        GameManger.player.Effects.Add(new Effect(nextX + 1, nextY, GameManger.player.weapon.weaponType));
+                        GameManger.player.Effects.Add(new Effect(nextX - 1, nextY, GameManger.player.weapon.weaponType));
+                    }
+                }
+                else if (GameManger.player.weapon.weaponType == 2)
+                {
+                    GameManger.player.Effects.Add(new Effect(nextX, nextY, GameManger.player.weapon.weaponType));
+                    if (GameManger.player.direction == 0)//오른쪽 보는중
+                    {
+                        GameManger.player.Effects.Add(new Effect(nextX + 1, nextY, GameManger.player.weapon.weaponType));
+                        GameManger.player.Effects.Add(new Effect(nextX + 2, nextY, GameManger.player.weapon.weaponType));
+                    }
+                    else if (GameManger.player.direction == 1)//왼쪽 보는중
+                    {
+                        GameManger.player.Effects.Add(new Effect(nextX - 1, nextY, GameManger.player.weapon.weaponType));
+                        GameManger.player.Effects.Add(new Effect(nextX - 2, nextY, GameManger.player.weapon.weaponType));
+                    }
+                    else if (GameManger.player.direction == 2)//위쪽 보는중
+                    {
+                        GameManger.player.Effects.Add(new Effect(nextX, nextY - 1, GameManger.player.weapon.weaponType));
+                        GameManger.player.Effects.Add(new Effect(nextX, nextY - 2, GameManger.player.weapon.weaponType));
+                    }
+                    else if (GameManger.player.direction == 3)//아래쪽 보는중
+                    {
+                        GameManger.player.Effects.Add(new Effect(nextX, nextY + 1, GameManger.player.weapon.weaponType));
+                        GameManger.player.Effects.Add(new Effect(nextX, nextY + 2, GameManger.player.weapon.weaponType));
+                    }
+                }
+
+            }
+
+            for (int i = 0; i < GameManger.player.Effects.Count; i++)
+            {
+                if (GameManger.player.Effects[i].type == -1) continue;
+                if (GameManger.player.Effects[i] == null) continue;
+
+                int nextX = GameManger.player.Effects[i].Axis2D.x;
+                int nextY = GameManger.player.Effects[i].Axis2D.y;
+
+                //적 공격
+                Enemy currEnemy = GameManger.currField.FindEnemiesAt(nextX, nextY);
+                if (currEnemy != null)
+                {
+                    if (currEnemy.isLive)
+                    {
+                        currEnemy.hitPoint -= GameManger.player.weapon.weaponStr;
+                        currEnemy.moveTimer.Change(300, 600 - (10 * ((Enemy._ENEMY_HITPOINT_MAX - currEnemy.hitPoint) / Enemy._ENEMY_HITPOINT_MAX)));
+                        if (currEnemy.hitPoint <= 0)
+                        {
+                            GameManger.currField.RemoveEnemy(nextX, nextY);
+
+                            if (GameManger.currField.GetEnemies().Count == 0)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+            }
+            return false;
         }
 
         public override string[] ConvertMapToString(ref string[] line)
@@ -289,7 +378,7 @@ namespace Project1st.Game.Map.Fields
                                     line[y] += ".4.";
 
                                 }
-                                else if (GameManger.player.hitPoint < 9999)
+                                else if (GameManger.player.hitPoint < int.MaxValue)
                                 {
                                     line[y] += ".0.";
 
@@ -318,7 +407,7 @@ namespace Project1st.Game.Map.Fields
                             }
                             else
                             {
-                                line[y] += ".11." + Effect.effectString[firstEffect.type] + ".";                             
+                                line[y] += ".11." + Effect._EFFECT_STRING[firstEffect.type] + ".";                             
                             }
                             if (firstEffect.type != 4)
                             {
@@ -339,11 +428,11 @@ namespace Project1st.Game.Map.Fields
                         {
                             if (tmp.isLive)
                             {
-                                if (tmp.hitPoint < Enemy.EnemyHitPointMAX / 3)
+                                if (tmp.hitPoint < Enemy._ENEMY_HITPOINT_MAX / 3)
                                 {
                                     line[y] += ".8.";
                                 }
-                                else if (tmp.hitPoint <= Enemy.EnemyHitPointMAX *2 / 3)
+                                else if (tmp.hitPoint <= Enemy._ENEMY_HITPOINT_MAX *2 / 3)
                                 {
                                     line[y] += ".7.";
                                 }
@@ -389,7 +478,7 @@ namespace Project1st.Game.Map.Fields
                                 line[y] += ".4.";
 
                             }
-                            else if (GameManger.player.hitPoint < 9999)
+                            else if (GameManger.player.hitPoint < int.MaxValue)
                             {
                                 line[y] += ".0.";
 
@@ -484,13 +573,13 @@ namespace Project1st.Game.Map.Fields
 
             try
             {
-                line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player.hitPointMax,3}";
+                line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player._PLAYER_HITPOINT_MAX,3}";
                 line[FieldBase._FIELD_SIZE + 1] += $"적 숫자{GameManger.currField.ReturnSelfToBattle().enemies.Count,2}/{GameManger.currField.ReturnSelfToBattle().enemyCount,2}";
                 line[FieldBase._FIELD_SIZE + 1] += "\t\t\t\t\t\t\t\t\t";
             }
             catch
             {
-                line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player.hitPointMax,3}";
+                line[FieldBase._FIELD_SIZE + 1] += $"체력{GameManger.player.hitPoint,3}/{Player._PLAYER_HITPOINT_MAX,3}";
                 line[FieldBase._FIELD_SIZE + 1] += "                       ";
                 line[FieldBase._FIELD_SIZE + 1] += "\t\t\t\t\t\t\t\t\t";
             }

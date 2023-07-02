@@ -12,7 +12,7 @@ namespace Project1st.Game.GameObject
 {
     public class Effect : MoveObject
     {
-        public static string[] effectString = { "／", "⇔", "Δ", "€", "˚" };
+        public static readonly string[] _EFFECT_STRING = { "／", "⇔", "Δ", "€", "˚" };
         public int type;
         public bool isRemove;
 
@@ -77,6 +77,7 @@ namespace Project1st.Game.GameObject
                 if (currEnemy.isLive)
                 {
                     currEnemy.hitPoint -= GameManger.player.attckPoint;
+                    currEnemy.moveTimer.Change(300, 600 - (10 * ((Enemy._ENEMY_HITPOINT_MAX - currEnemy.hitPoint) / Enemy._ENEMY_HITPOINT_MAX)));
                     bulletTimer.Dispose();
                     GameManger.player.bulletCount -= 1;
                     isRemove = true;
@@ -87,24 +88,7 @@ namespace Project1st.Game.GameObject
 
                         if (GameManger.currField.GetEnemies().Count == 0)
                         {
-                            GameManger.currField.ReturnSelfToBattle().isWin = true;
-
-                            GameManger.currField.ReturnSelfToBattle().beforePlayerInfo.hitPoint = GameManger.player.hitPoint;
-                            GameManger.currField.StopEnemies();
-
-                            //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-
-                            GameManger.player = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo;
-                            GameManger.currField = GameManger.currField.ReturnSelfToBattle().beforeFieldInfo;
-                            if (GameManger.currField.type == 1)
-                            {
-                                GameManger.currField.PlayEnemies();
-                                GameManger.currField.SetCreateTimer(new Timer(GameManger.currField.CreateEnemy, null, 100, 10000));
-                            }
-                            GameManger.currField.isFog = false;
-                            GameManger.currField.isCurrField = true;
-
-                            GameManger.player.RemoveFog();
+                            GameManger.currField.isWin = true;
                         }
                     }
                 }

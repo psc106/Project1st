@@ -15,7 +15,7 @@ namespace Project1st.Game.GameObject
 {
     public class Enemy : MoveObject
     {
-        public static readonly int EnemyHitPointMAX = 200;
+        public static readonly int _ENEMY_HITPOINT_MAX = 200;
 
         public Timer moveTimer;
         public Timer delayTimer;
@@ -34,7 +34,7 @@ namespace Project1st.Game.GameObject
             isAttack = false;
             isMove = true;
             isLive = true;
-            hitPoint = EnemyHitPointMAX - GameManger.random.Next(100);
+            hitPoint = _ENEMY_HITPOINT_MAX - GameManger.random.Next(100);
             attckPoint = GameManger.random.Next(2,11);
             ID = 0;
             path = new List<Location>();
@@ -63,7 +63,7 @@ namespace Project1st.Game.GameObject
             isAttack = false;
             isMove = true;
             isLive = true;
-            hitPoint = EnemyHitPointMAX - GameManger.random.Next(100);
+            hitPoint = _ENEMY_HITPOINT_MAX - GameManger.random.Next(100);
             attckPoint = 35;
             ID = 0;
             path = new List<Location>();
@@ -116,7 +116,7 @@ namespace Project1st.Game.GameObject
         }
         public void StartBattleTimer()
         {
-            moveTimer = new Timer(SetFightTimer, null, 0, 600 - (400 * ((EnemyHitPointMAX - hitPoint)/EnemyHitPointMAX)));
+            moveTimer = new Timer(SetFightTimer, null, 0, 600 - (400 * ((_ENEMY_HITPOINT_MAX - hitPoint)/_ENEMY_HITPOINT_MAX)));
 
         }
 
@@ -185,18 +185,11 @@ namespace Project1st.Game.GameObject
                 //플레이어와 붙을 경우
                 if (GameManger.player.Axis2D.x == this.Axis2D.x && GameManger.player.Axis2D.y == this.Axis2D.y)
                 {
-                    GameManger.currField.StopEnemies();
-                    if (GameManger.currField.GetCreateTimer() != null)
-                    {
-                        GameManger.currField.GetCreateTimer().Dispose();
-                    }
 
-                    moveTimer.Dispose();
+                    GameManger.currField.Exit();
                     GameManger.currField.GetEnemies().RemoveAll(x => x.Axis2D.x == this.Axis2D.x && x.Axis2D.y == this.Axis2D.y);
 
-                    //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-
-                    new Battle(GameManger.currField.ReturnSelfToForest());
+                    new Battle();
                     return;
                 }
             }
@@ -232,7 +225,7 @@ namespace Project1st.Game.GameObject
                 {
                     isAttack = true;
                     isDelay = true;
-                    delayTimer = new Timer(DelayTimer, null, 600 - (300 * ((EnemyHitPointMAX - hitPoint) / EnemyHitPointMAX)),100);
+                    delayTimer = new Timer(DelayTimer, null, 600 - (300 * ((_ENEMY_HITPOINT_MAX - hitPoint) / _ENEMY_HITPOINT_MAX)),100);
 
                     GameManger.player.hitPoint -= attckPoint;
                     if (GameManger.player.hitPoint<=0)

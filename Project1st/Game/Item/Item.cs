@@ -77,7 +77,7 @@ namespace Project1st.Game.Item
                     case 9:
                         weaponType = 2;
                         weaponDelay = 450;
-                        weaponStr = 45;
+                        weaponStr = 35;
                         break;
                     default:
                         weaponType = 0;
@@ -108,27 +108,27 @@ namespace Project1st.Game.Item
                     case 4:
                         weaponType = 1;
                         weaponDelay = 1300;
-                        weaponStr = 60;
+                        weaponStr = 80;
                         break;
                     case 5:
                         weaponType = 2;
                         weaponDelay = 300;
-                        weaponStr = 20;
+                        weaponStr = 30;
                         break;
                     case 6:
                         weaponType = 1;
                         weaponDelay = 800;
-                        weaponStr = 45;
+                        weaponStr = 55;
                         break;
                     case 7:
                         weaponType = 0;
                         weaponDelay = 150;
-                        weaponStr = 10;
+                        weaponStr = 15;
                         break;
                     case 8:
                         weaponType = 1;
-                        weaponDelay = 2500;
-                        weaponStr = 140;
+                        weaponDelay = 3000;
+                        weaponStr = 200;
                         break;
                     case 9:
                         weaponType = 2;
@@ -165,27 +165,27 @@ namespace Project1st.Game.Item
                     case 4:
                         weaponType = 1;
                         weaponDelay = 1300;
-                        weaponStr = 60;
+                        weaponStr = 80;
                         break;
                     case 5:
                         weaponType = 2;
                         weaponDelay = 300;
-                        weaponStr = 20;
+                        weaponStr = 30;
                         break;
                     case 6:
                         weaponType = 1;
                         weaponDelay = 800;
-                        weaponStr = 45;
+                        weaponStr = 55;
                         break;
                     case 7:
                         weaponType = 0;
                         weaponDelay = 150;
-                        weaponStr = 10;
+                        weaponStr = 15;
                         break;
                     case 8:
                         weaponType = 1;
-                        weaponDelay = 2500;
-                        weaponStr = 140;
+                        weaponDelay = 3000;
+                        weaponStr = 200;
                         break;
                     case 9:
                         weaponType = 2;

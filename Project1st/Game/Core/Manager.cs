@@ -14,7 +14,7 @@ namespace Project1st.Game.Core
     {
         public static BufferPrinter buffer;
         public static Player player;
-        public static WorldMap map;
+        public static WorldMap worldMap;
         public static FieldBase currField;
 
         public static DB db;
@@ -28,7 +28,7 @@ namespace Project1st.Game.Core
             db = new DB();
             db.PutData();
 
-            map = new WorldMap();
+            worldMap = new WorldMap();
             buffer = new BufferPrinter();
             player = new Player();
             currFieldPos = new Coordinate(1, 1);
