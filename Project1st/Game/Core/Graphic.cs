@@ -133,6 +133,7 @@ namespace Project1st.Game.Core
                             case Color.DARK_YELLOW:
                                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                                 break;
+
                             //99?
                             case Color.BLACK:
                                 Console.ForegroundColor = ConsoleColor.Black;

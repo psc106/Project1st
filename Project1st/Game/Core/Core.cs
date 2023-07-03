@@ -148,8 +148,6 @@ namespace Project1st.Game.Core
                     {
                         //전투후 player 체력저장
                         int afterHitPoint = GameManger.player.hitPoint;
-                        
-                        //Utility.currRoom.enemyTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
                         //플레이어와 필드를 이전값으로 복구
                         GameManger.player = GameManger.currField.ReturnSelfToBattle().beforePlayerInfo;

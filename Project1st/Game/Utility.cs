@@ -93,7 +93,7 @@ namespace Project1st.Game
             string str = "";
             if (type == 0)
             {
-                if (townX != -1 || townY != -1)
+                if (townX == -1 || townY == -1)
                 {
                     str += $"[?, ?]에서 ";
                 }

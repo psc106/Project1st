@@ -1088,30 +1088,46 @@ namespace Project1st.Game.Map.Fields
                     //골드 정보
                     if (y == 30)
                     {
-                        line[30] = "\t";
-                        line[30] += $"{gold,8}";
+                        line[30] = $"(상점)";
                         line[30] += "\t\t\t\t\t\t";
-                        line[30] += $"{GameManger.player.gold,8}";
-                        line[y] += "\t\t";
-                    }
-                    //무게 정보
-                    if (y == 31)
-                    {
-                        line[31] = "\t";
-                        line[31] += "\t\t\t\t\t\t\t ";
+
                         if (cursorPosition.x <= 1)
                         {
-                            line[31] += $"{GameManger.player.weight,4}" + "/";
-                            line[31] += $"{Player._PLAYER_WEIGHT_MAX,-4}";
-                            line[31] += $"{GameManger.player.SumWeight(),4}" + "/";
-                            line[31] += $"{GameManger.player.maxWeightSum,-4}";
+                            line[30] += $"(플레이어)";
+                            line[30] += "\t\t";
                         }
                         else
                         {
-                            line[31] += $"{GameManger.player.wagonList[cursorPosition.x - 2].weight,4}" + "/";
-                            line[31] += $"{Wagon._WAGON_WEIGHT_MAX,-4}";
-                            line[31] += $"{GameManger.player.SumWeight(),4}" + "/";
-                            line[31] += $"{GameManger.player.maxWeightSum,-4}";
+                            line[30] += $"(플레이어: {cursorPosition.x-1}번 마차)";
+                            line[30] += "\t\t";
+                        }
+                    }
+                    //골드 정보
+                    if (y == 31)
+                    {
+                        line[31] = $"{gold,-8}.4. Gold.";
+                        line[31] += "\t\t\t\t\t\t\t";
+                        line[31] += $"{GameManger.player.gold,-8}.4. Gold.";
+                        line[31] += "\t\t";
+                    }
+                    //무게 정보
+                    if (y == 32)
+                    {
+                        line[32] = "\t";
+                        line[32] += "\t\t\t\t\t\t\t ";
+                        if (cursorPosition.x <= 1)
+                        {
+                            line[32] += $"{GameManger.player.weight,4}" + "/";
+                            line[32] += $"{Player._PLAYER_WEIGHT_MAX,-4}";
+                            line[32] += $"{GameManger.player.SumWeight(),4}" + "/";
+                            line[32] += $"{GameManger.player.maxWeightSum,-4}";
+                        }
+                        else
+                        {
+                            line[32] += $"{GameManger.player.wagonList[cursorPosition.x - 2].weight,4}" + "/";
+                            line[32] += $"{Wagon._WAGON_WEIGHT_MAX,-4}";
+                            line[32] += $"{GameManger.player.SumWeight(),4}" + "/";
+                            line[32] += $"{GameManger.player.maxWeightSum,-4}";
                         }
                         line[y] += "\t\t";
                     }
@@ -1141,6 +1157,12 @@ namespace Project1st.Game.Map.Fields
                             line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
                     }
+                    //골드 정보
+                    if (y == 20)
+                    {
+                        line[20] = $"{GameManger.player.gold,8}.4. Gold.";
+                        line[20] += "\t\t";
+                    }
                 }
 
                 //여관
@@ -1162,6 +1184,12 @@ namespace Project1st.Game.Map.Fields
                         default:
                             line[y] += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
                             break;
+                    }
+                    //골드 정보
+                    if (y == 20)
+                    {
+                        line[20] = $"{GameManger.player.gold,8}.4. Gold.";
+                        line[20] += "\t\t";
                     }
                 }
 

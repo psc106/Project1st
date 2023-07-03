@@ -1022,7 +1022,7 @@ namespace Project1st.Game.Map.Fields
                                     line[y] += ".5.";
 
                                 }
-                                else if (GameManger.player.hitPoint < 200)
+                                else if (GameManger.player.hitPoint <= 200)
                                 {
                                     line[y] += ".4.";
 
@@ -1114,6 +1114,14 @@ namespace Project1st.Game.Map.Fields
                             {
                                 line[y] += ".2.";
                             }
+                            else if (fieldInfo[y, x] == FieldBase.field_info.tree)
+                            {
+                                line[y] += ".5.";
+                            }
+                            else if (fieldInfo[y, x] == FieldBase.field_info.mud)
+                            {
+                                line[y] += ".7.";
+                            }
                             else
                             {
                                 line[y] += ".0.";
@@ -1125,6 +1133,14 @@ namespace Project1st.Game.Map.Fields
                             if (fieldInfo[y, x] == FieldBase.field_info.portal)
                             {
                                 line[y] += ".12.";
+                            }
+                            else if (fieldInfo[y, x] == FieldBase.field_info.tree)
+                            {
+                                line[y] += ".11.";
+                            }
+                            else if (fieldInfo[y, x] == FieldBase.field_info.mud)
+                            {
+                                line[y] += ".8.";
                             }
                             else
                             {
